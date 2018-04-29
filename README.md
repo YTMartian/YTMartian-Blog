@@ -1,9 +1,10 @@
-# YTMartian-Blog
+# [YTMartian-Blog](http://www.dongjiayi.com/)
 
-###INTRODUCTION
+### INTRODUCTION
+
 a blog build with django
 
-###REQUIREMENTS
+### REQUIREMENTS
 
 
-###ACHIEVING FUNCTION
+### ACHIEVING FUNCTION
