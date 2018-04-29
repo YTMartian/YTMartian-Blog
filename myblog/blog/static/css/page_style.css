@@ -1,0 +1,404 @@
+
+body {
+    background-attachment: fixed;
+    background-image: url("http://www.potatochip.cn/wallpaper-132.jpg");
+    background-size: cover;
+    background-position: center;
+    -webkit-background-size: cover; /* 兼容Webkit内核浏览器如Chrome和Safari */
+    -o-background-size: cover; /* 兼容Opera */
+    -moz-background-size: cover;
+}
+
+h1, h2, h3, h4, h5, h6, figure {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 10px 0;
+    line-height: 33px;
+    background: #454545;
+    border-left: 9px solid #e23703;
+    color: #fff;
+    padding-left: 12px;
+}
+
+/*响应式，在手机上隐藏一些元素*/
+
+.control-particle-show {
+
+}
+
+#anti-emit-display {
+    display: none;
+}
+
+@media screen and (max-width: 1000px) {
+
+    .navigation, #emit-canvas {
+        display: none;
+    }
+
+    #anti-emit-display {
+        display: inline;
+    }
+
+    .control-particle-show {
+        display: none;
+    }
+
+}
+
+div.page_card_header {
+    background-image: url(../images/background.svg);
+    border-radius: 100px;
+    padding: 10px;
+    font-size: 30px;
+}
+
+li::before {
+    position: absolute;
+    content: '\2022';
+    font-family: Arial;
+    color: #ff0100;
+    left: 0;
+    text-align: center;
+    font-size: 2em;
+    opacity: .5;
+    line-height: .75;
+    -webkit-transition: .5s;
+    transition: .5s;
+}
+
+li:hover {
+    font-size: 1.04em;
+    padding-left: 5px;
+    color: #000000;
+    overflow: hidden;
+}
+
+li:hover::before {
+    -webkit-transform: scale(2);
+    -ms-transform: scale(2);
+    transform: scale(2);
+    opacity: 1;
+    text-shadow: 0 0 4px;
+    -webkit-transition: .1s;
+    transition: .1s;
+    overflow: hidden;
+}
+
+ul, ol {
+    list-style: none;
+    position: relative;
+    font-family: Arial;
+    padding-left: 3%;
+    display: inline-block;
+    color: #1b1b1b;
+}
+
+blockquote {
+    opacity: .9;
+    font-style: italic;
+}
+
+code {
+    font-family: Source-CodePro;
+}
+
+img {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    width: 50%;
+}
+
+.img-judge:hover {
+    -webkit-transform: translateY(-1px);
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px 4px rgba(0, 0, 0, 0.2);
+}
+
+#myImg {
+    border-radius: 5px;
+    transition: 0.3s;
+    cursor: url('../fonts/zoom-in.cur'), zoom-in; /*when use url, must have a default cursor*/
+}
+
+.img-judge {
+    /*to obtain all the imgs in picZoom.js*/
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    -webkit-transition: 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    transition: 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+    cursor: url('../fonts/zoom-out.cur'), zoom-out;
+}
+
+/* Modal Content (image) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 100%;
+    max-width: 1000px;
+}
+
+/* Add Animation */
+.modal-content, #caption {
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+    from {
+        -webkit-transform: scale(0)
+    }
+    to {
+        -webkit-transform: scale(1)
+    }
+}
+
+@keyframes zoom {
+    from {
+        transform: scale(0.1)
+    }
+    to {
+        transform: scale(1)
+    }
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px) {
+    .modal-content {
+        width: 100%;
+    }
+}
+
+.myVideo {
+    padding-left: 3px;
+    box-shadow: 7px 7px 40px rgba(0, 0, 0, 0.9);
+}
+
+.video-js .vjs-menu-button-inline.vjs-slider-active, .video-js .vjs-menu-button-inline:focus, .video-js .vjs-menu-button-inline:hover, .video-js.vjs-no-flex .vjs-menu-button-inline {
+    width: 10em;
+}
+
+.video-js .vjs-control {
+    width: 3em;
+}
+
+.video-js .vjs-menu-button-inline:before {
+    width: 1.5em;
+}
+
+.vjs-menu-button-inline .vjs-menu {
+    left: 3em;
+}
+
+.video-js .vjs-mouse-display:after, .video-js .vjs-play-progress:after {
+    padding: 0 .4em .3em;
+}
+
+.video-js.vjs-ended .vjs-loading-spinner {
+    display: none;
+}
+
+.video-js.vjs-ended .vjs-big-play-button {
+    display: block !important;
+}
+
+.video-js.vjs-paused .vjs-big-play-button, .vjs-paused.vjs-has-started.video-js .vjs-big-play-button, video-js.vjs-ended .vjs-big-play-button {
+    display: block;
+}
+
+.video-js .vjs-big-play-button {
+    top: 50%;
+    left: 50%;
+    background-color: rgba(44, 151, 222, .8);
+    font-size: 3.5em;
+    border-radius: 100%;
+    height: 2em !important;
+    width: 2em !important;
+    line-height: 1.7em !important;
+    margin-top: -1em !important;
+    margin-left: -1em;
+    border-width: 4px;
+}
+
+.video-js .vjs-big-play-button:active, .video-js .vjs-big-play-button:focus, .video-js:hover .vjs-big-play-button {
+    background-color: rgba(44, 151, 222, .9);
+}
+
+.video-js .vjs-loading-spinner {
+    border-color: #2c97de;
+}
+
+.video-js .vjs-control-bar2 {
+    background-color: transparent;
+}
+
+.video-js .vjs-control-bar {
+    background-color: rgba(0, 0, 0, 0) !important;
+    color: #fff;
+    font-size: 18px;
+}
+
+.video-js .vjs-play-progress, .video-js .vjs-volume-level {
+    background-color: #2c97de;
+}
+
+.video-js .vjs-big-play-button:before, .video-js .vjs-icon-play:before {
+    font-size: 40px;
+}
+
+.video-js .vjs-progress-holder {
+    font-size: 1.7em;
+    border-radius: 10px;
+}
+
+.video-js .vjs-progress-holder .vjs-load-progress, .video-js .vjs-progress-holder .vjs-load-progress div, .video-js .vjs-progress-holder .vjs-play-progress, .video-js .vjs-slider, .vjs-volume-level {
+    border-radius: 10px;
+}
+
+.video-js .vjs-load-progress {
+    background: rgba(255, 255, 255, .5);
+}
+
+.video-js, .video-js .vjs-tech, .video-js video, .vjs-poster {
+    border-radius: 8px;
+}
+
+.video-js .vjs-controls-disabled .vjs-big-play-button, .video-js .vjs-load-progress div, .vjs-seeking .vjs-big-play-button, .vjs-waiting .vjs-big-play-button {
+    display: none !important;
+}
+
+.video-js li {
+    color: white;
+}
+
+.video-js li::before {
+    display: none;
+}
+
+.video-js li:hover {
+    overflow: hidden;
+}
+
+.video-js li:hover::before {
+    display: none;
+}
+
+.article-info {
+    text-align: left;
+    padding-left: 4%;
+    font-size: 1.0em;
+    font-family: Source-CodePro;
+    position: relative;
+}
+
+.comment_style {
+
+}
+
+.comment_user {
+    font-weight: bold;
+    font-size: 1.3em;
+}
+
+.comment_content {
+    margin-top: 20px;
+    margin-left: 30px;
+    background-color: #fbe6d4;
+    font-family: Source-CodePro, KaiTi;
+}
+
+hr {
+    height: 1px;
+    border: none;
+    border-top: 1px dashed #0066CC;
+}
+
+.single_comment {
+    font-family: "Microsoft YaHei UI";
+
+}
+
+.single_comment:hover .com_operator {
+    display: inline-block;
+}
+
+.com_operator {
+    color: #7f7f7f;
+    display: none;
+}
+
+.com_operator:hover {
+    color: #101010;
+    cursor: pointer;
+}
+
+.comment_card {
+
+}
+
+#comment_text_area {
+    resize: none;
+
+    font-size: 1.3em;
+    background-color: #e3e3e3;
+    border: solid 3px #373331;
+    outline: none;
+}
+
+#comment_text_area::placeholder {
+    line-height: 1.0em;
+    font-size: 1.3em;
+    letter-spacing: 0.2em;
+}
+
+#comment_text_area:focus {
+    background-color: #f3f3f3;
+    border: solid 3px #373331
+}
+
+#submit_comment {
+    margin-left: -20%;
+}
+
+#comment_button {
+    width: 120px;
+}
+
+#faceBlock {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.comment-children {
+    padding-left: 40px;
+}
+
+.first-generation {
+    border-bottom: solid 1px;
+    border-color: silver;
+}
+
+code {
+    border-radius: 15px;
+    border-color: transparent !important;
+    background-color: #45403f;
+    color: #ffcba0;
+    box-shadow: 0 1px 0px 1px rgba(0, 0, 0, 0.5);
+}

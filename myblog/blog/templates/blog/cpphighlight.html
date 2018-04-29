@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>代码高亮</title>
+    <link rel="icon" href="{% static 'fonts/label.ico' %}" type="image/x-icon">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <style>
+        @font-face {
+            font-family: Source-Code;
+            src: url('{% static 'fonts/SourceCodePro.ttf' %}')
+        }
+
+        /*代码输入框样式*/
+        #code_area {
+            height: 600px;
+            resize: none;
+            font-size: 1.3em;
+            background-color: #3e4037;
+            border: solid 3px #373331;
+            outline: none;
+            color: #d3d3d3;
+        }
+
+        #code_area::placeholder {
+            line-height: 1.0em;
+            font-size: 1.3em;
+            letter-spacing: 0.2em;
+        }
+
+        #code_area:focus {
+            background-color: #34362e;
+            border: solid 3px #373331
+        }
+
+        .button {
+            border: none;
+            outline: none;
+            border-radius: 50px;
+            color: white;
+            font-family: "Microsoft YaHei UI";
+            background-color: #ff4351;
+            padding: 10px 24px;
+            text-align: center;
+            width: 150px;
+            display: inline-block;
+            font-size: 23px;
+            margin: 10px 2px;
+            cursor: pointer;
+            box-shadow: 4px 4px 6px #343434;
+        }
+
+        hr {
+            height: 1px;
+            border: none;
+            border-top: 1px dashed #0066CC;
+        }
+
+        #code-background {
+            background-color: #3e4037;
+            margin: 0 auto;
+            padding-left: 10px;
+        }
+
+        #result {
+            font-family: Source-Code;
+            font-size: 1.0em;
+        }
+
+        ::selection {
+            background: rgba(100, 245, 176, 0.84);
+            color: #4e4e4e;
+        }
+
+        ::-moz-selection {
+            background: rgba(100, 245, 176, 0.84);
+            color: #4e4e4e;
+        }
+    </style>
+</head>
+<body>
+<div id="code-background">
+    <code id="result"></code>
+</div>
+<hr>
+<div style="text-align: center">
+    <textarea name="submit" placeholder="代码..." id="code_area" required></textarea>
+</div>
+<div style="text-align: center;position: fixed;top: 85%;right: 10%">
+    <button id="highlight_button" class="button" type="button">高亮</button>
+</div>
+<script>
+    document.getElementById('code_area').value = '#include <map>\n' +
+        '#include <set>\n' +
+        '#include <queue>\n' +
+        '#include <stack>\n' +
+        '#include <string>\n' +
+        '#include <vector>\n' +
+        '#include <math.h>\n' +
+        '#include <stdio.h>\n' +
+        '#include <string.h>\n' +
+        '#include <iostream>\n' +
+        '#include <algorithm>\n' +
+        '\n' +
+        '#define ll long long\n' +
+        '#define inf 0x3f3f3f3f\n' +
+        '#define mem(a, b) memset(a,b,sizeof(a))\n' +
+        'typedef __int64 I64;\n' +
+        'using namespace std;\n' +
+        '\n' +
+        'void fuck() {\n' +
+        '    int a = 1;\n' +
+        '}\n' +
+        'struct node {\n' +
+        '    int x;\n' +
+        '} sb;\n' +
+        '\n' +
+        'class None {\n' +
+        '  public:\n' +
+        '  protected:\n' +
+        '  private:\n' +
+        '};\n' +
+        '#include<stdio.h>\n' +
+        '\n' +
+        'int main() {\n' +
+        '    char ss = \'x\';\n' +
+        '    double avf = 100.59;\n' +
+        '    double avx = 7.5;\n' +
+        '    double ansx = 0, ansf = 0;\n' +
+        '    double f[10] = {83.21, 87.78, 1e6, 12E4};\n' +
+        '    double x[10] = {6.2, 6.5,};\n' +
+        '    long long l = 1e5;\n' +
+        '    float c = -1;\n' +
+        '\n' +
+        '    for(int i = 0; i < 10; i++)ansf += (avf - f[i]) * (avf - f[i]);\n' +
+        '\n' +
+        '    ansf = sqrt(ansf / 90.0);\n' +
+        '\n' +
+        '    for(int i = 0; i < 10; i++)ansx += (avx - x[i]) * (avx - x[i]);\n' +
+        '\n' +
+        '    ansx = sqrt(ansx / 90.0);\n' +
+        '    printf("%1lf dsds %lf\\n", ansf, ansx);\n' +
+        '    double t123 = 38.67, te2 = 518.59;\n' +
+        '    printf("%lf\\n", sqrt(t123 * t123 * ansf * ansf + te2 * te2 * ansx * ansx));\n' +
+        '    cout << \'1\' << endl;\n' +
+        '\n' +
+        '    while(true) {\n' +
+        '        break;\n' +
+        '    }\n' +
+        '\n' +
+        '    do {\n' +
+        '        continue;\n' +
+        '    } while(false);\n' +
+        '\n' +
+        '    //omit单行注释\n' +
+        '    /*\n' +
+        '    note\n' +
+        '    多行注释\n' +
+        '     */\n' +
+        '    return 0;\n' +
+        '}\n' +
+        '\n' +
+        '\n';
+</script>
+<script src="{% static 'js/CPPhighlight.js' %}"></script>
+<!--textarea随文本高度而变化-->
+<script src="{% static 'js/autosize.js' %}"></script>
+<script>
+    autosize(document.querySelectorAll('textarea'));
+</script>
+</body>
+</html>

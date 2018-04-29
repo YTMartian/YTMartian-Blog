@@ -1,0 +1,77 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('../fonts/icomoon/icomoon.eot?7cjqad');
+  src:  url('../fonts/icomoon/icomoon.eot?7cjqad#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon/icomoon.ttf?7cjqad') format('truetype'),
+    url('../fonts/icomoon/icomoon.woff?7cjqad') format('woff'),
+    url('../fonts/icomoon/icomoon.svg?7cjqad#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-dot-single:before {
+  content: "\e904";
+}
+.icon-dot-circle-o:before {
+  content: "\e905";
+}
+.icon-qq:before {
+  content: "\e903";
+}
+.icon-mail-envelope-closed:before {
+  content: "\e900";
+}
+.icon-thumb-down:before {
+  content: "\e901";
+}
+.icon-thumb-up:before {
+  content: "\e902";
+}
+.icon-calendar:before {
+  content: "\e953";
+}
+.icon-bubbles3:before {
+  content: "\e96f";
+}
+.icon-search:before {
+  content: "\e986";
+}
+.icon-eye:before {
+  content: "\e9ce";
+}
+.icon-loop2:before {
+  content: "\ea2e";
+}
+.icon-arrow-up:before {
+  content: "\ea32";
+}
+.icon-undo2:before {
+  content: "\e967";
+}
+.icon-redo2:before {
+  content: "\e968";
+}
+.icon-user-tie:before {
+  content: "\e976";
+}
+.icon-bin:before {
+  content: "\e9ac";
+}
+.icon-question:before {
+  content: "\ea09";
+}

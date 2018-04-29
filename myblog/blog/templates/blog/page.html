@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load custom_markdown %}
+{% load add_something %}
+{% load comment_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="{% static 'fonts/label.ico' %}" type="image/x-icon">
+    <title>YTMartian | 董家佚</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icomoon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/crowd.css' %}">
+    <link rel="stylesheet" href="{% static 'css/triangle_emit.css' %}">
+    <link rel="stylesheet" href="{% static 'css/component.css' %}">
+    <link rel="stylesheet" href="{% static 'css/video_js.css' %}">
+    <link rel="stylesheet" href="{% static 'css/x0popup.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/page_style.css' %}">
+    <script src="{% static 'js/jquery-1.8.3.min.js' %}"></script>
+
+    <script src="{% static 'highlight/highlight.pack.js' %}"></script>
+    <!--highlightjs-line-numbers.min.js放于highlight.pack.js之下-->
+    <!--highlightjs-line-numbers.js 是 highlight.js 用来显示代码行号的一个插件-->
+    <script src="{% static 'js/highlightjs-line-numbers.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'highlight/styles/darkula.css' %}">
+</head>
+<body style="overflow-x: hidden" id="myscrool" unselectable="on" onselectstart="return false;">
+
+<!--粒子线条-->
+<div class="control-particle-show">
+    <canvas id="dot_line_display"></canvas>
+    <div id="dot_line_blachole"></div>
+</div>
+<div class="row " style="margin: auto; ">
+    <div class="col-md-8 col-md-offset-2 text-center gtco-heading">
+        <div class="emit ">
+            <div id="large-header" class="large-header">
+                <canvas id="emit-canvas"></canvas>
+                <canvas id="anti-emit-display"></canvas>
+                <h7 class="main-title">{{ article.title }}</h7>
+                <div class="article-info">
+                    <span class="icon-calendar">{{ article.publish_time|trans_date }} </span>
+                    <span class="icon-eye">{{ article.readings }}</span>
+                    <span class="icon-thumb-up" id="thumbs">{{ article.thumbs_up }}</span>
+                    <span class="icon-bubbles3" id="comments_number"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table_hljs col-md-8 col-md-offset-2 gtco-tabs page_card">
+        <br>
+        <div class="page-global">{{ article.content|add_|custom_markdown }}</div>
+        <br>
+    </div>
+    <!--COMMENTS-->
+    <div class="table_hljs col-md-8 col-md-offset-2 gtco-tabs page_card">
+        {% include 'comments/comment_form.html' with post=article %}
+        {% include 'comments/comment_list.html' with post=article %}
+        <br><br><br><br>
+    </div>
+</div>
+<!--position: fixed;绝对定位，不随页面而动-->
+<!--返回顶部-->
+<div class="gototop js-top" style="position: fixed;top: 85%;right: 2%">
+    <a class="js-gotop"><i class="icon-arrow-up"></i></a>
+</div>
+<!--点赞-->
+<nav class="navigation">
+    <div class="praise">
+        <button id="praise" style="position: fixed;top: 6%;right: 8%" class="button button-glow button-circle button-caution
+    button-jumbo " onclick="thumbs_up('{% url 'blog:thumbs_up' article.id %}',{{ article.thumbs_up }})"><i
+                class="icon-thumb-up
+"></i>
+        </button>
+        <span id="add1s"></span>
+    </div>
+</nav>
+<!--Zoom start-->
+<div id="myModal" class="modal">
+    <img class="modal-content" id="img01">
+</div>
+<!--Zoom end-->
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+
+<script src="{% static 'js/autosize.js' %}"></script>
+<script>
+    autosize(document.querySelectorAll('textarea'));
+</script>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery.emojiFace.js' %}"></script>
+<script>
+    $(function () {
+        $('#emojihere').emojiInit();
+        var wwidth = document.getElementsByClassName('col-md-8')[0].offsetWidth - 40;
+        var mmargin = document.getElementsByClassName('page_card')[0].offsetWidth - wwidth;
+        document.getElementById('faceBlock').style.width = wwidth + 'px';
+        document.getElementById('faceBlock').style.marginLeft = mmargin / 2 + 'px';
+    });
+</script>
+<script src="{% static 'js/x0popup.min.js' %}"></script>
+<script src="{% static 'js/comment_relative.js' %}"></script>
+<script src="{% static 'js/video.js' %}"></script>
+<script src="{% static 'js/videojs-speed.js' %}"></script>
+<script src="{% static 'js/picZoom.js' %}"></script>
+<script src="{% static 'js/dianzan.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/jquery.easing.1.3.js' %}"></script>
+<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'js/main1.js' %}"></script>
+<!--line_dot-->
+<script src="{% static 'js/constellation.js' %}"></script>
+<!--triangle_emit-->
+<script src="{% static 'js/TweenLite.min.js' %}"></script>
+<script src="{% static 'js/EasePack.min.js' %}"></script>
+<script src="{% static 'js/trangle_emit.js' %}"></script>
+
+</body>
+</html>

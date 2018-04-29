@@ -1,0 +1,116 @@
+{% load staticfiles %}
+{% load add_something %}
+{% load custom_markdown %}
+{% load comment_tags %}
+{% load mptt_tags %}
+
+{% get_comment_list_of post as nodes %}
+{% get_comments_user_count post as user_count %}
+
+
+<div style="text-align: left;">
+    {% ifequal nodes.count 0 %}
+        <h2 style="padding-top:10px;color: #fff">还没有评论</h2>
+    {% else %}
+        <h2 style="padding-top:10px;color: #fff">{{ nodes.count }}条评论</h2>
+    {% endifequal %}
+</div>
+<div class="comment_card">
+    {% if nodes.count > 0 %}
+        {% recursetree nodes %}
+            {% comment %}<hr>{% endcomment %}
+            <div class="single_comment">
+                <span class="icon-user-tie" style="color: #e6312a"></span>
+                <span class="comment_user">{{ node.user_name }}</span>
+                {% if not node.is_root_node %}
+                    <span class="icon-redo2"><span style="color: #00b65f">{{ node.parent.user_name }}</span></span>
+                {% endif %}
+                <span style="float: right">{{ node.submit_date }}</span>
+                <div class="comment_content"
+                     style="padding-left: 10px;border-left: 8px solid #2b2b2b;background: #eee;">
+                    {{ node.content|safe|add_|safe|custom_markdown }}</div>
+                <br>
+                <a class="com_operator icon-bubbles3" id="reply-{{ node.id }}"
+                   onclick="reply_comment({{ node.id }},'{{ node.user_name }}')">回复</a>
+                <a class="com_operator icon-thumb-up" id="thumbs_up-{{ node.id }}"
+                   onclick="thumbs_up_comment('{% url 'comments:thumbs_up' post.id node.id %}'
+                           ,{{ node.thumbs_up }},{{ node.id }})">{{ node.thumbs_up }}</a>
+                <a class="com_operator icon-thumb-down" id="thumbs_down-{{ node.id }}"
+                   onclick="thumbs_down_comment('{% url 'comments:thumbs_down' post.id node.id %}'
+                           ,{{ node.thumbs_down }},{{ node.id }})
+                           ">{{ node.thumbs_down }}</a><br><br>
+            </div>
+            <div class="comment-children {% if node.is_root_node %}first-generation{% endif %}">
+                {% if not node.is_leaf_node %}
+                    {{ children }}
+                {% endif %}
+            </div>
+        {% endrecursetree %}
+    {% else %}
+
+    {% endif %}
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        var comments_number = document.getElementById('comments_number');
+        comments_number.innerText = '{{ nodes.count }}';
+    });
+
+    function reply_comment(parent_id, name) {
+        parentId = '' + parent_id;
+        document.getElementById('cancel_button').style.display = 'inline-block';
+        $('textarea').attr('placeholder', '@' + name + ': ');
+        $('html,body').animate({scrollTop: $("#submit_comment").offset().top - 100}, 500);
+    }
+
+    function thumbs_up_comment(post_url, now_number, num) {
+        var request = $.ajax({
+            url:post_url,
+            type: 'GET',
+            async: true,
+            timeout: 7000,
+            error: function () {
+                window.alert("😫出错了😫,可以向邮箱 1773741250@qq.com 发送反馈")
+            },
+            complete: function (XMLHttpRequest, status) {
+                if (status == 'timeout') {
+                    request.abort();
+                    window.alert('请求超时了...')
+                }
+            },
+            success: function () {
+                if (request.responseText == "true") {
+                    var thumbs_number = document.getElementById('thumbs_up-' + num);
+                    thumbs_number.innerText = now_number + 1;
+                }
+            }
+        });
+    }
+
+    function thumbs_down_comment(post_url, now_number, num) {
+        var request = $.ajax({
+            url: post_url,
+            type: 'GET',
+            async: true,
+            timeout: 7000,
+            error: function () {
+                window.alert("😫出错了😫,可以向邮箱 1773741250@qq.com 发送反馈")
+            },
+            complete: function (XMLHttpRequest, status) {
+                if (status == 'timeout') {
+                    request.abort();
+                    window.alert('请求超时了...')
+                }
+            },
+            success: function () {
+                if (request.responseText == "true") {
+                    var thumbs_number = document.getElementById('thumbs_down-' + num);
+                    thumbs_number.innerText = now_number + 1;
+                }
+            }
+        });
+    }
+</script>
