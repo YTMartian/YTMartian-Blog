@@ -1,2 +1,9 @@
 # YTMartian-Blog
-my blog build with django
+
+###INTRODUCTION
+a blog build with django
+
+###REQUIREMENTS
+
+
+###ACHIEVING FUNCTION
