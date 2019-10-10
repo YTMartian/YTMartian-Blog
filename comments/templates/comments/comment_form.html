@@ -1,0 +1,75 @@
+{% load staticfiles %}
+{% load comment_tags %}
+
+{% generate_form_for post as form %}
+
+
+<form id="submit_comment" method="post" action="{% url 'comments:submit_comment' post.id %}">
+
+    <textarea name="submit" placeholder="说出你大胆的想法..." id="comment_text_area"
+              required></textarea>
+
+    <button id="comment_button" class="button button-3d button-primary button-rounded" type="button">评论</button>
+    <button id="cancel_button" style="display:none" class="button button-3d button-caution button-rounded"
+            type="button" onclick="cancel_reply()">取消
+    </button>
+    <div id="code-1" style="display: none;"></div>
+    <a class="button button-primary button-box button-small" href="javascript:exec(1);">帮助</a>
+    <span id="emojihere" style="cursor: pointer;"><a style="font-size:2.0em" id='faceEnter'
+                                                     onclick='showFaceBlock()'>😃</a></span>
+</form>
+<hr>
+<script>
+    var parentId = '';
+
+    function cancel_reply() {
+        $('textarea').attr('placeholder', '说出你大胆的想法...');
+        document.getElementById('cancel_button').style.display = 'none';
+        document.getElementById('comment_text_area').value = '';
+        parentId = '';
+    }
+
+    $(document).ready(function () {
+        /*使评论框实际宽度宽度与...一致*/
+        /*在jquery.emojiFace.js里更改*/
+        var wwidth = document.getElementsByClassName('col-md-8')[0].offsetWidth - 40;
+        document.getElementById('comment_text_area').style.width = wwidth + 'px';
+
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
+        });
+        document.getElementById('comment_button').onclick = function () {
+            var content = document.getElementById('comment_text_area').value;
+            if (content.length == 0) {
+                exec(2);
+                return;
+            }
+            var request = $.ajax({
+                type: 'POST',
+                url: "{% url 'comments:submit_comment' post.id %}",
+                dataType: "json",
+                async: true,
+                timeout: 10000,
+                data: {
+                    'honeypot': '',
+                    'content': '<fuck>\n' +
+                    '\n' + content,
+                    'parent': parentId,
+                    'post':{{ post.id }}
+                },
+                success: function () {
+                    window.location.reload();
+                },
+                complete: function (XMLHttpRequest, status) {
+                    if (status == 'timeout') {
+                        request.abort();    // 超时后中断请求
+                        alert('请求超时');
+                    }
+                },
+                error: function () {
+                    alert("😫出错了😫,可以向邮箱 1773741250@qq.com 发送反馈");
+                }
+            });
+        }
+    })
+</script>

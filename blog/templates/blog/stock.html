@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load custom_markdown %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="{% static 'fonts/label.ico' %}" type="image/x-icon">
+    <title>YTMartian | 董家佚</title>
+    <script src="{% static 'css/bootstrap.min.css' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/timeline.css' %}">
+    <script src="{% static 'js/jquery-1.8.3.min.js' %}"></script>
+    <style>
+        @media screen and (max-width: 1000px) {
+            .anime_display {
+                display: none;
+            }
+        }
+    </style>
+
+</head>
+<body style="overflow-x: hidden" id="myscrool" unselectable="on" onselectstart="return false;">
+
+<div class="htmleaf-container">
+    <div class="timeline">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-timeline">
+                        {% for recorser in recorders %}
+                            <div class="timeline">
+                                <div class="timeline-content">
+	                                <span class="date">
+	                                    <span class="day">{{ recorser.time|get_day }}日</span>
+	                                    <span class="month">{{ recorser.time|get_month }}月</span>
+	                                    <span class="year">{{ recorser.time|get_year }}年</span>
+	                                </span>
+                                    <h2 class="title">{{ recorser.title }}</h2>
+                                    <div class="description">{{ recorser.content|custom_markdown }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--start anime-->
+<img src="{% static "images/layer-1.png" %}" style="width: 11%;position: fixed;bottom:0;right: 0%;">
+<img src="{% static "images/layer-2.png" %}" style="width:16%;position: fixed;bottom:0;left: -1%">
+<!--end anime-->
+
+</body>
+</html>

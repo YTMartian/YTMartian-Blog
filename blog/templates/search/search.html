@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load custom_markdown %}
+{% load trans_space %}
+{% load highlight %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="{% static 'fonts/label.ico' %}" type="image/x-icon">
+    <title>YTMartian | 董家佚</title>
+    <link rel="stylesheet" href="{% static 'css/main_copy.css' %}">
+    <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icomoon.css' %}">
+    <script src="{% static 'highlight/highlight.pack.js' %}"></script>
+    <style>
+        @media screen and (max-width: 1200px) {
+            .search_navigation {
+                position: relative;
+                width: 160px;
+                left: 25%;
+                margin: auto;
+            }
+        }
+
+        input, textarea { /*输入框字体*/
+            font-family: "Microsoft YaHei UI";
+            font-size: 17px;
+            color: #2b262e
+        }
+
+        span.highlighted {
+            color: #c52424;
+            font-family: Microsoft YaHei UI;
+        }
+
+    </style>
+</head>
+
+
+<body style="overflow-x: hidden" id="myscrool" unselectable="on" onselectstart="return false;">
+
+
+<section class="banner" role="banner">
+    <header id="header">
+        <div class="header-content clearfix"><a class="logo" href="{% url 'blog:index' %}">YTMartian</a>
+            <div class="search dd" style="float: left">
+                <form class="search_navigation" role="search" method="get" action="{% url 'haystack_search' %}">
+                    <input type="search" name="q" placeholder="搜索" id="search_text" required>
+                    <button type="submit"><i class="icon-search"></i></button>
+                </form>
+            </div>
+            <nav class="navigation" role="navigation">
+                <ul class="primary-nav">
+                    <li><a href="{% url 'blog:article' 'acm' 1 %}">ACM</a></li>
+                    <li><a href="{% url 'blog:article' 'python' 1 %}">PYTHON</a></li>
+                    <li><a href="{% url 'blog:article' 'c-c++' 1 %}">C/C++</a></li>
+                    <li><a href="{% url 'blog:article' 'java' 1 %}">JAVA</a></li>
+                    <li><a href="{% url 'blog:article' 'thoughts' 1 %}">随想</a></li>
+                    <li><a href="{% url 'blog:article' 'others' 1 %}">其它</a></li>
+                    <li><a></a></li>
+                </ul>
+            </nav>
+        </div>
+
+    </header>
+    <br><br><br><br><br><br><br><br><br>
+
+
+
+    {% if query %}
+        <div class="row">
+            {% for result in page.object_list %}
+                <div class="col-md-8 col-md-offset-2 text-center gtco-heading animate-box">
+                    <div class="card">
+                        <div class="card_header">
+                            <a href="{% url 'blog:search_page'  query|trans_space page.number result.object.id %}"
+                               target="_blank">
+                                <h2><h2>{% highlight result.object.title with query %}</h2></h2>
+                            </a>
+                            <span class="article-info">
+                                    <span class="icon-calendar">{{ result.object.publish_time|trans_date }} </span>
+                    <span class="icon-eye">{{ result.object.readings }}</span>
+                                <span class="icon-thumb-up">{{ result.object.thumbs_up }}</span>
+                                <span class="icon-bubbles3">{{ result.object.comments }}</span>
+                                </span>
+                        </div>
+                        <div class="card_container">
+                            <p>{% highlight result.object.content with query %}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no_article_text">没有文章
+                    <div class="no_article"></div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    {% ifnotequal page|length 0 %}
+        <div style="text-align: center;margin: auto;" class="">
+            {% if page.has_previous %}
+                <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}" class="button button-3d button-action
+        button-pill gtco-heading">上一页</a>
+            {% endif %}
+            {% if page.has_next %}
+                <a href="?q={{ query }}&amp;page={{ page.next_page_number }}" class="button button-3d button-action
+        button-pill gtco-heading">下一页</a>
+            {% endif %}
+        </div>
+    {% endifnotequal %}
+
+</section>
+<!--start anime-->
+<!--<img src="{% static "images/layer-1.png" %}" style="width: 11%;position: fixed;bottom:0;right: 0%;">-->
+<!--<img src="{% static "images/layer-2.png" %}" style="width:16%;position: fixed;bottom:0;left: -1%">-->
+<!--end anime-->
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/retina.min.js' %}"></script>
+<script src="{% static 'js/modernizr.js' %}"></script>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'js/jquery.countTo.js' %}"></script>
+<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'js/magnific-popup-options.js' %}"></script>
+<script src="{% static 'js/main1.js' %}"></script>
+<script src="{% static 'js/main2.js' %}"></script>
+</body>
+</html>

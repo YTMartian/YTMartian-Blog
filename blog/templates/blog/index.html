@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load custom_markdown %}
+<html lang="en">
+<head>
+    <meta name="baidu-site-verification" content="4j1Ctek6Sd"/>
+    <meta charset="UTF-8" http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="0o-WnWu_W8RzubzoyHZF5_kl15SeWaGxR6j3SGcGaj8" />
+    <link rel="icon" href="{% static 'fonts/label.ico' %}" type="image/x-icon">
+    <title>YTMartian | 董家佚</title>
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icomoon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/flexslider.css' %}">
+    <link rel="stylesheet" href="{% static 'css/jquery.fancybox.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <style>
+        @media screen and (max-width: 1200px) {
+            .search_navigation {
+                position: relative;
+                width: 160px;
+                left: 25%;
+                margin: auto;
+            }
+        }
+
+        input, textarea { /*输入框字体*/
+            font-family: "Microsoft YaHei UI";
+            font-size: 17px;
+            color: #2b262e
+        }
+    </style>
+</head>
+
+<body id="myscrool">
+
+<!-- 菜单栏 -->
+<section class="banner" role="banner">
+    <header id="header">
+        <div class="header-content clearfix"><a class="logo" href="{% url 'blog:index' %}">YTMartian</a>
+            <div class="search dd" style="float: left">
+                <form class="search_navigation" role="search" method="get" action="{% url 'haystack_search' %}">
+                    <input type="search" name="q" placeholder="搜索" id="search_text" required>
+                    <button type="submit"><i class="icon-search"></i></button>
+                </form>
+            </div>
+            <nav class="navigation" role="navigation">
+                <ul class="primary-nav">
+                    <li><a href="{% url 'blog:article' 'acm' 1 %}">ACM</a></li>
+                    <li><a href="{% url 'blog:article' 'python' 1 %}">PYTHON</a></li>
+                    <li><a href="{% url 'blog:article' 'c-c++' 1 %}">C/C++</a></li>
+                    <li><a href="{% url 'blog:article' 'java' 1 %}">JAVA</a></li>
+                    <li><a href="{% url 'blog:article' 'thoughts' 1 %}">随想</a></li>
+                    <li><a href="{% url 'blog:article' 'others' 1 %}">其它</a></li>
+                    <li><a></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <br><br><br>
+    <section id="header-slider" class="section">
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+            <!-- 换页圆圈 -->
+            <ol class="carousel-indicators">
+                {% for slide in slides %}
+                {% if slide.id == 0 %}
+                <li data-target="#myCarousel" data-slide-to={{ slide.id }} class="active"></li>
+                {% else %}
+                <li data-target="#myCarousel" data-slide-to={{ slide.id }}></li>
+                {% endif %}
+                {% endfor %}
+            </ol>
+            <!-- 图片标题 -->
+            <div class="carousel-inner" role="listbox">
+                {% for slide in slides %}
+                {% if slide.id == 0 %}
+                <div class="item active">
+                    <img src="{{ slide.pic_address }} " alt="Chania" style="margin: auto">
+                    {% else %}
+                    <div class="item"><img src="{{ slide.pic_address }}" alt="Chania" style="margin: auto;
+                        ">
+                        {% endif %}
+                        <div class="carousel-caption">
+                            <a href="{% url 'blog:page' 0 slide.article_id %}">
+                                <h7>{{ slide.title }}</h7>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- Controls -->
+                <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev"> <span
+                        class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> <span
+                        class="sr-only">Previous</span></a> <a class="right carousel-control" href="#myCarousel"
+                                                               role="button"
+                                                               data-slide="next"> <span
+                    class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <span
+                    class="sr-only">Next</span></a>
+            </div>
+        </div>
+    </section>
+</section>
+
+<div id="page">
+    <!-- 壁纸 -->
+    <div id="gtco-products">
+        <div class="gtco-container">
+            <div class="row animate-box">
+                <div class="col-md-8 col-md-offset-2 text-center gtco-heading animate-box">
+                    <h2>壁纸</h2>
+                    <p>various</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="works" class="works section no-padding">
+        <div class="container-fluid">
+            <div class="row no-gutter">
+                {% for wallpaper in wallpapers %}
+                <div class="col-lg-3 col-md-6 col-sm-6 work" href=""><a href="
+{% url 'blog:wallpaper' wallpaper.id %}"
+                                                                        class="work-box"><img
+                        src="{{ wallpaper.preview_address }}" alt="">
+                    <div class="overlay">
+                        <div class="overlay-caption">
+                            <!--<h5>{{ wallpaper.id }}</h5> -->
+                        </div>
+                    </div>
+                    <!-- overlay -->
+                </a></div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <div id="gtco-products"></div>
+    <!--STOCK-->
+    <div id="gtco-portfolio">
+        <div class="gtco-container">
+            <div class="row animate-box">
+                <div class="col-md-8 col-md-offset-2 text-center gtco-heading animate-box fadeInUp animated-fast"
+                     style="padding-top: 10%">
+                    <a href="{% url 'blog:stock_recorder' %}" target="_blank" class="button button-primary
+                    button-giant">Leek Cultivation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--ABOUT-->
+    <footer id="gtco-footer" role="contentinfo">
+        <div class="gtco-container">
+            <div class="row row-p	b-md">
+
+                <div class="col-md-4">
+                    <div class="gtco-widget">
+                        <h3>关于本站</h3>
+                        <p>这是使用Django Web框架开发，Apache2进行部署的董家佚的个人小博客网站.</p>
+                        <a href="http://www.potatochip.cn/resume-chs.pdf" target="_blank" style="">中文简历</a><br>
+                        <a href="http://www.potatochip.cn/resume-eng.pdf" target="_blank">英文简历</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-md-push-1">
+                    <div class="gtco-widget">
+                        <h3>一些网站</h3>
+                        <ul class="gtco-footer-links">
+                            <li><a href="https://www.quora.com/">Quora</a></li>
+                            <li><a href="https://github.com/">GitHub</a></li>
+                            <li><a href="https://stackoverflow.com/">Stack Overflow</a></li>
+                            <li><a href="http://codeforces.com/">Codeforces</a></li>
+                            <li><a href="http://www.ostagram.ru/lenta?locale=en">Ostagram</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="gtco-widget">
+                        <h3>联系我</h3>
+                        <ul class="gtco-quick-contact">
+
+                            <li><i class="icon-mail-envelope-closed"></i>1773741250@qq.com</li>
+                            <li><i class="icon-mail-envelope-closed"></i>dongtim@outlook.com</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row copyright">
+                <div class="col-md-12">
+                    <p class="pull-left">
+                        <small class="block">&copy;蜀ICP备17014384号-2</small>
+                        <small class="block">&copy; 2017年9月</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- js files -->
+
+<script src="{% static 'js/battery_preload.js' %}"></script>
+<script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+<script src="{% static 'js/main5.js' %}"></script>
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/bootstrap.min3.js' %}"></script>
+<script src="{% static 'js/jquery.flexslider-min3.js' %}"></script>
+<script src="{% static 'js/main3.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/jquery.flexslider-min.js' %}"></script>
+<script src="{% static 'js/jquery.fancybox.pack.js' %}"></script>
+<script src="{% static 'js/retina.min.js' %}"></script>
+<script src="{% static 'js/modernizr.js' %}"></script>
+<script src="{% static 'js/jquery.contact.js' %}"></script>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery.easing.1.3.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'js/jquery.countTo.js' %}"></script>
+<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'js/magnific-popup-options.js' %}"></script>
+<script src="{% static 'js/main1.js' %}"></script>
+<script src="{% static 'js/main2.js' %}"></script>
+
+</body>
+</html>
