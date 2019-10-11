@@ -19,7 +19,7 @@
 
 - Stock recorder(because I was fascinated in stock market).
 
-- rticle search.
+- Article search.
 
 - Artice pagination。
 
