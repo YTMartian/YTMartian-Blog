@@ -158,6 +158,11 @@ figure {
         width: 7em;
         height: 7em;
     }
+    
+    blockquote {
+        font-size: 0.9em;
+        font-family: 楷体, cursive;
+    }
 
     body {
         background-attachment: fixed;
