@@ -1,5 +1,0 @@
-0.去掉凌波丽和明日香，换成看板娘 live2d	https://github.com/galnetwen/Live2D  https://shenxiaohai.me/2018/12/05/paper-yolo-v1/
-1.悬浮目录 自动目录
-4.在leek cultivation上面加一板块，名为“标签分类”（形如“壁纸/various”） 3d标签云 js 3d tags cloud
-6.在壁纸查看页添加上一页下一页按钮（不要简单的重定向下一张url，而是图片替换）支持方向键左右翻页
-11.加入魔方求解页面。http://kociemba.org/cube（添加说明：如红色是正面，绿色是顶）
