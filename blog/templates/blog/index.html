@@ -5,7 +5,7 @@
 <head>
     <meta name="baidu-site-verification" content="4j1Ctek6Sd"/>
     <meta charset="UTF-8" http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="google-site-verification" content="0o-WnWu_W8RzubzoyHZF5_kl15SeWaGxR6j3SGcGaj8" />
+    <meta name="google-site-verification" content="0o-WnWu_W8RzubzoyHZF5_kl15SeWaGxR6j3SGcGaj8"/>
     <link rel="icon" href="{% static 'fonts/label.ico' %}" type="image/x-icon">
     <title>YTMartian | 董家佚</title>
     <!-- Animate.css -->
@@ -73,30 +73,30 @@
             <!-- 换页圆圈 -->
             <ol class="carousel-indicators">
                 {% for slide in slides %}
-                {% if slide.id == 0 %}
-                <li data-target="#myCarousel" data-slide-to={{ slide.id }} class="active"></li>
-                {% else %}
-                <li data-target="#myCarousel" data-slide-to={{ slide.id }}></li>
-                {% endif %}
+                    {% if slide.id == 0 %}
+                        <li data-target="#myCarousel" data-slide-to={{ slide.id }} class="active"></li>
+                    {% else %}
+                        <li data-target="#myCarousel" data-slide-to={{ slide.id }}></li>
+                    {% endif %}
                 {% endfor %}
             </ol>
             <!-- 图片标题 -->
             <div class="carousel-inner" role="listbox">
                 {% for slide in slides %}
-                {% if slide.id == 0 %}
-                <div class="item active">
-                    <img src="{{ slide.pic_address }} " alt="Chania" style="margin: auto">
+                    {% if slide.id == 0 %}
+                        <div class="item active">
+                        <img src="{{ slide.pic_address }} " alt="Chania" style="margin: auto">
                     {% else %}
-                    <div class="item"><img src="{{ slide.pic_address }}" alt="Chania" style="margin: auto;
+                        <div class="item"><img src="{{ slide.pic_address }}" alt="Chania" style="margin: auto;
                         ">
-                        {% endif %}
-                        <div class="carousel-caption">
-                            <a href="{% url 'blog:page' 0 slide.article_id %}">
-                                <h7>{{ slide.title }}</h7>
-                            </a>
-                        </div>
-                    </div>
-                    {% endfor %}
+                    {% endif %}
+                <div class="carousel-caption">
+                    <a href="{% url 'blog:page' 0 slide.article_id %}">
+                        <h7>{{ slide.title }}</h7>
+                    </a>
+                </div>
+                </div>
+                {% endfor %}
                 </div>
                 <!-- Controls -->
                 <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev"> <span
@@ -127,23 +127,38 @@
         <div class="container-fluid">
             <div class="row no-gutter">
                 {% for wallpaper in wallpapers %}
-                <div class="col-lg-3 col-md-6 col-sm-6 work" href=""><a href="
+                    <div class="col-lg-3 col-md-6 col-sm-6 work" href=""><a href="
 {% url 'blog:wallpaper' wallpaper.id %}"
-                                                                        class="work-box"><img
-                        src="{{ wallpaper.preview_address }}" alt="">
-                    <div class="overlay">
-                        <div class="overlay-caption">
-                            <!--<h5>{{ wallpaper.id }}</h5> -->
+                                                                            class="work-box"><img
+                            src="{{ wallpaper.preview_address }}" alt="">
+                        <div class="overlay">
+                            <div class="overlay-caption">
+                                <!--<h5>{{ wallpaper.id }}</h5> -->
+                            </div>
                         </div>
-                    </div>
-                    <!-- overlay -->
-                </a></div>
+                        <!-- overlay -->
+                    </a></div>
                 {% endfor %}
             </div>
         </div>
     </section>
-    <div id="gtco-products"></div>
+    <!--CUBE-->
+    <div id="gtco-products">
+        <div class="gtco-container">
+            <div class="row animate-box">
+                <div class="col-md-8 col-md-offset-2 text-center gtco-heading animate-box">
+                    <h2>魔方</h2>
+                    <p>The Cube</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--页面宽度自适应-->
+    <iframe src="/blog/kociemba-cube" frameborder="0" scrolling="no"
+            name="myframe" width="100%" height="600"
+            οnlοad="document.all['myframe'].style.width=myframe.document.body.scrollWidth"></iframe>
     <!--STOCK-->
+    <div id="gtco-products"></div>
     <div id="gtco-portfolio">
         <div class="gtco-container">
             <div class="row animate-box">
@@ -164,8 +179,7 @@
                     <div class="gtco-widget">
                         <h3>关于本站</h3>
                         <p>这是使用Django Web框架开发，Apache2进行部署的董家佚的个人小博客网站.</p>
-                        <a href="http://www.potatochip.cn/resume-chs.pdf" target="_blank" style="">中文简历</a><br>
-                        <a href="http://www.potatochip.cn/resume-eng.pdf" target="_blank">英文简历</a>
+                        <a href="http://www.potatochip.cn/resume.pdf" target="_blank" style="">Resume</a><br>
                     </div>
                 </div>
 
@@ -173,11 +187,11 @@
                     <div class="gtco-widget">
                         <h3>一些网站</h3>
                         <ul class="gtco-footer-links">
-                            <li><a href="https://www.quora.com/">Quora</a></li>
-                            <li><a href="https://github.com/">GitHub</a></li>
-                            <li><a href="https://stackoverflow.com/">Stack Overflow</a></li>
-                            <li><a href="http://codeforces.com/">Codeforces</a></li>
-                            <li><a href="http://www.ostagram.ru/lenta?locale=en">Ostagram</a></li>
+                            <li><a target="_blank" href="https://www.reddit.com/">Reddit</a></li>
+                            <li><a target="_blank" href="https://github.com/">GitHub</a></li>
+                            <li><a target="_blank" href="https://imgur.com/">Imgur</a></li>
+                            <li><a target="_blank" href="https://xueqiu.com/">XueQiu</a></li>
+                            <li><a target="_blank" href="https://www.instagram.com/">Instagram</a></li>
                         </ul>
                     </div>
                 </div>
@@ -186,7 +200,6 @@
                     <div class="gtco-widget">
                         <h3>联系我</h3>
                         <ul class="gtco-quick-contact">
-
                             <li><i class="icon-mail-envelope-closed"></i>1773741250@qq.com</li>
                             <li><i class="icon-mail-envelope-closed"></i>dongtim@outlook.com</li>
                         </ul>
