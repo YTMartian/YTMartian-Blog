@@ -10,7 +10,6 @@ urlpatterns = [
     url(r'^thumbs_up/article=(\d+)$', views.thumbs_up, name = 'thumbs_up'),
     url(r'^stock_recorder$', views.stock_recorder, name = 'stock_recorder'),
     url(r'^cpphighlight$', views.cpphighlight, name = 'cpphighlight'),
-    url(r'^kociemba-cube$', views.kociembaCube, name = 'kociembaCube'),
 ]
 
 handler404 = views.page_not_found

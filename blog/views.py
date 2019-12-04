@@ -198,11 +198,3 @@ def cpphighlight(request):
     recorder.object_title = 'cpp代码高亮'
     recorder.save()
     return render(request, 'blog/cpphighlight.html', )
-    
-def kociembaCube(request):
-    now_article = models.Article.objects.get(pk = 80)
-    recorder = models.Recorder(content_object = now_article)
-    recorder.ip_address = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", None))
-    recorder.object_title = 'kociemba魔方还原'
-    recorder.save()
-    return render(request, 'blog/kociemba-cube.html', )
