@@ -11,12 +11,35 @@
 </head>
 <body data-spy="scroll">
 <header>
-        <img class="heroshot wow bounceInUp" data-wow-duration="3s"
-             src="{{ image.pic_address }}"
-             alt="Featured Work">
+    <img class="heroshot wow bounceInUp" data-wow-duration="3s"
+         src="{{ image.pic_address }}"
+         alt="Featured Work">
 </header>
-
+<div style="font-weight: bold;color: #ffffff;position: absolute;bottom: 5%;right: 3%">
+    ←→<br>翻页
+</div>
 <script src="{% static 'js/wow.min4.js' %}"></script>
 <script>new WOW().init();</script>
+<script>
+    //键盘事件
+    document.onkeydown = keyDown;
+
+    function keyDown() {
+        let key_code = event.which;   //取得对应的键值（数字）
+        const url = window.location.href;
+        const list = url.split('/');
+        let number = parseInt(list[list.length - 1]);
+        let new_url = '';
+        for (let i = 0; i < list.length - 1; i++) new_url += list[i] + '/';
+        if (key_code === 37) {//left
+            number -= 1;
+            if (number <= 0) return;
+            window.location.href = new_url + String(number);
+        } else if (key_code === 39) {//right
+            number += 1;
+            window.location.href = new_url + String(number);
+        }
+    }
+</script>
 </body>
 </html>
