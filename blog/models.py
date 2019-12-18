@@ -113,6 +113,7 @@ class Article(models.Model):  # 文章
     classification = models.ForeignKey(Classification, default = '')  # 分类
     content = models.TextField('内容', blank = True, null = True, default = '')
     publish_time = models.DateTimeField('发布日期', auto_now_add = True)
+    modify_time = models.DateTimeField('最新修改', auto_now = True, null = True)
     readings = models.PositiveIntegerField('阅读量', default = 0)
     thumbs_up = models.PositiveIntegerField('点赞', default = 0)
     comments = models.PositiveIntegerField('评论', default = 0)
@@ -208,4 +209,3 @@ class StockRecorder(models.Model):
     
     def __str__(self):
         return self.title
-    

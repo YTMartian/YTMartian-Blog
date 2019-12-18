@@ -15,7 +15,7 @@ class ArticleForm(forms.ModelForm):
 class ArticleAdmin(admin.ModelAdmin):
     form = ArticleForm
     list_filter = ('publish_time', 'classification')
-    list_display = ('title', 'publish_time', 'classification', 'readings', 'thumbs_up', 'comments')
+    list_display = ('title', 'publish_time', 'modify_time', 'classification', 'readings', 'thumbs_up', 'comments')
     list_per_page = 10
     search_fields = ('title',)
 
