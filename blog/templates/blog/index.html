@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
     <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tag-cloud.css' %}">
     <style>
         @media screen and (max-width: 1200px) {
             .search_navigation {
@@ -56,12 +57,12 @@
             </div>
             <nav class="navigation" role="navigation">
                 <ul class="primary-nav">
-                    <li><a href="{% url 'blog:article' 'acm' 1 %}">ACM</a></li>
-                    <li><a href="{% url 'blog:article' 'python' 1 %}">PYTHON</a></li>
-                    <li><a href="{% url 'blog:article' 'c-c++' 1 %}">C/C++</a></li>
-                    <li><a href="{% url 'blog:article' 'java' 1 %}">JAVA</a></li>
-                    <li><a href="{% url 'blog:article' 'thoughts' 1 %}">随想</a></li>
-                    <li><a href="{% url 'blog:article' 'others' 1 %}">其它</a></li>
+                    <li><a href="{% url 'blog:article' 'acm' '$' 1 %}">ACM</a></li>
+                    <li><a href="{% url 'blog:article' 'python' '$' 1 %}">PYTHON</a></li>
+                    <li><a href="{% url 'blog:article' 'c-c++' '$' 1 %}">C/C++</a></li>
+                    <li><a href="{% url 'blog:article' 'java' '$' 1 %}">JAVA</a></li>
+                    <li><a href="{% url 'blog:article' 'thoughts' '$' 1 %}">随想</a></li>
+                    <li><a href="{% url 'blog:article' 'others' '$' 1 %}">其它</a></li>
                     <li><a></a></li>
                 </ul>
             </nav>
@@ -112,7 +113,25 @@
 </section>
 
 <div id="page">
-    <!-- 壁纸 -->
+    <!--TAG-CLOUD-->
+    <div id="gtco-products">
+        <div class="gtco-container">
+            <div class="row animate-box">
+                <div class="col-md-8 col-md-offset-2 text-center gtco-heading animate-box">
+                    <h2>标签</h2>
+                    <p>Tags</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cloud-tags-style">
+        <ul class="cloud-tags">
+            {% for tag in tags %}
+                <li><a target="_blank" href="{% url 'blog:article' 'tags' tag.name 1 %}"> {{ tag.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <!--WALLPAPER-->
     <div id="gtco-products">
         <div class="gtco-container">
             <div class="row animate-box">
@@ -230,6 +249,18 @@
 <script src="{% static 'js/magnific-popup-options.js' %}"></script>
 <script src="{% static 'js/main1.js' %}"></script>
 <script src="{% static 'js/main2.js' %}"></script>
+<script src="{% static 'js/tag-cloud.js' %}"></script>
+<!--tag cloud-->
+<script>
+    $(document).ready(function () {
 
+        $(".cloud-tags").prettyTag();
+
+        $(".tags").prettyTag({
+            randomColor: true,
+            tagicon: false,
+        });
+    });
+</script>
 </body>
 </html>

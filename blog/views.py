@@ -34,7 +34,8 @@ def index(request):
     for i in num:
         wallpapers.append(temp_wallpapers[i])
     # 第三个参数传递数据到前端,为一个dict
-    return render(request, 'blog/index.html', {'wallpapers': wallpapers, 'slides': slides})
+    tags = models.Tag.objects.all()
+    return render(request, 'blog/index.html', {'wallpapers': wallpapers, 'slides': slides, 'tags': tags})
 
 
 def wallpaper(request, wallpaper_id):
@@ -44,10 +45,21 @@ def wallpaper(request, wallpaper_id):
     return render(request, 'blog/wallpaper.html', {'image': image})
 
 
-def article(request, classification, now_page):
+def article(request, classification, tags, now_page):
     if judge_ip(request):
         return JsonResponse({'董家佚': '😁限制访问😁'})
-    articles = models.Article.objects.filter(classification__name__iexact = classification)  # 获取某一分类下的文章
+    # 判断是否是从标签处点进来的,'$'说明不是从标签处点进来的
+    articles = []
+    if str(tags) == '$':
+        articles = models.Article.objects.filter(classification__name__iexact = classification)  # 获取某一分类下的文章
+    else:
+        all_articles = models.Article.objects.all()
+        for i in all_articles:
+            article_all_tags = i.tags.all()
+            for j in article_all_tags:
+                if tags == j.name:
+                    articles.append(i)
+                    break
     per_page = 7
     total_page = len(articles) // per_page  # 每页展示7篇,total_page为总页数
     if len(articles) % per_page != 0:
@@ -150,8 +162,7 @@ def thumbs_up(request, article_id):
         if "article_%s_has_thumbs_up" % article_id in request.COOKIES:
             return render_to_response('blog/jsondata.html', {'j': 'false'}, content_type = RequestContext(request))
         else:
-            response = render_to_response('blog/jsondata.html', {'j': 'true'},
-                                          content_type = RequestContext(request))
+            response = render_to_response('blog/jsondata.html', {'j': 'true'}, content_type = RequestContext(request))
             response.set_cookie("article_%s_has_thumbs_up" % article_id, "True")
             now_article = models.Article.objects.get(pk = article_id)
             now_article.increase_thumb_up()
@@ -166,7 +177,6 @@ def page_not_found(request):
 
 def page_error(request):
     return render(request, '500.html')
-
 
 
 def judge_ip(request):

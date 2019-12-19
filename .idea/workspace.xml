@@ -3,9 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="1c32be3f-5f16-453e-884a-54705d280ec4" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/blog/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/blog/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog/static/css/page_style.css" beforeDir="false" afterPath="$PROJECT_DIR$/blog/static/css/page_style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/templates/blog/article.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/blog/article.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/templates/blog/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/blog/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/templates/search/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/search/search.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/blog/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/blog/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,57 +60,6 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>header</find>
-      <find>primary-nav</find>
-      <find>navigation</find>
-      <find>clearfix</find>
-      <find>vjs-playback-rate</find>
-      <find>three-container</find>
-      <find>input</find>
-      <find>page_ca</find>
-      <find>table</find>
-      <find>#fff</find>
-      <find>layer</find>
-      <find>wrapper</find>
-      <find>potatochip</find>
-      <find>stock</find>
-      <find>stockB</find>
-      <find>code</find>
-      <find>gtco-tabs</find>
-      <find>h2</find>
-      <find>li</find>
-      <find>评论方式</find>
-      <find>x0p</find>
-      <find>text-pure-wrapper</find>
-      <find>帮助</find>
-      <find>&lt;h</find>
-      <find>a{</find>
-      <find>portfolio</find>
-      <find>stats</find>
-      <find>average-5</find>
-      <find>text--note</find>
-      <find>note</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>now_page</replace>
-      <replace>gototop</replace>
-      <replace>myblog</replace>
-      <replace>value</replace>
-      <replace>word</replace>
-      <replace>emit</replace>
-      <replace>table_container</replace>
-      <replace>50px</replace>
-      <replace>id</replace>
-      <replace>comment_id</replace>
-      <replace>timeline</replace>
-      <replace>titl</replace>
-    </replaceStrings>
-    <dirStrings>
-      <dir>C:\Users\Tim\Desktop\py\myblog\blog\static\css</dir>
-    </dirStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -136,9 +87,10 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../views.py" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Color Scheme Font" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/../../views.py" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -319,6 +271,7 @@
       <workItem from="1576493904164" duration="296000" />
       <workItem from="1576494275815" duration="1714000" />
       <workItem from="1576659763197" duration="1177000" />
+      <workItem from="1576762461239" duration="7175000" />
     </task>
     <servers />
   </component>
@@ -335,5 +288,19 @@
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.conf" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="93" y="93" width="1350" height="638" maximized="true" key="DiffContextDialog" timestamp="1576767625853">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="93" y="93" width="1350" height="638" maximized="true" key="DiffContextDialog/0.0.1536.824@0.0.1536.824" timestamp="1576767625853" />
+    <state x="549" y="166" key="FileChooserDialogImpl" timestamp="1576767574453">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="549" y="166" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1576767574453" />
+    <state x="462" y="149" width="611" height="526" key="find.popup" timestamp="1576769059821">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="462" y="149" width="611" height="526" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1576769059821" />
   </component>
 </project>
