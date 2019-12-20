@@ -102,8 +102,9 @@
             {% ifnotequal first_page 1 %}
                 <a href="{% url 'blog:article' classification tags  1 %}" class="button button-3d button-action
                 button-circle button-jumbo
-        gtco-heading ">1</a><span> </span><span class="icon-dot-circle-o"></span><span class="icon-dot-circle-o"></span>
-                <span class="icon-dot-circle-o"></span>
+        gtco-heading ">1</a>
+{#                                <span> </span><span class="icon-dot-circle-o"></span><span class="icon-dot-circle-o"></span>#}
+{#                                <span class="icon-dot-circle-o"></span>#}
             {% endifnotequal %}
             {% for page in pages %}
                 {% ifequal page str_now_page %}
@@ -120,8 +121,9 @@
             {% ifnotequal last_page total_page %}
                 <a href="{% url 'blog:article' classification tags  total_page %}" class="button button-3d button-action
                 button-circle button-jumbo
-        gtco-heading ">{{ total_page }}</a><span> </span><span class="icon-dot-circle-o"></span>
-                <span class="icon-dot-circle-o"></span><span class="icon-dot-circle-o"></span>
+        gtco-heading ">{{ total_page }}</a>
+{#                <span> </span><span class="icon-dot-circle-o"></span>#}
+{#                <span class="icon-dot-circle-o"></span><span class="icon-dot-circle-o"></span>#}
             {% endifnotequal %}
             {% ifnotequal now_page total_page %}
                 <a href="{% url 'blog:article' classification tags  now_page|add:1 %}" class="button button-3d
