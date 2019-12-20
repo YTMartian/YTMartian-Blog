@@ -3,7 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="1c32be3f-5f16-453e-884a-54705d280ec4" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog/static/css/tag-cloud.css" beforeDir="false" afterPath="$PROJECT_DIR$/blog/static/css/tag-cloud.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/templates/blog/article.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/blog/article.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/templates/blog/page.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/blog/page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/templates/blog/search_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/blog/search_page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/templates/blog/wallpaper.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/blog/wallpaper.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/blog/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -84,7 +87,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../views.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Color Scheme Font" />
     <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/../../views.py" />
@@ -271,6 +274,8 @@
       <workItem from="1576762461239" duration="7175000" />
       <workItem from="1576804067376" duration="185000" />
       <workItem from="1576804378264" duration="89000" />
+      <workItem from="1576806984314" duration="5223000" />
+      <workItem from="1576816025724" duration="235000" />
     </task>
     <servers />
   </component>
@@ -293,13 +298,13 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="93" y="93" width="1350" height="638" maximized="true" key="DiffContextDialog/0.0.1536.824@0.0.1536.824" timestamp="1576767625853" />
-    <state x="549" y="166" key="FileChooserDialogImpl" timestamp="1576767574453">
+    <state x="549" y="166" key="FileChooserDialogImpl" timestamp="1576811383880">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="549" y="166" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1576767574453" />
-    <state x="462" y="149" width="611" height="526" key="find.popup" timestamp="1576769059821">
+    <state x="549" y="166" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1576811383880" />
+    <state x="462" y="149" width="740" height="596" key="find.popup" timestamp="1576809698889">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="462" y="149" width="611" height="526" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1576769059821" />
+    <state x="462" y="149" width="740" height="596" key="find.popup/0.0.1536.824@0.0.1536.824" timestamp="1576809698889" />
   </component>
 </project>

@@ -95,35 +95,37 @@
     {% ifnotequal now_page -1 %}
         <div style="text-align: center;margin: auto; ">
             {% ifnotequal now_page 1 %}
-                <a href="{% url 'blog:article' classification '$'  now_page|add:-1 %}" class="button button-3d button-action
+                <a href="{% url 'blog:article' classification tags  now_page|add:-1 %}" class="button button-3d
+                button-action
         button-pill gtco-heading">上一页</a>
             {% endifnotequal %}
             {% ifnotequal first_page 1 %}
-                <a href="{% url 'blog:article' classification '$'  1 %}" class="button button-3d button-action
+                <a href="{% url 'blog:article' classification tags  1 %}" class="button button-3d button-action
                 button-circle button-jumbo
         gtco-heading ">1</a><span> </span><span class="icon-dot-circle-o"></span><span class="icon-dot-circle-o"></span>
                 <span class="icon-dot-circle-o"></span>
             {% endifnotequal %}
             {% for page in pages %}
                 {% ifequal page str_now_page %}
-                    <a href="{% url 'blog:article' classification '$'  page %}" class="button button-3d
+                    <a href="{% url 'blog:article' classification tags  page %}" class="button button-3d
                     button-action:is_active
         button-circle
         button-jumbo gtco-heading">{{ page }}</a>
                 {% else %}
-                    <a href="{% url 'blog:article' classification '$'  page %}" class="button button-3d button-action
+                    <a href="{% url 'blog:article' classification tags  page %}" class="button button-3d button-action
                     button-circle
         button-jumbo gtco-heading">{{ page }}</a>
                 {% endifequal %}
             {% endfor %}
             {% ifnotequal last_page total_page %}
-                <a href="{% url 'blog:article' classification '$'  total_page %}" class="button button-3d button-action
+                <a href="{% url 'blog:article' classification tags  total_page %}" class="button button-3d button-action
                 button-circle button-jumbo
         gtco-heading ">{{ total_page }}</a><span> </span><span class="icon-dot-circle-o"></span>
                 <span class="icon-dot-circle-o"></span><span class="icon-dot-circle-o"></span>
             {% endifnotequal %}
             {% ifnotequal now_page total_page %}
-                <a href="{% url 'blog:article' classification '$'  now_page|add:1 %}" class="button button-3d button-action
+                <a href="{% url 'blog:article' classification tags  now_page|add:1 %}" class="button button-3d
+                button-action
         button-pill gtco-heading ">下一页</a>
             {% endifnotequal %}
         </div>

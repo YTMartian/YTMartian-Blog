@@ -41,7 +41,10 @@ def index(request):
 def wallpaper(request, wallpaper_id):
     if judge_ip(request):
         return JsonResponse({'董家佚': '😁限制访问😁'})
-    image = models.Wallpaper.objects.get(pic_index = str(wallpaper_id))  # pk是主键字段
+    try:
+        image = models.Wallpaper.objects.get(pic_index = str(wallpaper_id))  # pk是主键字段
+    except:
+        image = models.Wallpaper()
     return render(request, 'blog/wallpaper.html', {'image': image})
 
 
@@ -97,7 +100,7 @@ def article(request, classification, tags, now_page):
     return render(request, 'blog/article.html', {
         'articles'      : articles[int(front):int(back) + 1], 'total_page': int(total_page), 'now_page': int(now_page),
         'classification': classification, 'pages': pages, 'last_page': int(last_page), 'first_page': int(first_page),
-        'str_now_page'  : str(now_page),
+        'str_now_page'  : str(now_page), 'tags': tags
     })
 
 
