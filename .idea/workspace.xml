@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1c32be3f-5f16-453e-884a-54705d280ec4" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog/templates/blog/article.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/blog/article.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog/templates/blog/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/blog/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog/templates/search/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/blog/templates/search/search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blog/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/blog/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blog/static/css/tag-cloud.css" beforeDir="false" afterPath="$PROJECT_DIR$/blog/static/css/tag-cloud.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blog/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/blog/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -272,6 +269,8 @@
       <workItem from="1576494275815" duration="1714000" />
       <workItem from="1576659763197" duration="1177000" />
       <workItem from="1576762461239" duration="7175000" />
+      <workItem from="1576804067376" duration="185000" />
+      <workItem from="1576804378264" duration="89000" />
     </task>
     <servers />
   </component>

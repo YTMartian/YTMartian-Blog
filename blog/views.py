@@ -41,7 +41,7 @@ def index(request):
 def wallpaper(request, wallpaper_id):
     if judge_ip(request):
         return JsonResponse({'董家佚': '😁限制访问😁'})
-    image = models.Wallpaper.objects.get(pk = wallpaper_id)  # pk是主键字段
+    image = models.Wallpaper.objects.get(pic_index = str(wallpaper_id))  # pk是主键字段
     return render(request, 'blog/wallpaper.html', {'image': image})
 
 
