@@ -28,10 +28,19 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
-INSTALLED_APPS = ['jet.dashboard', 'jet',  # github：https://github.com/geex-arts/django-jet
-                  'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
-                  'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles', 'haystack',
-                  'blog', 'oaugh', 'pagedown', 'mptt', 'comments']
+INSTALLED_APPS = ['jet.dashboard',
+                  'jet',  # github：https://github.com/geex-arts/django-jet
+                  'django.contrib.admin',
+                  'django.contrib.auth',
+                  'django.contrib.contenttypes',
+                  'django.contrib.sessions',
+                  'django.contrib.messages',
+                  'django.contrib.staticfiles',
+                  'haystack',
+                  'blog',
+                  'pagedown',
+                  'mptt',
+                  'comments']
 
 COMMENT_ENTRY_MODEL = 'blog.Article'  # 格式是 app_name+model_name
 AUTH_USER_MODEL = 'auth.user'  # 格式是 app_name+model_name
@@ -115,11 +124,6 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 7
 
 GRAPPELLI_ADMIN_TITLE = '董家佚 | YTMartian'
 
-# qq互联信息
-
-QQ_APP_ID = '101466028'
-QQ_APP_KEY = 'c223718bd66b58a4b8cfdd83fb831cf9'
-QQ_RECALL_URL = 'http://www.dongjiayi.com/oaugh/qq_check'
 
 MATHJAX_ENABLED = True
 

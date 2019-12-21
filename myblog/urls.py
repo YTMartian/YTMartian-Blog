@@ -25,7 +25,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', include('comments.urls')),
     url(r'^blog/', include('blog.urls', namespace = 'blog')),
-    url(r'^oaugh/', include('oaugh.urls', namespace = 'oaugh')),
     url(r'^search/', include('haystack.urls')),
     url(r'^robots\.txt$', TemplateView.as_view(template_name = 'robots.txt', content_type = 'text/plain')),
 
