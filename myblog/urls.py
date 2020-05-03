@@ -19,13 +19,11 @@ from blog.views import *
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    url(r'^jet/', include('jet.urls', 'jet')),
-    url(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     url(r'^$', index),  # 能直接从域名进入首页
     url(r'^admin/', admin.site.urls),
     url(r'', include('comments.urls')),
-    url(r'^blog/', include('blog.urls', namespace = 'blog')),
+    url(r'^blog/', include('blog.urls', namespace='blog')),
     url(r'^search/', include('haystack.urls')),
-    url(r'^robots\.txt$', TemplateView.as_view(template_name = 'robots.txt', content_type = 'text/plain')),
+    url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
 
 ]

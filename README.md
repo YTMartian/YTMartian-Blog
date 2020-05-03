@@ -7,9 +7,25 @@
 - I was a fresh man(2017) when I first know django,and then I built this blog intermittently till now，and the work will not end up because there are so many interesting new technologies come to the world! At first I didn't know too much about the css and js，so I used some front-end templates so the front-end files may be mussy, If I have free time in the future I will build a better new independent website.
 
 
-### REQUIREMENTS
+### SOMETHING
 
-- Some requirements I don't remember, so if you can't run this project correctly just try yourself.
+The django-haystack compatibility problem with the newest django 3.0.5, so when run this project you need to change some files appears in the log infomation.
+
+should change
+
+```
+from django.utils import six
+```
+to
+```
+import six
+```
+and comment out
+```
+from django.utils.encoding import python_2_unicode_compatible
+...
+@python_2_unicode_compatible
+```
 
 ### ACHIEVING FUNCTION
 

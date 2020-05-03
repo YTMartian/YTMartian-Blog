@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.http import Http404, JsonResponse
 from django.template import RequestContext
 from . import models
@@ -11,15 +11,15 @@ import random
 def index(request):
     if judge_ip(request):
         return JsonResponse({'董家佚': '😁限制访问😁'})
-    
+
     class Slider:
         pic_address = ''
         title = ''
         article_id = ''
         id = 0
-    
+
     temp_slides = models.Slide.objects.all()
-    articles = models.Article.objects.filter(classification__name__iexact = 'index_show')
+    articles = models.Article.objects.filter(classification__name__iexact='index_show')
     slides = []
     for i in range(len(temp_slides)):
         t = Slider()
@@ -42,7 +42,7 @@ def wallpaper(request, wallpaper_id):
     if judge_ip(request):
         return JsonResponse({'董家佚': '😁限制访问😁'})
     try:
-        image = models.Wallpaper.objects.get(pic_index = str(wallpaper_id))  # pk是主键字段
+        image = models.Wallpaper.objects.get(pic_index=str(wallpaper_id))  # pk是主键字段
     except:
         image = models.Wallpaper()
     return render(request, 'blog/wallpaper.html', {'image': image})
@@ -54,7 +54,7 @@ def article(request, classification, tags, now_page):
     # 判断是否是从标签处点进来的,'$'说明不是从标签处点进来的
     articles = []
     if str(tags) == '$':
-        articles = models.Article.objects.filter(classification__name__iexact = classification)  # 获取某一分类下的文章
+        articles = models.Article.objects.filter(classification__name__iexact=classification)  # 获取某一分类下的文章
     else:
         all_articles = models.Article.objects.all()
         for i in all_articles:
@@ -63,7 +63,7 @@ def article(request, classification, tags, now_page):
                 if tags == j.name:
                     articles.append(i)
                     break
-    per_page = 7
+    per_page = settings.ARTICLE_PER_PAGE
     total_page = len(articles) // per_page  # 每页展示7篇,total_page为总页数
     if len(articles) % per_page != 0:
         total_page += 1
@@ -80,7 +80,7 @@ def article(request, classification, tags, now_page):
         if t > total_page:
             break
         pages.append(str(t))
-    
+
     last_page = pages[-1]
     if int(last_page) == total_page:
         pages.clear()
@@ -98,9 +98,9 @@ def article(request, classification, tags, now_page):
     first_page = pages[0]
     # 注意切片左闭右开
     return render(request, 'blog/article.html', {
-        'articles'      : articles[int(front):int(back) + 1], 'total_page': int(total_page), 'now_page': int(now_page),
+        'articles': articles[int(front):int(back) + 1], 'total_page': int(total_page), 'now_page': int(now_page),
         'classification': classification, 'pages': pages, 'last_page': int(last_page), 'first_page': int(first_page),
-        'str_now_page'  : str(now_page), 'tags': tags
+        'str_now_page': str(now_page), 'tags': tags
     })
 
 
@@ -109,21 +109,21 @@ def page(request, now_page, article_id):
         return JsonResponse({'董家佚': '😁限制访问😁'})
     # 若存在cookies，则不增加阅读量
     try:
-        now_article = models.Article.objects.get(pk = article_id)
+        now_article = models.Article.objects.get(pk=article_id)
         if not "article_%s_has_read" % article_id in request.COOKIES:
             now_article.increase_readings()
     except:
         raise Http404
     # 记录访问明细
-    recorder = models.Recorder(content_object = now_article)
+    recorder = models.Recorder(content_object=now_article)
     recorder.ip_address = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", None))
     recorder.object_title = now_article.title
     recorder.save()
     classification = now_article.classification
     # 要为str才能在templates中与str比较
-    response = render_to_response('blog/page.html', {
+    response = render(request, 'blog/page.html', {
         'article': now_article, 'classification': str(classification), 'now_page': now_page
-    }, content_type = RequestContext(request))
+    })
     # 设置临时cookie，表示打开阅读过了,该cookie有效期直到浏览器关闭
     response.set_cookie("article_%s_has_read" % article_id, "True")
     return response
@@ -133,25 +133,25 @@ def search_page(request, word, page_number, article_id):
     if judge_ip(request):
         return JsonResponse({'董家佚': '😁限制访问😁'})
     try:
-        now_article = models.Article.objects.get(pk = article_id)
+        now_article = models.Article.objects.get(pk=article_id)
         if not "article_%s_has_read" % article_id in request.COOKIES:
             now_article.increase_readings()
     except:
         raise Http404
     # 记录访问明细
-    recorder = models.Recorder(content_object = now_article)
+    recorder = models.Recorder(content_object=now_article)
     recorder.ip_address = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", None))
     recorder.object_title = now_article.title
     recorder.save()
     # 注意到服务器端时改域名,且要写http://
     host_url = 'http://127.0.0.1:8000/search/?q='
-    if settings.DEBUG == False:
+    if not settings.DEBUG:
         host_url = 'http://www.dongjiayi.com/search/?q='
     word = re.sub('\+{2}', '%2B%2B', word)
     back_url = host_url + str(word) + '&page=' + str(page_number)
-    response = render_to_response('blog/search_page.html', {
+    response = render(request, 'blog/search_page.html', {
         'article': now_article, 'word': word, 'page_number': page_number, 'back_url': back_url,
-    }, content_type = RequestContext(request))
+    })
     # 设置临时cookie，表示打开阅读过了,该cookie有效期直到浏览器关闭
     response.set_cookie("article_%s_has_read" % article_id, "True")
     return response
@@ -163,21 +163,23 @@ def thumbs_up(request, article_id):
         return JsonResponse({'董家佚': '😁限制访问😁'})
     if "article_%s_has_read" % article_id in request.COOKIES:
         if "article_%s_has_thumbs_up" % article_id in request.COOKIES:
-            return render_to_response('blog/jsondata.html', {'j': 'false'}, content_type = RequestContext(request))
+            return render(request, 'blog/jsondata.html', {'j': 'false'})
         else:
-            response = render_to_response('blog/jsondata.html', {'j': 'true'}, content_type = RequestContext(request))
+            response = render(request, 'blog/jsondata.html', {'j': 'true'})
             response.set_cookie("article_%s_has_thumbs_up" % article_id, "True")
-            now_article = models.Article.objects.get(pk = article_id)
+            now_article = models.Article.objects.get(pk=article_id)
             now_article.increase_thumb_up()
             return response
     else:
-        return render_to_response('blog/jsondata.html', {'j': 'false'}, content_type = RequestContext(request))
+        return render(request, 'blog/jsondata.html', {'j': 'false'})
 
 
-def page_not_found(request):
+# 404 should has exception.
+def page_not_found(request, exception):
     return render(request, '404.html')
 
 
+# 500 should not has exception.
 def page_error(request):
     return render(request, '500.html')
 
@@ -194,19 +196,19 @@ def judge_ip(request):
 
 
 def stock_recorder(request):
-    now_article = models.Article.objects.get(pk = 80)
-    recorder = models.Recorder(content_object = now_article)
+    now_article = models.Article.objects.get(pk=80)
+    recorder = models.Recorder(content_object=now_article)
     recorder.ip_address = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", None))
     recorder.object_title = '股市记录'
     recorder.save()
     temp = models.StockRecorder.objects.all()
-    recorders = sorted(temp, key = lambda t: t.time, reverse = True)
+    recorders = sorted(temp, key=lambda t: t.time, reverse=True)
     return render(request, 'blog/stock.html', {'recorders': recorders})
 
 
 def cpphighlight(request):
-    now_article = models.Article.objects.get(pk = 80)
-    recorder = models.Recorder(content_object = now_article)
+    now_article = models.Article.objects.get(pk=80)
+    recorder = models.Recorder(content_object=now_article)
     recorder.ip_address = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", None))
     recorder.object_title = 'cpp代码高亮'
     recorder.save()

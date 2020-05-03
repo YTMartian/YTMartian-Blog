@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load staticfiles %}
+{% load static %}
 {% load custom_markdown %}
 {% load trans_space %}
 {% load highlight %}
@@ -47,7 +47,7 @@
     <header id="header">
         <div class="header-content clearfix"><a class="logo" href="{% url 'blog:index' %}">YTMartian</a>
             <div class="search dd" style="float: left">
-                <form class="search_navigation" role="search" method="get" action="{% url 'haystack_search' %}">
+                <form class="search_navigation" role="search" method="get" action="{% url 'haystack_search' %}" >
                     <input type="search" name="q" placeholder="搜索" id="search_text" required>
                     <button type="submit"><i class="icon-search"></i></button>
                 </form>

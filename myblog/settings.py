@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 """
 Django settings for myblog project.
 
@@ -24,23 +25,21 @@ SECRET_KEY = 's5(mk(i+-2x#+18wu8^$n7(j2r2zcyt#)&(hxzt+(a*xu+yznf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*'] if DEBUG else ['www.dongjiayi.com', 'dongjiayi.com', '59.110.154.234']
 
 # Application definition
 
-INSTALLED_APPS = ['jet.dashboard',
-                  'jet',  # github：https://github.com/geex-arts/django-jet
-                  'django.contrib.admin',
-                  'django.contrib.auth',
-                  'django.contrib.contenttypes',
-                  'django.contrib.sessions',
-                  'django.contrib.messages',
-                  'django.contrib.staticfiles',
-                  'haystack',
-                  'blog',
-                  'pagedown',
-                  'mptt',
-                  'comments']
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'haystack',
+    'blog',
+    'mptt',
+    'comments']
 
 COMMENT_ENTRY_MODEL = 'blog.Article'  # 格式是 app_name+model_name
 AUTH_USER_MODEL = 'auth.user'  # 格式是 app_name+model_name
@@ -54,13 +53,15 @@ MIDDLEWARE = ['django.middleware.security.SecurityMiddleware', 'django.contrib.s
 ROOT_URLCONF = 'myblog.urls'
 
 TEMPLATES = [{
-    'BACKEND' : 'django.template.backends.django.DjangoTemplates', 'DIRS': [os.path.join(BASE_DIR, "templates/")],
+    'BACKEND': 'django.template.backends.django.DjangoTemplates', 'DIRS': [os.path.join(BASE_DIR, "templates/")],
     # 不写os.path.join(BASE_DIR, '地址')的话找不到base.html，当然我没有base.html
-    'APP_DIRS': True, 'OPTIONS': {
+    'APP_DIRS': True,
+    'OPTIONS': {
         'context_processors': ['django.template.context_processors.debug', 'django.template.context_processors.request',
                                'django.contrib.auth.context_processors.auth',
                                'django.contrib.messages.context_processors.messages', ],
     },
+
 }, ]
 
 WSGI_APPLICATION = 'myblog.wsgi.application'
@@ -71,6 +72,16 @@ WSGI_APPLICATION = 'myblog.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+} if DEBUG else {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_db',
+        'HOST': '',
+        'USER': 'django',
+        'PASSWORD': 'Dongjiayidjy3832375',
+        'PORT': '',
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 
@@ -109,31 +120,29 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
-
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'blog.whoosh_cn_backend.WhooshEngine',
-        'PATH'  : os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
     },
 }
 # 添加文章时自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-# 设置每页检索文章数
+# 设置每页文章数
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 7
+ARTICLE_PER_PAGE = 7
 
 GRAPPELLI_ADMIN_TITLE = '董家佚 | YTMartian'
-
 
 MATHJAX_ENABLED = True
 
 MATHJAX_CONFIG_DATA = {
-  "tex2jax": {
-    "inlineMath":
-      [
-          ['$','$'],
-          ['\\(','\\)']
-      ]
-  },
-    "CommonHTML": {"linebreaks": {"automatic": "true"},"scale":90}
+    "tex2jax": {
+        "inlineMath":
+            [
+                ['$', '$'],
+                ['\\(', '\\)']
+            ]
+    },
+    "CommonHTML": {"linebreaks": {"automatic": "true"}, "scale": 90}
 }
