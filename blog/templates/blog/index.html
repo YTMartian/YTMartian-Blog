@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static %}
+{% load staticfiles %}
 {% load custom_markdown %}
 <html lang="en">
 <head>
@@ -57,13 +57,13 @@
             </div>
             <nav class="navigation" role="navigation">
                 <ul class="primary-nav">
-                    <li><a href="{% url 'blog:article' 'acm' '$' 1 %}">ACM</a></li>
+                   <!-- <li><a href="{% url 'blog:article' 'acm' '$' 1 %}">ACM</a></li>
                     <li><a href="{% url 'blog:article' 'python' '$' 1 %}">PYTHON</a></li>
                     <li><a href="{% url 'blog:article' 'c-c++' '$' 1 %}">C/C++</a></li>
                     <li><a href="{% url 'blog:article' 'java' '$' 1 %}">JAVA</a></li>
                     <li><a href="{% url 'blog:article' 'thoughts' '$' 1 %}">随想</a></li>
                     <li><a href="{% url 'blog:article' 'others' '$' 1 %}">其它</a></li>
-                    <li><a></a></li>
+                    <li><a></a></li>-->
                 </ul>
             </nav>
         </div>
@@ -147,7 +147,7 @@
             <div class="row no-gutter">
                 {% for wallpaper in wallpapers %}
                     <div class="col-lg-3 col-md-6 col-sm-6 work" href=""><a href="
-{% url 'blog:wallpaper' wallpaper.id %}"
+{% url 'blog:wallpaper' wallpaper.pic_index %}"
                                                                             class="work-box"><img
                             src="{{ wallpaper.preview_address }}" alt="">
                         <div class="overlay">
