@@ -79,7 +79,7 @@ DATABASES = {
         'NAME': 'django_db',
         'HOST': '',
         'USER': 'django',
-        'PASSWORD': 'Dongjiayidjy3832375',
+        'PASSWORD': '***',
         'PORT': '',
         'OPTIONS': {'charset': 'utf8mb4'},
     }
