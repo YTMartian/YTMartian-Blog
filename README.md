@@ -56,3 +56,5 @@ from django.utils.encoding import python_2_unicode_compatible
 - User login function.
 
 - Front end adapt the Mobile services.
+
+- WeChat mini program.
