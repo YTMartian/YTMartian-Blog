@@ -1,4 +1,5 @@
 from django.conf.urls import url, handler404, handler500
+from django.urls import path
 from . import views
 
 app_name = 'blog'
@@ -12,6 +13,9 @@ urlpatterns = [
     url(r'^thumbs_up/article=(\d+)$', views.thumbs_up, name='thumbs_up'),
     url(r'^stock_recorder$', views.stock_recorder, name='stock_recorder'),
     url(r'^cpphighlight$', views.cpphighlight, name='cpphighlight'),
+    path('get_slide/', views.get_slide),
+    path('get_tags/', views.get_tags),
+    path('get_article/', views.get_article),
 ]
 
 handler404 = views.page_not_found

@@ -1,11 +1,15 @@
-from django.shortcuts import render
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404, JsonResponse
 from django.template import RequestContext
+from django.shortcuts import render
+from django.core import serializers
+from django.conf import settings
 from . import models
 # 引入settings.py
-from django.conf import settings
-import re
 import random
+import json
+import re
 
 
 def index(request):
@@ -213,3 +217,57 @@ def cpphighlight(request):
     recorder.object_title = 'cpp代码高亮'
     recorder.save()
     return render(request, 'blog/cpphighlight.html', )
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_slide(request):
+    res = {}
+    try:
+        data = models.Slide.objects.all()
+        res['list'] = json.loads(serializers.serialize('json', data))
+        res['msg'] = 'success'
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    return JsonResponse(res)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_tags(request):
+    res = {}
+    try:
+        data = models.Tag.objects.all()
+        res['list'] = json.loads(serializers.serialize('json', data))
+        res['msg'] = 'success'
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    return JsonResponse(res)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def get_article(request):
+    res = {}
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        res_data = None
+        if data['condition'] == 'all':  # 所有文章
+            res_data = models.Article.objects.all()
+        elif data['condition'] == 'slide':  # slide的文章
+            res_data = models.Article.objects.filter(classification__id=8)  # index_show
+        elif data['condition'] == 'tag':  # 该标签下的文章
+            res_data = models.Article.objects.filter(tags__id=data['tag_id'])  # 判断是否在ManyToManyField里面
+        elif data['condition'] == 'one_article':  # 单独一篇文章
+            res_data = models.Article.objects.filter(pk=data['article_id'])
+        res['list'] = json.loads(serializers.serialize('json', res_data))
+        res['msg'] = 'success'
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    return JsonResponse(res)
