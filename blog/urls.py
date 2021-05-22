@@ -16,6 +16,7 @@ urlpatterns = [
     path('get_slide/', views.get_slide),
     path('get_tags/', views.get_tags),
     path('get_article/', views.get_article),
+    path('get_wallpaper/', views.get_wallpaper),
 ]
 
 handler404 = views.page_not_found

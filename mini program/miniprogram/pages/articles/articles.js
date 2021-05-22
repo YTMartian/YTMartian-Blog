@@ -5,14 +5,40 @@ Page({
      * Page initial data
      */
     data: {
-
+        tagId: -1,
     },
 
     /**
      * Lifecycle function--Called when page load
      */
     onLoad: function (options) {
+        const that = this;
+        const app = getApp();
 
+        that.setData({
+            "tagId": options.tagId
+        })
+        //获取文章
+        wx.request({
+            url: app.globalData.baseUrl + 'get_article/',
+            header: {
+                'content-type': 'application/json'
+            },
+            data: {
+                "condition": "tag",
+                "tag_id": options.tagId,
+                "article_id": -1
+            },
+            method: 'POST',
+            success: function (res) {
+                console.log(res)
+
+            },
+            fail: function (res) {
+            },
+            complete: function (res) {
+            },
+        });
     },
 
     /**

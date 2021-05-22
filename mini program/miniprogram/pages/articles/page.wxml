@@ -1,2 +1,2 @@
-<!--pages/articles/page.wxml-->
-<text>pages/articles/page.wxml</text>
+
+<towxml nodes="{{article.content}}"></towxml>

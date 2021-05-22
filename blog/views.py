@@ -8,6 +8,7 @@ from django.conf import settings
 from . import models
 # 引入settings.py
 import random
+import math
 import json
 import re
 
@@ -255,7 +256,7 @@ def get_article(request):
     res = {}
     try:
         data = json.loads(request.body.decode('utf-8'))
-        res_data = None
+        res_data = {}
         if data['condition'] == 'all':  # 所有文章
             res_data = models.Article.objects.all()
         elif data['condition'] == 'slide':  # slide的文章
@@ -264,6 +265,45 @@ def get_article(request):
             res_data = models.Article.objects.filter(tags__id=data['tag_id'])  # 判断是否在ManyToManyField里面
         elif data['condition'] == 'one_article':  # 单独一篇文章
             res_data = models.Article.objects.filter(pk=data['article_id'])
+        elif data['condition'] == 'page':
+            try:
+                per_page = 8
+                page_number = data['page_number']
+                res_data = models.Article.objects.all()
+                if 0 < page_number <= math.ceil(len(res_data) / per_page):
+                    start = per_page * (page_number - 1)
+                    end = per_page * page_number
+                    print(start)
+                    print(end)
+                    if end > len(res_data):
+                        end = len(res_data)
+                    res_data = res_data[start:end]
+                else:
+                    res_data = {}
+            except:
+                pass
+        res['list'] = json.loads(serializers.serialize('json', res_data))
+        res['msg'] = 'success'
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    return JsonResponse(res)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def get_wallpaper(request):
+    res = {}
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        res_data = {}
+        if data['condition'] == 'index':
+            wallpapers = models.Wallpaper.objects.all()
+            res_data = random.sample(list(wallpapers), 8)
+            print(res_data)
+        elif data['condition'] == 'one':
+            res_data = models.Wallpaper.objects.filter(id=data['id'])  # index_show
         res['list'] = json.loads(serializers.serialize('json', res_data))
         res['msg'] = 'success'
         res['code'] = 0

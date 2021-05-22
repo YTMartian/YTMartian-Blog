@@ -1,3 +1,138 @@
-.my-swiper image{
-    width:100%;
+.my-swiper image {
+    width: 100%;
+}
+
+.my-slide {
+    position: relative;
+}
+
+.slide-caption {
+    position: absolute;
+    right: 5%;
+    left: 5%;
+    z-index: 10;
+    color: #fff;
+    text-align: center;
+    text-shadow: 12px 7px 6px rgba(0, 0, 0, .7)
+}
+
+.my-head-top {
+    margin: 0 auto;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding-top: 10%;
+    border-bottom: 5px solid #17b794;
+    padding-bottom: 10px;
+    width: 15%;
+}
+
+.my-head-bottom {
+    margin: 0 auto;
+    text-align: center;
+    font-size: 1.1em;
+    padding-top: 2%;
+    width: 20%;
+}
+
+.cloud-tags-style {
+    margin: 0 auto;
+    width: 80%;
+}
+
+swiper {
+    padding-top: 30px;
+}
+
+.le-img {
+    width: 100%;
+    display: block;
+    transform: scale(0.8);
+    transition: all 0.5s ease;
+    border-radius: 6px;
+}
+
+.le-img.le-active {
+    transform: scale(1);
+}
+
+.top {
+    width: 100%;
+    background-color: #f7f7f7;
+}
+
+.topsearch {
+    width: 90%;
+    margin-left: 5%;
+    display: flex;
+    padding: 2% 0;
+    align-items: center;
+}
+
+.frame {
+    background-color: white;
+    width: 70%;
+    border-radius: 20px;
+    padding: 0 3%;
+    margin: 0 auto
+}
+
+.frame > input {
+    margin: 6px 0;
+}
+
+.topsearch > text {
+    width: 10%;
+    margin-left: 5%;
+    color: #a8a7a7fa;
+}
+
+.history {
+    background-color: white;
+    padding: 4%;
+}
+
+.history_title {
+    font-size: 1em;
+    display: flex;
+    justify-content: space-between;
+    color: #a8a7a7fa;
+    align-items: center;
+}
+
+.history_text {
+    padding: 4% 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.history_text > text {
+    background-color: #f7f7f7;
+    padding: 1% 3%;
+    margin: 2%;
+    border-radius: 40px;
+    font-size: 1.1em;
+}
+
+.history_text > text:first-child {
+    margin-left: 0;
+}
+
+.my-tag {
+    padding: 1% 3%;
+    margin: 2%;
+    border-radius: 40px;
+    font-size: 1.1em;
+    color: white;
+    z-index:10;
+    box-shadow: 12px 5px 10px rgba(0, 0, 0, .1)
+}
+.copyright {
+    font-size: 0.7em;
+    line-height: 1.6;
+    font-weight: 400;
+    text-align: center;
+    color: #c4c4c4;
+    margin-top: 48px;
+    padding-bottom: 80px;
 }
