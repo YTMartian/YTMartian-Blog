@@ -17,6 +17,8 @@ urlpatterns = [
     path('get_tags/', views.get_tags),
     path('get_article/', views.get_article),
     path('get_wallpaper/', views.get_wallpaper),
+    path('get_comment/', views.get_comment),
+    path('submit_like/', views.submit_like),
 ]
 
 handler404 = views.page_not_found

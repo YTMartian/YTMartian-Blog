@@ -6,6 +6,10 @@ Page({
      */
     data: {
         tagId: -1,
+        pageNumber: 1,
+        articleList: [],
+        isLoading: true,
+        noMoreArticle: false
     },
 
     /**
@@ -14,31 +18,12 @@ Page({
     onLoad: function (options) {
         const that = this;
         const app = getApp();
-
-        that.setData({
-            "tagId": options.tagId
-        })
-        //获取文章
-        wx.request({
-            url: app.globalData.baseUrl + 'get_article/',
-            header: {
-                'content-type': 'application/json'
-            },
-            data: {
-                "condition": "tag",
-                "tag_id": options.tagId,
-                "article_id": -1
-            },
-            method: 'POST',
-            success: function (res) {
-                console.log(res)
-
-            },
-            fail: function (res) {
-            },
-            complete: function (res) {
-            },
-        });
+        if (typeof (options) !== "undefined") { //判断undefined
+            that.setData({
+                "tagId": options.tagId
+            })
+        }
+        this.onReachBottom()
     },
 
     /**
@@ -73,14 +58,64 @@ Page({
      * Page event handler function--Called when user drop down
      */
     onPullDownRefresh: function () {
-
+        this.setData({
+            tagId: this.data.tagId,
+            pageNumber: 1,
+            articleList: [],
+            isLoading: true,
+            noMoreArticle: false
+        })
+        this.onLoad()
     },
 
     /**
      * Called when page reach bottom
      */
     onReachBottom: function () {
-
+        const app = getApp();
+        const that = this;
+        that.setData({
+            "isLoading": true
+        })
+        //获取文章
+        wx.request({
+            url: app.globalData.baseUrl + 'get_article/',
+            header: {
+                'content-type': 'application/json'
+            },
+            data: {
+                "condition": "tag",
+                "tag_id": that.data.tagId,
+                "article_id": -1,
+                "page_number": that.data.pageNumber,
+            },
+            method: 'POST',
+            success: function (res) {
+                const articles = [];
+                const noMore = res.data.list.length < app.globalData.perPage;
+                for (let i = 0; i < res.data.list.length; i++) {
+                    articles.push({
+                        'pk': res.data.list[i].pk,
+                        'title': res.data.list[i].fields.title,
+                        'publish_time': res.data.list[i].fields.publish_time.slice(0, 10),
+                        'readings': res.data.list[i].fields.readings,
+                        'thumbs_up': res.data.list[i].fields.thumbs_up,
+                        'comments': res.data.list[i].fields.comments,
+                        'img': 'https://www.dongjiayi.com/static/files/preview-' + res.data.list[i].pk + '.jpg'
+                    })
+                }
+                that.setData({
+                    "articleList": that.data.articleList.concat(articles),
+                    "pageNumber": that.data.pageNumber + 1,
+                    "isLoading": false,
+                    "noMoreArticle": noMore
+                })
+            },
+            fail: function (res) {
+            },
+            complete: function (res) {
+            },
+        });
     },
 
     /**

@@ -1,2 +1,76 @@
+<view class="page-title">
+    <view class="page-title">
+        <text>{{title}}</text>
+    </view>
+    <view class="post-data" style="margin-left:150rpx">
+        <image src="/images/calendar.svg"></image>
+        <text>{{publish_time}}</text>
+        <image src="/images/readings.svg"></image>
+        <text class="">{{readings}}</text>
+        <image src="/images/comments.svg"></image>
+        <text class="">{{comments}}</text>
+        <image src="/images/thumbs_up.svg"></image>
+        <text class="">{{thumbs_up}}</text>
+    </view>
+</view>
+<towxml nodes="{{content}}"></towxml>
+<view style='display:{{isLoading?"block":"none"}}'>
+    <view class="sk-three-bounce">
+        <view class="sk-child sk-bounce1"></view>
+        <view class="sk-child sk-bounce2"></view>
+        <view class="sk-child sk-bounce3"></view>
+    </view>
+</view>
+<view class="my-head-top" style="margin-top:-50rpx">评论</view>
+<view class="container" style="background:white;margin-top:50rpx">
+    <view class="post-list">
+        <block wx:for="{{commentsList}}" wx:key="pk">
+            <view class="post-item">
+                <view class="post-desc">
+                    <view class="post-title" style="height:40rpx">
+                        <text style="font-size:25rpx;color:#737373">{{item.user_name}}</text>
+                    </view>
+                    <view>
+                        <text style="font-size:30rpx;color:#333">{{item.content}}</text>
+                    </view>
+                    <view class="post-data" style="margin-top:20rpx">
+                        <image src="/images/calendar.svg"></image>
+                        <text>{{item.submit_date}}</text>
+                        <image src="/images/thumbs_up.svg"></image>
+                        <text class="">{{item.thumbs_up}}</text>
+                    </view>
+                </view>
+            </view>
+        </block>
+    </view>
+    <view class="no-more">- 无更多评论 -</view>
+</view>
+<view class="copyright">
+    copyright@ 2021.05 董家佚
+</view>
 
-<towxml nodes="{{article.content}}"></towxml>
+<view style="display:block">
+    <view class="comment-fixed">
+        <form catchsubmit="formSubmit" report-submit="true">
+            <view class="comment-respond">
+                <input class="comment-input" maxlength="200" name="inputPostID" value="评论"
+                       style="display:none"/>
+                <view class="comment-box">
+                    <!--                    <image src="../../images/like.svg" class=""-->
+                    <!--                           catchtap="handleLike"></image>-->
+<!--                    <button type="primary" bindtap="pressLike" class="article-like">点赞</button>-->
+                    <view class="article_like" bindtap="likeArticle">
+                        <image src="{{articleLikeImg}}"></image>
+                    </view>
+                    <!-- 评论输入框和发送按钮 -->
+                    <view class="comment_input_box">
+                        <input class="comment-input" type='text' confirm-type="send" cursor-spacing="10" maxlength="200"
+                               name="inputComment" placeholder="评论..." focus="{{focus}}"
+                               bindblur="onReplyBlur" bindfocus="onRepleyFocus"/>
+                        <button class="comment-button touch-active" formType="submit">发送</button>
+                    </view>
+                </view>
+            </view>
+        </form>
+    </view>
+</view>

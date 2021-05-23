@@ -1,1 +1,37 @@
-{{tagId}}
+<view class="container">
+    <view class="post-list">
+        <block wx:for="{{articleList}}" wx:key="pk">
+            <view class="post-item">
+                <image src="{{item.img}}" mode="aspectFill" class="post-img"></image>
+                <view class="post-desc">
+                    <navigator url="/pages/articles/page?articleId={{item.pk}}" open-type="switchTab" redirect>
+                        <view class="post-title">
+                            <text>{{item.title}}</text>
+                        </view>
+                    </navigator>
+                    <view class="post-data">
+                        <image src="/images/calendar.svg"></image>
+                        <text>{{item.publish_time}}</text>
+                        <image src="/images/readings.svg"></image>
+                        <text class="">{{item.readings}}</text>
+                        <image src="/images/comments.svg"></image>
+                        <text class="">{{item.comments}}</text>
+                        <image src="/images/thumbs_up.svg"></image>
+                        <text class="">{{item.thumbs_up}}</text>
+                    </view>
+                </view>
+            </view>
+        </block>
+    </view>
+    <view class="loadingmore" style="display:block">
+        <view wx:if="{{noMoreArticle}}" class="no-more">- 无更多文章 -</view>
+        <view wx:else class="no-more">- 下拉加载更多 -</view>
+    </view>
+    <view style='display:{{isLoading?"block":"none"}}'>
+        <view class="sk-three-bounce">
+            <view class="sk-child sk-bounce1"></view>
+            <view class="sk-child sk-bounce2"></view>
+            <view class="sk-child sk-bounce3"></view>
+        </view>
+    </view>
+</view>

@@ -10,7 +10,7 @@
     "navigationBarBackgroundColor": "#43A047",
     "navigationBarTitleText": "YTMartian | 董家佚",
     "navigationBarTextStyle": "white",
-    "enablePullDownRefresh": false
+    "enablePullDownRefresh": true
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2",

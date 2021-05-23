@@ -11,6 +11,10 @@ import random
 import math
 import json
 import re
+import sys
+
+sys.path.append("..")
+import comments.models
 
 
 def index(request):
@@ -250,6 +254,9 @@ def get_tags(request):
     return JsonResponse(res)
 
 
+PER_PAGE = 8
+
+
 @csrf_exempt
 @require_http_methods(['POST'])
 def get_article(request):
@@ -262,19 +269,45 @@ def get_article(request):
         elif data['condition'] == 'slide':  # slide的文章
             res_data = models.Article.objects.filter(classification__id=8)  # index_show
         elif data['condition'] == 'tag':  # 该标签下的文章
-            res_data = models.Article.objects.filter(tags__id=data['tag_id'])  # 判断是否在ManyToManyField里面
+            try:
+                per_page = PER_PAGE
+                page_number = data['page_number']
+                res_data = models.Article.objects.filter(tags__id=data['tag_id'])  # 判断是否在ManyToManyField里面
+                if 0 < page_number <= math.ceil(len(res_data) / per_page):
+                    start = per_page * (page_number - 1)
+                    end = per_page * page_number
+                    if end > len(res_data):
+                        end = len(res_data)
+                    res_data = res_data[start:end]
+                else:
+                    res_data = {}
+            except:
+                pass
         elif data['condition'] == 'one_article':  # 单独一篇文章
             res_data = models.Article.objects.filter(pk=data['article_id'])
         elif data['condition'] == 'page':
             try:
-                per_page = 8
+                per_page = PER_PAGE
                 page_number = data['page_number']
                 res_data = models.Article.objects.all()
                 if 0 < page_number <= math.ceil(len(res_data) / per_page):
                     start = per_page * (page_number - 1)
                     end = per_page * page_number
-                    print(start)
-                    print(end)
+                    if end > len(res_data):
+                        end = len(res_data)
+                    res_data = res_data[start:end]
+                else:
+                    res_data = {}
+            except:
+                pass
+        elif data['condition'] == 'history':
+            try:
+                per_page = PER_PAGE
+                page_number = data['page_number']
+                res_data = models.Article.objects.filter(content__contains=data['search_text'])
+                if 0 < page_number <= math.ceil(len(res_data) / per_page):
+                    start = per_page * (page_number - 1)
+                    end = per_page * page_number
                     if end > len(res_data):
                         end = len(res_data)
                     res_data = res_data[start:end]
@@ -306,6 +339,52 @@ def get_wallpaper(request):
             res_data = models.Wallpaper.objects.filter(id=data['id'])  # index_show
         res['list'] = json.loads(serializers.serialize('json', res_data))
         res['msg'] = 'success'
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    return JsonResponse(res)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def get_comment(request):
+    res = {}
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        res_data = {}
+        if data['condition'] == 'article':  # 获取文章的评论
+            res_data = comments.models.Comment.objects.filter(post__id=data['article_id'])
+        elif data['condition'] == 'comment':  # 获取评论的评论
+            res_data = comments.models.Comment.objects.filter(parent__id=data['comment_id'])
+        res['list'] = json.loads(serializers.serialize('json', res_data))
+        res['msg'] = 'success'
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    return JsonResponse(res)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def submit_like(request):
+    res = {}
+    try:
+        msg = 'failed'
+        data = json.loads(request.body.decode('utf-8'))
+        if data['condition'] == 'article':  # 点赞文章
+            article_ = models.Article.objects.get(id=data['article_id'])
+            if data['state'] == 'add':
+                article_.thumbs_up = article_.thumbs_up + 1
+                msg = 'success'
+            elif data['state'] == 'minus':
+                article_.thumbs_up = article_.thumbs_up - 1
+                msg = 'success'
+            article_.save()
+        elif data['condition'] == 'comment':  # 点赞评论
+            res_data = comments.models.Comment.objects.filter(parent__id=data['comment_id'])
+        res['msg'] = msg
         res['code'] = 0
     except Exception as e:
         res['msg'] = str(e)

@@ -19,7 +19,12 @@ App({
 
         //配置全局变量
         this.globalData = {
-            baseUrl: "http://127.0.0.1:8000/blog/"
+            baseUrl: "http://127.0.0.1:8000/blog/",
+            perPage: 8,//一页多少文章
+            likeArticleList: [],//记录已经点赞的文章id，点过赞的不能继续点了
+            likeCommentList: [],//记录已经点赞的评论id
+            nickName: '',//用户名
+            avatarUrl: '',//用户头像
         }
     }
 })

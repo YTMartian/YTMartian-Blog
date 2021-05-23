@@ -13,14 +13,22 @@ Page({
         searchButtonText: '搜索',
         tags: [],
         wallpapers: [],
+        articleList: [],
+        noMoreArticle: true,
         pageNumber: 1,
+        historyArticleList: [],
+        historyPageNumber: 1,
+        historyNoMoreArticle: true,
 
     },
     //清除历史记录
     clearHistory: function (e) {
         this.setData({
             historyArray: [], //清空历史记录数组
-            searchText: "" //清空搜索框
+            searchText: "", //清空搜索框
+            historyArticleList: [],
+            historyPageNumber: 1,
+            historyNoMoreArticle: true,
         })
     },
     //搜索
@@ -32,8 +40,13 @@ Page({
             const array = this.data.historyArray;
             array.push(text)
             this.setData({//跟react类似，只有setData才能触发前端更新
-                historyArray: array
+                historyArray: array,
+                searchText: text,
+                historyArticleList: [],
+                historyPageNumber: 1,
+                historyNoMoreArticle: false,
             })
+            this.onReachBottom()
         } else if (text2 === "") {
             this.setData({
                 searchText: ""
@@ -64,7 +77,10 @@ Page({
         this.setData({
             showHistory: false,
             isSearching: false,
-            searchText: ''
+            searchText: '',
+            historyArticleList: [],
+            historyPageNumber: 1,
+            historyNoMoreArticle: true,
         });
     },
     //获取swiper高度
@@ -187,6 +203,41 @@ Page({
             complete: function (res) {
             },
         });
+        //获取文章
+        this.onReachBottom()
+        // wx.request({
+        //     url: app.globalData.baseUrl + 'get_article/',
+        //     header: {
+        //         'content-type': 'application/json'
+        //     },
+        //     data: {
+        //         "condition": "page",
+        //         "page_number": 1,
+        //     },
+        //     method: 'POST',
+        //     success: function (res) {
+        //         const articles = [];
+        //         for (let i = 0; i < res.data.list.length; i++) {
+        //             articles.push({
+        //                 'pk': res.data.list[i].pk,
+        //                 'title': res.data.list[i].fields.title,
+        //                 'publish_time': res.data.list[i].fields.publish_time,
+        //                 'readings': res.data.list[i].fields.readings,
+        //                 'thumbs_up': res.data.list[i].fields.thumbs_up,
+        //                 'comments': res.data.list[i].fields.comments
+        //             })
+        //         }
+        //         that.setData({
+        //             "articleList": articles,
+        //             "pageNumber": 2,
+        //             "isLoading": false
+        //         })
+        //     },
+        //     fail: function (res) {
+        //     },
+        //     complete: function (res) {
+        //     },
+        // });
         //获取首页壁纸
         // wx.request({
         //     url: app.globalData.baseUrl + 'get_wallpaper/',
@@ -249,14 +300,102 @@ Page({
      * Page event handler function--Called when user drop down
      */
     onPullDownRefresh: function () {
+        this.setData({
+            slides: [],
+            swiperH: '',//swiper高度
+            nowIdx: 0,//当前swiper索引
+            slideFontSize: "1.3em",
+            fontBottom: "2em",//字体距底部距离
+            isLoading: true,
+            showHistory: false,//显示历史记录或是主页其它类容
+            searchText: '',
+            historyArray: [],
+            isSearching: false,
+            searchButtonText: '搜索',
+            tags: [],
+            wallpapers: [],
+            pageNumber: 1,
+            articleList: [],
+            historyArticleList: [],
+            historyPageNumber: 1,
+            historyNoMoreArticle: true,
 
+        })
+        this.onLoad()
     },
 
     /**
      * Called when page reach bottom
      */
     onReachBottom: function () {
-
+        const app = getApp();
+        const that = this;
+        that.setData({
+            "isLoading": true
+        })
+        let post_data = {}
+        if (that.data.showHistory) {
+            post_data = {
+                "condition": "history",
+                "search_text": that.data.searchText,
+                "page_number": that.data.historyPageNumber,
+            }
+        } else {
+            post_data = {
+                "condition": "page",
+                "page_number": that.data.pageNumber,
+            }
+        }
+        wx.request({
+            url: app.globalData.baseUrl + 'get_article/',
+            header: {
+                'content-type': 'application/json'
+            },
+            data: post_data,
+            method: 'POST',
+            success: function (res) {
+                const articles = [];
+                const noMore = res.data.list.length < app.globalData.perPage;
+                for (let i = 0; i < res.data.list.length; i++) {
+                    articles.push({
+                        'pk': res.data.list[i].pk,
+                        'title': res.data.list[i].fields.title,
+                        'publish_time': res.data.list[i].fields.publish_time.slice(0, 10),
+                        'readings': res.data.list[i].fields.readings,
+                        'thumbs_up': res.data.list[i].fields.thumbs_up,
+                        'comments': res.data.list[i].fields.comments,
+                        'img': 'https://www.dongjiayi.com/static/files/preview-' + res.data.list[i].pk + '.jpg',
+                        'content': res.data.list[i].fields.content.replace(/\n/g, '').slice(0, 20) + '...'
+                    })
+                }
+                if (that.data.showHistory) {
+                    // for (let i = 0; i < articles.length; i++) {
+                    //     const index = articles[i].content.indexOf(that.data.searchText);
+                    //     console.log(typeof(articles[i].content))
+                    //     let start = index - 10 < 0 ? 0 : index - 10;
+                    //     let end = index + 10 > articles[i].content.length ? articles[i].content.length : index + 10;
+                    //     articles[i].content = '...' + articles[i].content.slice(start, end) + '...';
+                    // }
+                    that.setData({
+                        "historyArticleList": that.data.historyArticleList.concat(articles),
+                        "historyPageNumber": that.data.historyPageNumber + 1,
+                        "isLoading": false,
+                        "historyNoMoreArticle": noMore
+                    })
+                } else {
+                    that.setData({
+                        "articleList": that.data.articleList.concat(articles),
+                        "pageNumber": that.data.pageNumber + 1,
+                        "isLoading": false,
+                        "noMoreArticle": noMore
+                    })
+                }
+            },
+            fail: function (res) {
+            },
+            complete: function (res) {
+            },
+        });
     },
 
     /**
@@ -264,5 +403,5 @@ Page({
      */
     onShareAppMessage: function () {
 
-    }
+    },
 })
