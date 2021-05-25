@@ -57,10 +57,13 @@ from django.utils.encoding import python_2_unicode_compatible
 
 - Video customized(use [video.js](https://videojs.com/)).
 
+- WeChat mini program.
+
+<img src="mini program.jpg" width="30%" height="30%">
+
 ### UNDER BUILDING
 
 - User login function.
 
 - Front end adapt the Mobile services.
 
-- WeChat mini program.
