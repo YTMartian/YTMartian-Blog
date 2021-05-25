@@ -39,7 +39,7 @@
                 <view class="post-item">
                     <image src="{{item.img}}" mode="aspectFill" class="post-img"></image>
                     <view class="post-desc">
-                        <navigator url="/pages/articles/page?articleId={{item.pk}}" open-type="switchTab" redirect>
+                        <navigator url="/pages/articles/page?articleId={{item.pk}}">
                             <view class="post-title">
                                 <text>{{item.title}}</text>
                             </view>
@@ -86,7 +86,7 @@
             previous-margin="50px"
             next-margin="50px"
             bindchange="swiperChange"
-            style='height:{{swiperH}};background:url("/images/banner.svg");padding-bottom:10px'
+            style='height:{{swiperH}};background:url("https://www.dongjiayi.com/static/images/banner.svg");padding-bottom:10px'
     >
         <block wx:for="{{slides}}" wx:key="*this">
             <swiper-item>
@@ -96,8 +96,7 @@
                            bindload='getHeight'
                            style='height:{{swiperH}};'></image>
                     <view class="slide-caption" style="bottom:{{fontBottom}};font-size:{{slideFontSize}}">
-                        <navigator url="/pages/articles/page?articleId={{item.articleId}}" open-type="switchTab"
-                                   redirect>
+                        <navigator url="/pages/articles/page?articleId={{item.articleId}}">
                             {{item.articleTitle}}
                         </navigator>
                     </view>
@@ -112,9 +111,7 @@
     <view class="history_text">
         <navigator class="my-tag" wx:for="{{tags}}" wx:key="*this"
                    url="/pages/articles/articles?tagId={{item.id}}"
-                   open-type="switchTab"
-                   style="background-color:{{item.color}}"
-                   redirect>
+                   style="background-color:{{item.color}}">
             {{item.name}}
         </navigator>
     </view>
@@ -146,7 +143,7 @@
                 <view class="post-item">
                     <image src="{{item.img}}" mode="aspectFill" class="post-img"></image>
                     <view class="post-desc">
-                        <navigator url="/pages/articles/page?articleId={{item.pk}}" open-type="switchTab" redirect>
+                        <navigator url="/pages/articles/page?articleId={{item.pk}}">
                             <view class="post-title">
                                 <text>{{item.title}}</text>
                             </view>

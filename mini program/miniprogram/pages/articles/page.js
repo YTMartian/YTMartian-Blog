@@ -199,12 +199,16 @@ Page({
         const that = this;
         const app = getApp();
         if (app.globalData.nickName.length === 0) { //用户需要先登录
-            wx.getUserInfo({
+            wx.getUserProfile({
+                desc: '获取用户身份信息',
                 success: function (res) {
                     app.globalData.nickName = res.userInfo.nickName;
                     app.globalData.avatarUrl = res.userInfo.avatarUrl;
                     that.likeSubmit_(e)
                 },
+                fail: function (res) {
+                    console.log(res)
+                }
             })
         } else {
             that.likeSubmit_(e)
@@ -316,7 +320,8 @@ Page({
         const app = getApp();
         if (app.globalData.nickName.length === 0) { //用户需要先登录
             //注意该方法也是异步的，因此需要在success里完成提交，否则app的nickName并没有更新
-            wx.getUserInfo({
+            wx.getUserProfile({
+                desc: '获取用户身份信息',
                 success: function (res) {
                     app.globalData.nickName = res.userInfo.nickName;
                     app.globalData.avatarUrl = res.userInfo.avatarUrl;
@@ -334,7 +339,7 @@ Page({
         if (comment.replace(/ /g, '').length === 0) return;
         //提交评论
         wx.request({
-            url: app.globalData.baseUrl + 'a/',
+            url: app.globalData.baseUrl + 'submit_comment/',
             header: {
                 'content-type': 'application/json'
             },
@@ -347,7 +352,7 @@ Page({
             },
             method: 'POST',
             success: function (res) {
-                console.log(res)
+                // console.log(res)
                 let content = res.data.list[0].fields.content;
                 content = content.replace(/\n/g, '');
                 content = content.replace(/<fuck>/g, '');
@@ -385,7 +390,8 @@ Page({
         const that = this;
         const app = getApp();
         if (app.globalData.nickName.length === 0) { //用户需要先登录
-            wx.getUserInfo({
+            wx.getUserProfile({
+                desc: '获取用户身份信息',
                 success: function (res) {
                     app.globalData.nickName = res.userInfo.nickName;
                     app.globalData.avatarUrl = res.userInfo.avatarUrl;

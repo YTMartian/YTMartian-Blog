@@ -4,7 +4,7 @@
             <view class="post-item">
                 <image src="{{item.img}}" mode="aspectFill" class="post-img"></image>
                 <view class="post-desc">
-                    <navigator url="/pages/articles/page?articleId={{item.pk}}" open-type="switchTab" redirect>
+                    <navigator url="/pages/articles/page?articleId={{item.pk}}">
                         <view class="post-title">
                             <text>{{item.title}}</text>
                         </view>
