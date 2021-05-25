@@ -215,14 +215,13 @@ page {
     display: flex;
     border-bottom: 1px solid #eee;
     padding: 24rpx 0;
-    float: left;
     overflow: hidden;
+    margin:auto 0;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
-    width: 95%;
+    width: 700rpx;
     border-radius: 5rpx;
     margin-top: 20rpx;
-    margin-left: 20rpx;
 }
 
 .post-desc {
@@ -250,6 +249,14 @@ page {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+}
+
+.post-title > image {
+    width:30rpx;
+    float: right;
+    margin-top: -30rpx;
+    margin-right:20rpx;
+    display: -webkit-box;
 }
 
 .post-content {
@@ -472,7 +479,7 @@ page {
 }
 
 .comment_input_box {
-    width: 500rpx;
+    width: 600rpx;
     display: flex;
     align-items: center;
 }
@@ -487,9 +494,9 @@ page {
 }
 
 .comment-button {
-    width: 120rpx;
-    height: 80rpx;
-    line-height: 80rpx;
+    width: 50rpx;
+    height: 60rpx;
+    line-height: 60rpx;
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
     border-top-right-radius: 40rpx;

@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import Tag, Classification, Article, Wallpaper, Slide, Recorder, LimitIp, StockRecorder
-from pagedown.widgets import AdminPagedownWidget
-from django import forms
+# from django import forms
 
 
 # class ArticleForm(forms.ModelForm):

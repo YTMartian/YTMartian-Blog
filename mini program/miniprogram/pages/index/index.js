@@ -19,10 +19,13 @@ Page({
         historyArticleList: [],
         historyPageNumber: 1,
         historyNoMoreArticle: true,
+        isFocus: false
 
     },
     //清除历史记录
     clearHistory: function (e) {
+        const app = getApp();
+        app.globalData.historyArray = [];
         this.setData({
             historyArray: [], //清空历史记录数组
             searchText: "", //清空搜索框
@@ -33,12 +36,14 @@ Page({
     },
     //搜索
     search: function (e) {
+        const app = getApp();
         const text = this.data.searchText; //搜索框的值
         const text2 = text.replace(/ /g, '');//判断是否只含空格
         if (text !== "" && text2 !== "") {
             //将搜索框的值赋给历史数组
             const array = this.data.historyArray;
             array.push(text)
+            app.globalData.historyArray = array;
             this.setData({//跟react类似，只有setData才能触发前端更新
                 historyArray: array,
                 searchText: text,
@@ -69,7 +74,13 @@ Page({
     searchFocus: function (e) {
         this.setData({
             showHistory: true,
-            isSearching: true
+            isSearching: true,
+            isFocus: true
+        })
+    },
+    searchBlur: function (e) {
+        this.setData({
+            isFocus: false
         })
     },
     //取消搜索
@@ -106,11 +117,13 @@ Page({
     onLoad: function () {
         const app = getApp();
         const that = this;//request里直接用不了this，因为上下文已经发生改变
-        const slides = [];
         const slides_length = 3;
         for (let i = 0; i < slides_length; i++) {
-            slides.push({'imgUrl': '', 'articleTitle': '', 'articleId': -1})
+            that.data.slides.push({'imgUrl': '', 'articleTitle': '', 'articleId': -1})
         }
+        that.setData({
+            'historyArray':app.globalData.historyArray
+        })
         //获取首页图片地址
         wx.request({
             url: app.globalData.baseUrl + 'get_slide/',
@@ -122,8 +135,11 @@ Page({
                 // console.log(res.data.list[0].fields.pic_address)
                 const imgUrls = []
                 for (let i = 0; i < slides_length; i++) {
-                    slides[i].imgUrl = res.data.list[i].fields.pic_address
+                    that.data.slides[i].imgUrl = res.data.list[i].fields.pic_address
                 }
+                that.setData({
+                    "slides": that.data.slides,
+                })
             },
             fail: function (res) {
             },
@@ -144,11 +160,11 @@ Page({
             method: 'POST',
             success: function (res) {
                 for (let i = 0; i < slides_length; i++) {
-                    slides[i].articleTitle = res.data.list[i].fields.title;
-                    slides[i].articleId = res.data.list[i].pk;
+                    that.data.slides[i].articleTitle = res.data.list[i].fields.title;
+                    that.data.slides[i].articleId = res.data.list[i].pk;
                 }
                 that.setData({
-                    "slides": slides,
+                    "slides": that.data.slides,
                 })
             },
             fail: function (res) {
@@ -309,7 +325,6 @@ Page({
             isLoading: true,
             showHistory: false,//显示历史记录或是主页其它类容
             searchText: '',
-            historyArray: [],
             isSearching: false,
             searchButtonText: '搜索',
             tags: [],
@@ -319,6 +334,7 @@ Page({
             historyArticleList: [],
             historyPageNumber: 1,
             historyNoMoreArticle: true,
+            isFocus: false,
 
         })
         this.onLoad()

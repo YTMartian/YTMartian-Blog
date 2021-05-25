@@ -14,7 +14,7 @@
     </view>
 </view>
 <towxml nodes="{{content}}"></towxml>
-<view style='display:{{isLoading?"block":"none"}}'>
+<view style='display:{{isArticleLoading?"block":"none"}}'>
     <view class="sk-three-bounce">
         <view class="sk-child sk-bounce1"></view>
         <view class="sk-child sk-bounce2"></view>
@@ -24,11 +24,25 @@
 <view class="my-head-top" style="margin-top:-50rpx">评论</view>
 <view class="container" style="background:white;margin-top:50rpx">
     <view class="post-list">
+        <view style='display:{{isCommentLoading?"block":"none"}}'>
+            <view class="sk-three-bounce">
+                <view class="sk-child sk-bounce1"></view>
+                <view class="sk-child sk-bounce2"></view>
+                <view class="sk-child sk-bounce3"></view>
+            </view>
+        </view>
         <block wx:for="{{commentsList}}" wx:key="pk">
             <view class="post-item">
                 <view class="post-desc">
                     <view class="post-title" style="height:40rpx">
                         <text style="font-size:25rpx;color:#737373">{{item.user_name}}</text>
+                        <image src="/images/delete.svg"
+                               data-type="comment"
+                               data-commentId="{{item.pk}}"
+                               mode="widthFix"
+                               style='display:{{item.canDelete ? " block" : "none"}}'
+                               bindtap="deleteComment">
+                        </image>
                     </view>
                     <view>
                         <text style="font-size:30rpx;color:#333">{{item.content}}</text>
@@ -36,7 +50,11 @@
                     <view class="post-data" style="margin-top:20rpx">
                         <image src="/images/calendar.svg"></image>
                         <text>{{item.submit_date}}</text>
-                        <image src="/images/thumbs_up.svg"></image>
+                        <image src="{{item.likeImg}}"
+                               data-type="comment"
+                               data-commentId="{{item.pk}}"
+                               bindtap="likeSubmit">
+                        </image>
                         <text class="">{{item.thumbs_up}}</text>
                     </view>
                 </view>
@@ -51,23 +69,28 @@
 
 <view style="display:block">
     <view class="comment-fixed">
-        <form catchsubmit="formSubmit" report-submit="true">
+        <form catchsubmit="submitComment">
             <view class="comment-respond">
-                <input class="comment-input" maxlength="200" name="inputPostID" value="评论"
-                       style="display:none"/>
                 <view class="comment-box">
-                    <!--                    <image src="../../images/like.svg" class=""-->
-                    <!--                           catchtap="handleLike"></image>-->
-<!--                    <button type="primary" bindtap="pressLike" class="article-like">点赞</button>-->
-                    <view class="article_like" bindtap="likeArticle">
+                    <view class="article_like" data-type="article" bindtap="likeSubmit">
                         <image src="{{articleLikeImg}}"></image>
                     </view>
                     <!-- 评论输入框和发送按钮 -->
                     <view class="comment_input_box">
-                        <input class="comment-input" type='text' confirm-type="send" cursor-spacing="10" maxlength="200"
-                               name="inputComment" placeholder="评论..." focus="{{focus}}"
-                               bindblur="onReplyBlur" bindfocus="onRepleyFocus"/>
-                        <button class="comment-button touch-active" formType="submit">发送</button>
+                        <input class="comment-input"
+                               type='text'
+                               confirm-type="send"
+                               cursor-spacing="10"
+                               maxlength="200"
+                               name="inputComment"
+                               placeholder="评论..."
+                               focus="{{isFocus}}"
+                               bindblur="commentBlur"
+                               bindfocus="commentFocus"
+                               value="{{commentText}}"
+                               style="font-size:30rpx;color:#4f4f4f;"
+                        />
+                        <button style="color:#8f8f8f;font-size:26rpx;" size="mini" formType="submit">发送</button>
                     </view>
                 </view>
             </view>

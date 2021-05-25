@@ -285,6 +285,10 @@ def get_article(request):
                 pass
         elif data['condition'] == 'one_article':  # 单独一篇文章
             res_data = models.Article.objects.filter(pk=data['article_id'])
+            if not data['is_reading']:
+                article_ = models.Article.objects.get(pk=data['article_id'])
+                article_.readings = article_.readings + 1
+                article_.save()
         elif data['condition'] == 'page':
             try:
                 per_page = PER_PAGE
@@ -383,7 +387,62 @@ def submit_like(request):
                 msg = 'success'
             article_.save()
         elif data['condition'] == 'comment':  # 点赞评论
-            res_data = comments.models.Comment.objects.filter(parent__id=data['comment_id'])
+            comment = comments.models.Comment.objects.get(id=data['comment_id'])
+            if data['state'] == 'add':
+                comment.thumbs_up = comment.thumbs_up + 1
+                msg = 'success'
+            elif data['state'] == 'minus':
+                comment.thumbs_up = comment.thumbs_up - 1
+                msg = 'success'
+            comment.save()
+        res['msg'] = msg
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    return JsonResponse(res)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def submit_comment(request):
+    res = {}
+    try:
+        msg = 'failed'
+        data = json.loads(request.body.decode('utf-8'))
+        res_data = {}
+        if data['condition'] == 'article':  # 回复文章
+            if data['state'] == 'add':  # 添加评论
+                article_ = models.Article.objects.get(id=data['article_id'])
+                article_.comments = article_.comments + 1
+                article_.save()
+                comment = comments.models.Comment(content=data['content'], post=article_)
+                comment.user_name = data['user_name']
+                comment.save()
+                msg = 'success'
+                res_data = comments.models.Comment.objects.filter(id=comment.id)
+            elif data['state'] == 'delete':  # 删除评论
+                comment = comments.models.Comment.objects.get(id=data['comment_id'])
+                print(comment.__dict__)
+                print(comment.post_id)
+                article_ = models.Article.objects.get(id=comment.post_id)
+                print('fuck1')
+                article_.comments = article_.comments - 1
+                article_.save()
+                print('fuck2')
+                comments.models.Comment.objects.filter(id=data['comment_id']).delete()
+                print('fuck3')
+                msg = 'success'
+        elif data['condition'] == 'comment':  # 回复评论
+            if data['state'] == 'add':  # 添加评论
+                parent = comments.models.Comment.objects.get(id=data['comment_id'])
+                comment = comments.models.Comment(content=data['content'], parent=parent)
+                comment.save()
+                msg = 'success'
+            elif data['state'] == 'delete':  # 删除评论
+                comments.models.Comment.objects.get(id=data['comment_id']).delete()
+                msg = 'success'
+        res['list'] = json.loads(serializers.serialize('json', res_data))
         res['msg'] = msg
         res['code'] = 0
     except Exception as e:

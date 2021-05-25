@@ -12,7 +12,12 @@
 <view class="top">
     <view class="topsearch">
         <view class="frame">
-            <input value="{{searchText}}" bindinput="searchInput" bindfocus="searchFocus" placeholder=""
+            <input value="{{searchText}}"
+                   bindinput="searchInput"
+                   bindfocus="searchFocus"
+                   bindblur="searchBlur"
+                   focus="{{isFocus}}"
+                   placeholder=""
                    maxlength="20"></input>
         </view>
         <text bindtap="search">搜索</text>
