@@ -19,7 +19,7 @@ App({
 
         //配置全局变量
         this.globalData = {
-            baseUrl: "https://www.dongjiayi.com/blog/",
+            baseUrl: "https://www.dongjiayi.com/blog/",//http://127.0.0.1:8000
             perPage: 8,//一页多少文章
             likeArticleList: [],//记录已经点赞的文章id，点过赞的不能继续点了(所有的点赞记录都是本地记录，数据库没有记录)
             likeCommentList: [],//记录已经点赞的评论id

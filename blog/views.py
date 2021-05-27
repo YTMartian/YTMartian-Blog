@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.core import serializers
 from django.conf import settings
 from . import models
+import urllib.request
+import urllib.parse
 # 引入settings.py
 import random
 import math
@@ -308,7 +310,10 @@ def get_article(request):
             try:
                 per_page = PER_PAGE
                 page_number = data['page_number']
-                res_data = models.Article.objects.filter(content__contains=data['search_text'])
+                # 或查询
+                res_data = models.Article.objects.filter(content__contains=data['search_text']) \
+                           | models.Article.objects.filter(title__contains=data['search_text'])
+                print(type(res_data))
                 if 0 < page_number <= math.ceil(len(res_data) / per_page):
                     start = per_page * (page_number - 1)
                     end = per_page * page_number
@@ -413,6 +418,11 @@ def submit_comment(request):
         res_data = {}
         if data['condition'] == 'article':  # 回复文章
             if data['state'] == 'add':  # 添加评论
+                content_code = check_content(data['content'])
+                if content_code == 1:
+                    return JsonResponse({'msg': 'invalid', 'code': 1})
+                elif content_code == 2:
+                    return JsonResponse({'msg': 'error', 'code': 1})
                 article_ = models.Article.objects.get(id=data['article_id'])
                 article_.comments = article_.comments + 1
                 article_.save()
@@ -423,18 +433,18 @@ def submit_comment(request):
                 res_data = comments.models.Comment.objects.filter(id=comment.id)
             elif data['state'] == 'delete':  # 删除评论
                 comment = comments.models.Comment.objects.get(id=data['comment_id'])
-                print(comment.__dict__)
-                print(comment.post_id)
                 article_ = models.Article.objects.get(id=comment.post_id)
-                print('fuck1')
                 article_.comments = article_.comments - 1
                 article_.save()
-                print('fuck2')
                 comments.models.Comment.objects.filter(id=data['comment_id']).delete()
-                print('fuck3')
                 msg = 'success'
         elif data['condition'] == 'comment':  # 回复评论
             if data['state'] == 'add':  # 添加评论
+                content_code = check_content(data['content'])
+                if content_code == 1:
+                    return JsonResponse({'msg': 'invalid', 'code': 1})
+                elif content_code == 2:
+                    return JsonResponse({'msg': 'error', 'code': 1})
                 parent = comments.models.Comment.objects.get(id=data['comment_id'])
                 comment = comments.models.Comment(content=data['content'], parent=parent)
                 comment.save()
@@ -449,3 +459,42 @@ def submit_comment(request):
         res['msg'] = str(e)
         res['code'] = 1
     return JsonResponse(res)
+
+
+'''
+检测输入评论是否违规
+@:param content 评论内容
+@:return 0 评论正常
+@:return 1 评论违规
+@:return 2 接口调用错误
+'''
+
+
+def check_content(content: str) -> int:
+    appid = 'wxfb84b31783cc9cbb'
+    secret = '7fc3f549dfc65b9cc450999029abba07'
+    # 获取Access token
+    access_token_url = f'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appid}&secret={secret}'
+    access_token_request = urllib.request.urlopen(access_token_url).read()
+    access_token_request = eval(access_token_request)
+    if 'access_token' not in access_token_request:
+        return 2
+    access_token = access_token_request['access_token']
+    secure_check_url = f'https://api.weixin.qq.com/wxa/msg_sec_check?access_token={access_token}'
+    # print(secure_check_url)
+    headers = {
+        'content-type': 'application/json'
+    }
+    post_data = {"content": content}
+    # post_data = urllib.parse.urlencode(post_data).encode('utf-8')
+    secure_check_request = urllib.request.Request(url=secure_check_url,
+                                                  data=json.dumps(post_data, ensure_ascii=False).encode(),
+                                                  headers=headers)
+    secure_check_return = urllib.request.urlopen(secure_check_request).read()
+    secure_check_return = eval(secure_check_return)
+    # print(secure_check_return)
+    if secure_check_return['errcode'] == 87014:
+        return 1
+    if secure_check_return['errcode'] != 0:
+        return 2
+    return 0

@@ -352,33 +352,46 @@ Page({
             },
             method: 'POST',
             success: function (res) {
-                // console.log(res)
-                let content = res.data.list[0].fields.content;
-                content = content.replace(/\n/g, '');
-                content = content.replace(/<fuck>/g, '');
-                let newComment = {
-                    'pk': res.data.list[0].pk,
-                    'user_name': res.data.list[0].fields.user_name,
-                    'post': res.data.list[0].fields.post,
-                    'parent': res.data.list[0].fields.parent,
-                    'content': content,
-                    'submit_date': res.data.list[0].fields.submit_date.slice(0, 19).replace('T', ' '),
-                    'thumbs_up': res.data.list[0].fields.thumbs_up,
-                    'likeImg': '/images/thumb_gray.svg',
-                    'canDelete': true
+                if(res.data.msg === 'invalid') {
+                    wx.showToast({
+                        title: '评论违规',
+                        icon: 'none',
+                        duration: 1500,
+                    })
+                } else if (res.data.msg === 'error') {
+                    wx.showToast({
+                        title: '服务器内部错误',
+                        icon: 'none',
+                        duration: 1500,
+                    })
+                } else if (res.data.msg === 'success') {
+                    let content = res.data.list[0].fields.content;
+                    content = content.replace(/\n/g, '');
+                    content = content.replace(/<fuck>/g, '');
+                    let newComment = {
+                        'pk': res.data.list[0].pk,
+                        'user_name': res.data.list[0].fields.user_name,
+                        'post': res.data.list[0].fields.post,
+                        'parent': res.data.list[0].fields.parent,
+                        'content': content,
+                        'submit_date': res.data.list[0].fields.submit_date.slice(0, 19).replace('T', ' '),
+                        'thumbs_up': res.data.list[0].fields.thumbs_up,
+                        'likeImg': '/images/thumb_gray.svg',
+                        'canDelete': true
+                    }
+                    app.globalData.myCommentsList.push(newComment.pk);
+                    that.data.commentsList.push(newComment);
+                    that.setData({
+                        'commentsList': that.data.commentsList,
+                        'comments': that.data.comments + 1,
+                        'commentText': ''
+                    })
+                    wx.showToast({
+                        title: '评论成功',
+                        icon: 'success',
+                        duration: 1500,
+                    })
                 }
-                app.globalData.myCommentsList.push(newComment.pk);
-                that.data.commentsList.push(newComment);
-                that.setData({
-                    'commentsList': that.data.commentsList,
-                    'comments': that.data.comments + 1,
-                    'commentText': ''
-                })
-                wx.showToast({
-                    title: '评论成功',
-                    icon: 'success',
-                    duration: 1500,
-                })
             },
             fail: function (res) {
             },
