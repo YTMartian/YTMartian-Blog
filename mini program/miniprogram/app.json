@@ -2,7 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/articles/articles",
-    "pages/articles/page"
+    "pages/articles/page",
+    "pages/other/other"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -11,6 +12,23 @@
     "navigationBarTitleText": "YTMartian | 董家佚",
     "navigationBarTextStyle": "white",
     "enablePullDownRefresh": true
+  },
+  "tabBar": {
+    "color": "#a9b7b7",
+    "selectedColor": "#11cd6e",
+    "borderStyle": "black" ,
+    "list": [{
+      "selectedIconPath": "images/home_dark.png",
+      "iconPath": "images/home_gray.png",
+      "pagePath": "pages/index/index",
+      "text": "首页"
+    }, {
+      "selectedIconPath": "images/other_dark.png",
+      "iconPath": "images/other_gray.png",
+      "pagePath": "pages/other/other",
+      "text": "其它"
+    }
+    ]
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2",
