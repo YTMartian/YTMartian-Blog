@@ -35,35 +35,35 @@ from django.utils.encoding import python_2_unicode_compatible
 
 ### ACHIEVING FUNCTION
 
-- Index slider.
+* [x] Index slider.
 
-- Wallpaper exhibition(it will refresh while refresh the page).
+* [x] Wallpaper exhibition(it will refresh while refresh the page).
 
-- Stock recorder(because I was fascinated in stock market).
+* [x] Stock recorder(because I was fascinated in stock market).
 
-- Article search.
+* [x] Article search.
 
-- Artice pagination。
+* [x] Artice pagination。
 
-- Thumbs-up to the article.
+* [x] Thumbs-up to the article.
 
-- Comment to the article(emoji support).
+* [x] Comment to the article(emoji support).
 
-- Article information(reading amount, views, thumbs-up and comments amount of reading).
+* [x] Article information(reading amount, views, thumbs-up and comments amount of reading).
 
-- Zoom picture in the article page.
+* [x] Zoom picture in the article page.
 
-- Highlight code(use [highlight.js](https://highlightjs.org/)).
+* [x] Highlight code(use [highlight.js](https://highlightjs.org/)).
 
-- Video customized(use [video.js](https://videojs.com/)).
+* [x] Video customized(use [video.js](https://videojs.com/)).
 
-- WeChat mini program.
+* [x] WeChat mini program.
+
+* [x] Memcached cache
+
+* [ ] User login function.
+
+* [ ] Front end adapt the Mobile services.
 
 <img src="mini program.jpg" width="30%" height="30%">
-
-### UNDER BUILDING
-
-- User login function.
-
-- Front end adapt the Mobile services.
 

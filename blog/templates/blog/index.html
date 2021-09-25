@@ -126,6 +126,7 @@
     </div>
     <div class="cloud-tags-style">
         <ul class="cloud-tags">
+            <li><a target="_blank" href="{% url 'blog:article' 'tags' 'all' 1 %}">全部</a></li>
             {% for tag in tags %}
                 <li><a target="_blank" href="{% url 'blog:article' 'tags' tag.name 1 %}"> {{ tag.name }}</a></li>
             {% endfor %}

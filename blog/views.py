@@ -1,4 +1,5 @@
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404, JsonResponse
 from django.template import RequestContext
@@ -18,10 +19,10 @@ import sys
 sys.path.append("..")
 import comments.models
 
-
+@never_cache
 def index(request):
     if judge_ip(request):
-        return JsonResponse({'董家佚': '😁限制访问😁'})
+        return JsonResponse({'DJY': '😁限制访问😁'})
 
     class Slider:
         pic_address = ''
@@ -51,7 +52,7 @@ def index(request):
 
 def wallpaper(request, wallpaper_id):
     if judge_ip(request):
-        return JsonResponse({'董家佚': '😁限制访问😁'})
+        return JsonResponse({'DJY': '😁限制访问😁'})
     try:
         image = models.Wallpaper.objects.get(pic_index=str(wallpaper_id))  # pk是主键字段
     except:
@@ -61,7 +62,7 @@ def wallpaper(request, wallpaper_id):
 
 def article(request, classification, tags, now_page):
     if judge_ip(request):
-        return JsonResponse({'董家佚': '😁限制访问😁'})
+        return JsonResponse({'DJY': '😁限制访问😁'})
     # 判断是否是从标签处点进来的,'$'说明不是从标签处点进来的
     articles = []
     if str(tags) == '$':
@@ -71,7 +72,7 @@ def article(request, classification, tags, now_page):
         for i in all_articles:
             article_all_tags = i.tags.all()
             for j in article_all_tags:
-                if tags == j.name:
+                if tags == j.name or tags == 'all':
                     articles.append(i)
                     break
     per_page = settings.ARTICLE_PER_PAGE
@@ -115,9 +116,10 @@ def article(request, classification, tags, now_page):
     })
 
 
+@never_cache
 def page(request, now_page, article_id):
     if judge_ip(request):
-        return JsonResponse({'董家佚': '😁限制访问😁'})
+        return JsonResponse({'DJY': '😁限制访问😁'})
     # 若存在cookies，则不增加阅读量
     try:
         now_article = models.Article.objects.get(pk=article_id)
@@ -140,9 +142,10 @@ def page(request, now_page, article_id):
     return response
 
 
+@never_cache
 def search_page(request, word, page_number, article_id):
     if judge_ip(request):
-        return JsonResponse({'董家佚': '😁限制访问😁'})
+        return JsonResponse({'DJY': '😁限制访问😁'})
     try:
         now_article = models.Article.objects.get(pk=article_id)
         if not "article_%s_has_read" % article_id in request.COOKIES:
@@ -171,7 +174,7 @@ def search_page(request, word, page_number, article_id):
 # 先看是否有阅读过文章，再看是否点过赞
 def thumbs_up(request, article_id):
     if judge_ip(request):
-        return JsonResponse({'董家佚': '😁限制访问😁'})
+        return JsonResponse({'DJY': '😁限制访问😁'})
     if "article_%s_has_read" % article_id in request.COOKIES:
         if "article_%s_has_thumbs_up" % article_id in request.COOKIES:
             return render(request, 'blog/jsondata.html', {'j': 'false'})

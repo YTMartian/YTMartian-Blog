@@ -44,11 +44,19 @@ INSTALLED_APPS = [
 COMMENT_ENTRY_MODEL = 'blog.Article'  # 格式是 app_name+model_name
 AUTH_USER_MODEL = 'auth.user'  # 格式是 app_name+model_name
 
-MIDDLEWARE = ['django.middleware.security.SecurityMiddleware', 'django.contrib.sessions.middleware.SessionMiddleware',
-              'django.middleware.common.CommonMiddleware', 'django.middleware.csrf.CsrfViewMiddleware',
-              'django.contrib.auth.middleware.AuthenticationMiddleware',
-              'django.contrib.messages.middleware.MessageMiddleware',
-              'django.middleware.clickjacking.XFrameOptionsMiddleware', ]
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 缓存全站
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
+]
 
 ROOT_URLCONF = 'myblog.urls'
 
@@ -146,3 +154,13 @@ MATHJAX_CONFIG_DATA = {
     },
     "CommonHTML": {"linebreaks": {"automatic": "true"}, "scale": 90}
 }
+
+# 设置缓存
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+# 设置缓存过期时间
+CACHE_MIDDLEWARE_SECONDS=86400
