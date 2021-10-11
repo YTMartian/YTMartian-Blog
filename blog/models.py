@@ -5,6 +5,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 # 引用系统自带的用户模型
 from django.contrib.auth.models import User
 from django.urls import reverse
+from mdeditor import fields as md_models
 
 
 # 一个model为一张数据表
@@ -109,7 +110,8 @@ class Article(models.Model):  # 文章
     title = models.CharField('标题', max_length=100, default='')
     tags = models.ManyToManyField(Tag, blank=True, default='')  # 标签
     classification = models.ForeignKey(Classification, default='', on_delete=models.CASCADE)  # 分类
-    content = models.TextField('内容', blank=True, null=True, default='')
+    # content = models.TextField('内容', blank=True, null=True, default='')
+    content = md_models.MDTextField('内容', blank=True, null=True, default='')
     publish_time = models.DateTimeField('发布日期', auto_now_add=True)
     modify_time = models.DateTimeField('最新修改', auto_now=True, null=True)
     readings = models.PositiveIntegerField('阅读量', default=0)

@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'haystack',
     'blog',
     'mptt',
-    'comments']
+    'comments',
+    'mdeditor'
+]
 
 COMMENT_ENTRY_MODEL = 'blog.Article'  # 格式是 app_name+model_name
 AUTH_USER_MODEL = 'auth.user'  # 格式是 app_name+model_name

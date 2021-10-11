@@ -11,13 +11,25 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
-@register.filter(is_safe=True)
+@register.filter(is_safe = True)
 @stringfilter
 def custom_markdown(value):
     return mark_safe(markdown2.markdown(force_text(value),
-                                        extras=["fenced-code-blocks", "cuddled-lists", "metadata", "tables",
-                                                "spoiler"]))
+                                        extras = ["fenced-code-blocks", "cuddled-lists", "metadata", "tables",
+                                                  "spoiler"]))
 
+
+'''
+markdown会把下划线_转成<em>标签，直接去掉所有的<em>标签
+'''
+
+
+@register.filter(is_safe = True)
+@stringfilter
+def remove_em(value):
+    value = value.replace('<em>', '_')
+    value = value.replace('</em>', '_')
+    return value
 
 """
 去除publish time里的具体时间
