@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -166,3 +167,10 @@ CACHES = {
 }
 # 设置缓存过期时间
 CACHE_MIDDLEWARE_SECONDS=86400
+
+#将允许将cookie包含在跨站点HTTP请求中
+CORS_ALLOW_CREDENTIALS = True
+#添加允许执行跨站点请求的主机，True则是不使用白名单，并且将接受所有来源
+CORS_ORIGIN_ALLOW_ALL = True
+# 允许所有的请求头
+CORS_ALLOW_HEADERS = ('*')

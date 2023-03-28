@@ -65,7 +65,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 * [ ] Front end adapt the Mobile services.
 
-* [ ] 支持拼音音标显示
+* [ ] Rebuild frontend with react.
 
 <img src="mini program.jpg" width="30%" height="30%">
 

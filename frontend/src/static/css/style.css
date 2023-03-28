@@ -1,0 +1,9 @@
+/* 设置一些总的样式 */
+
+/*
+鼠标选中区域设置
+*/
+::selection {
+    color: #fff;
+    background: #17B794;
+}

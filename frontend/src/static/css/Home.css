@@ -1,0 +1,82 @@
+.ant-carousel .slick-prev,
+.ant-carousel .slick-prev:hover,
+.ant-carousel .slick-prev:focus {
+    font-size: 30px;
+    left: 4%;
+    z-index: 2;
+    color: #ffffff;
+}
+
+.ant-carousel .slick-next,
+.ant-carousel .slick-next:hover,
+.ant-carousel .slick-next:focus {
+    font-size: 30px;
+    right: 4%;
+    z-index: 2;
+    color: #ffffff;
+}
+
+#header .header-content {
+    margin: 0 auto;
+    max-width: 1170px;
+    padding: 60px 0;
+    width: 100%;
+    -moz-transition: padding 0.3s;
+    -o-transition: padding 0.3s;
+    -webkit-transition: padding 0.3s;
+    transition: padding 0.3s;
+}
+
+#header .logo {
+    float: left;
+    font-size: 24px;
+    font-weight: 700;
+    color: #eeeeee;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 7px;
+}
+
+.search {
+    padding: 1px 0;
+}
+
+.dd {
+    background: transparent;
+}
+
+.dd form {
+    background: transparent;
+    border-bottom: 4px dotted #be7c5b;
+}
+
+.banner {
+    background: linear-gradient(rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.2)), url('../imgs/banner.svg') repeat fixed;
+    -moz-background-size: 4000px;
+    -o-background-size: 4000px;
+    -webkit-background-size: 4000px;
+    background-size: 4000px;
+    min-height: 750px;
+}
+
+.carousel-item {
+    position: relative;
+    text-align: center;
+    padding-top: 3%;
+    max-height: 500px;
+}
+
+.carousel-item-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+h7 {
+    font-family: Monoton, KaiTi;
+    font-weight: 500;
+    font-size: 3.0em;
+    color: #c0ad91;
+}
