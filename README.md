@@ -67,5 +67,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 * [ ] Rebuild frontend with react.
 
+* [ ] Deploy in docker.
+
 <img src="mini program.jpg" width="30%" height="30%">
 

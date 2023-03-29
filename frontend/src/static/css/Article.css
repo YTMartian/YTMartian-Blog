@@ -1,0 +1,185 @@
+.body {
+    background-image: url('../imgs/background.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    -moz-background-size: cover;
+    min-height: 100vh;
+}
+
+/* ------------------------------------------------------------------------------
+	Header(START)
+-------------------------------------------------------------------------------*/
+#header {
+    position: fixed;
+    width: 100%;
+    z-index: 999;
+}
+
+#header .header-content {
+    margin: 0 auto;
+    max-width: 1170px;
+    padding: 60px 0;
+    width: 100%;
+    -moz-transition: padding 0.3s;
+    -o-transition: padding 0.3s;
+    -webkit-transition: padding 0.3s;
+    transition: padding 0.3s;
+}
+
+#header .logo {
+    float: left;
+    font-size: 24px;
+    font-weight: 700;
+    color: #343434;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 7px;
+}
+
+
+#header.fixed {
+    background-color: #fff;
+    box-shadow: 0px 10px 19px 8px rgba(0, 0, 0, 0.2), 0px 3px 20px 8px rgba(0, 0, 0, 0.19);
+}
+
+#header.fixed a {
+    color: #232323;
+}
+
+#header.fixed .header-content {
+    border-bottom: 0;
+    padding: 50px 0;
+}
+
+#header.fixed .nav-toggle {
+    top: 18px;
+    color: #000;
+}
+
+
+
+.search {
+    padding: 1px 0;
+}
+
+.dd {
+    background: transparent;
+}
+
+.dd form {
+    background: transparent;
+    border-bottom: 4px dotted #be7c5b;
+}
+
+/* ------------------------------------------------------------------------------
+	Header(END)
+-------------------------------------------------------------------------------*/
+
+
+
+/* ------------------------------------------------------------------------------
+	分页(START)
+-------------------------------------------------------------------------------*/
+
+.pagination {
+    text-align: center;
+    padding-top: 100px;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    bottom: 0%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+.pagination ul {
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 1px 6px, rgba(0, 0, 0, 0.3) 0px 1px 6px;
+    border-radius: 20px;
+    padding: 10px 10px 10px 10px;
+}
+
+.pagination li {
+    font-size: 20px;
+}
+
+
+/* ------------------------------------------------------------------------------
+	分页(END)
+-------------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------------------
+	card(START)
+-------------------------------------------------------------------------------*/
+
+
+.card {
+    opacity: .9;
+    width: 40vw;
+    height: auto;
+    padding: 20px;
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 1px 6px, rgba(0, 0, 0, 0.3) 0px 1px 6px;
+    text-align: center;
+    margin: auto;
+}
+
+.card:hover {
+    background-color: rgba(248, 244, 255, 0.23);
+    transition: all 500ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    box-shadow: 13px 10px 19px 0px rgba(0, 0, 0, 0.2), 0px 3px 20px 0px rgba(0, 0, 0, 0.19);
+}
+
+.card:active {
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
+}
+
+.card_header {
+    background-image: url(../imgs/background.svg);
+    background-color: rgba(255, 252, 248, 0.84);
+    font-size: 30px;
+}
+
+.card_header p {
+    font-family: "Microsoft YaHei UI";
+    font-size: 21px;
+    line-height: 1.5;
+    color: #343434;
+    margin-top: -20px;
+}
+
+.card_header h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #2b2b2b;
+    text-transform: none;
+    position: relative;
+    margin-top: -10px;
+}
+
+.card_header h2:before {
+    position: absolute;
+    bottom: 0;
+    content: "";
+    text-align: center;
+    width: 50px;
+    margin-left: -25px;
+    height: 5px;
+    left: 50%;
+    background: #17B794;
+    margin-bottom: -5px;
+}
+
+/* ------------------------------------------------------------------------------
+	card(END)
+-------------------------------------------------------------------------------*/
+
+.highlighted p {
+    color: #c52424;
+}

@@ -259,7 +259,7 @@ def get_tags(request):
     return JsonResponse(res)
 
 
-PER_PAGE = 8
+DEFAULT_PER_PAGE = 10
 
 
 @csrf_exempt
@@ -270,14 +270,26 @@ def get_article(request):
         data = json.loads(request.body.decode('utf-8'))
         res_data = {}
         if data['condition'] == 'all':  # 所有文章
+            per_page = data['per_page'] if 'per_page' in data.keys() else DEFAULT_PER_PAGE
+            page_number = data['page_number']
             res_data = models.Article.objects.all()
+            res['total_count'] = len(res_data)
+            if 0 < page_number <= math.ceil(len(res_data) / per_page):
+                start = per_page * (page_number - 1)
+                end = per_page * page_number
+                if end > len(res_data):
+                    end = len(res_data)
+                res_data = res_data[start:end]
+            else:
+                res_data = {}
         elif data['condition'] == 'slide':  # slide的文章
             res_data = models.Article.objects.filter(classification__id=8)  # index_show
         elif data['condition'] == 'tag':  # 该标签下的文章
             try:
-                per_page = PER_PAGE
+                per_page = data['per_page'] if 'per_page' in data.keys() else DEFAULT_PER_PAGE
                 page_number = data['page_number']
                 res_data = models.Article.objects.filter(tags__id=data['tag_id'])  # 判断是否在ManyToManyField里面
+                res['total_count'] = len(res_data)
                 if 0 < page_number <= math.ceil(len(res_data) / per_page):
                     start = per_page * (page_number - 1)
                     end = per_page * page_number
@@ -296,9 +308,10 @@ def get_article(request):
                 article_.save()
         elif data['condition'] == 'page':
             try:
-                per_page = PER_PAGE
+                per_page = data['per_page'] if 'per_page' in data.keys() else DEFAULT_PER_PAGE
                 page_number = data['page_number']
                 res_data = models.Article.objects.all()
+                res['total_count'] = len(res_data)
                 if 0 < page_number <= math.ceil(len(res_data) / per_page):
                     start = per_page * (page_number - 1)
                     end = per_page * page_number
@@ -309,14 +322,14 @@ def get_article(request):
                     res_data = {}
             except:
                 pass
-        elif data['condition'] == 'history':
+        elif data['condition'] == 'history' or data['condition'] == 'search':
             try:
-                per_page = PER_PAGE
+                per_page = data['per_page'] if 'per_page' in data.keys() else DEFAULT_PER_PAGE
                 page_number = data['page_number']
                 # 或查询
                 res_data = models.Article.objects.filter(content__contains=data['search_text']) \
                            | models.Article.objects.filter(title__contains=data['search_text'])
-                print(type(res_data))
+                res['total_count'] = len(res_data)
                 if 0 < page_number <= math.ceil(len(res_data) / per_page):
                     start = per_page * (page_number - 1)
                     end = per_page * page_number
