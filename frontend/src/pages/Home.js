@@ -130,7 +130,7 @@ const Home = () => {
                             target="_blank"
                             onClick={() => {
                                 navigate(
-                                    '/Article', { state: { condition: 'all', page_number: 1, tag_id: -1, per_page: 10 } }
+                                    '/Article', { state: { condition: 'all', page_number: 1, per_page: 10 } }
                                 )
                             }}
                             style={{ background: color }}
@@ -192,6 +192,7 @@ const Home = () => {
         setInitialization(false);
         init();
         window.addEventListener('scroll', handleScroll, true);
+
     }
 
 
@@ -200,7 +201,9 @@ const Home = () => {
     const onSearch = () => {
         let value = searchValueRef.current.input.value;
         if (value === undefined || value.length === 0) return;
-        alert(value)
+        navigate(
+            '/Article', { state: { condition: 'search', page_number: 1, per_page: 10, search_text: value } }
+        )
     }
 
     return (

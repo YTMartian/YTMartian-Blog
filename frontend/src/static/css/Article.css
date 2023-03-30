@@ -86,7 +86,7 @@
 
 .pagination {
     text-align: center;
-    padding-top: 100px;
+    padding-bottom: 0px;
     display: flex;
     justify-content: center;
     position: fixed;
@@ -107,6 +107,12 @@
     font-size: 20px;
 }
 
+
+/* 设置分页组件里的下拉框 */
+
+.ant-select-dropdown {
+    top: -150px;
+}
 
 /* ------------------------------------------------------------------------------
 	分页(END)
@@ -143,6 +149,11 @@
     background-image: url(../imgs/background.svg);
     background-color: rgba(255, 252, 248, 0.84);
     font-size: 30px;
+    background-size: cover;
+    background-position: center;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    -moz-background-size: cover;
 }
 
 .card_header p {
@@ -157,7 +168,7 @@
     font-size: 36px;
     margin-bottom: 20px;
     font-weight: bold;
-    color: #2b2b2b;
+    color: #343434;
     text-transform: none;
     position: relative;
     margin-top: -10px;
@@ -180,6 +191,6 @@
 	card(END)
 -------------------------------------------------------------------------------*/
 
-.highlighted p {
+.highlighted {
     color: #c52424;
 }

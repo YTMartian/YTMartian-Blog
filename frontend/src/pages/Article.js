@@ -1,8 +1,9 @@
+/* eslint-disable jsx-a11y/heading-has-content */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useRef, useState } from 'react';
-import { useNavigate, useLocation } from "react-router-dom"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import '../static/css/Article.css'
 import '../static/css/style.css'
 import '../static/css/TagCloud.css'
@@ -22,8 +23,7 @@ import {
     CalendarTwoTone,
     EyeTwoTone,
     LikeTwoTone,
-    MessageTwoTone,
-    RocketTwoTone
+    MessageTwoTone
 } from '@ant-design/icons'
 const { Meta } = Card;
 
@@ -33,18 +33,35 @@ message.config({
 
 const Article = () => {
 
+    const navigate = useNavigate();
     const [headerScrollClass, setHeaderScrollClass] = useState('');
     const [initialization, setInitialization] = useState(true);
     const [articles, setArticles] = useState(undefined);
     const [currentPageNumber, setCurrentPageNumber] = useState(1);
+    const [currentPageSize, setCurrentPageSize] = useState(10);
     const [totalPageNumber, setTotalPageNumber] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const searchValueRef = useRef('');
     const location = useLocation();//获取前一页面history传递的参数
+    const wordCount = 200;//每条显示字数
+
+    //将s1中出现的s2高亮显示
+    const addHighlight = (s1, s2) => {
+        let out = [];
+        let index = s1.indexOf(s2);
+        let start = 0;
+        while (index !== -1) {
+            out.push(s1.substring(start, index));
+            out.push(<span className='highlighted'>{s2}</span>)
+            start = index + s2.length;
+            index = s1.indexOf(s2, start);
+        }
+        out.push(s1.substring(start, s1.length));
+        return out;
+    }
 
     //获取articles
-    const getArticles = (condition, page_number, tag_id, per_page) => {
-
+    const getArticles = (condition, page_number, tag_id, per_page, search_text) => {
         request({
             method: 'post',
             url: 'get_article/',
@@ -52,15 +69,31 @@ const Article = () => {
                 "condition": condition,
                 "page_number": page_number,
                 "tag_id": tag_id,
-                "per_page": per_page
+                "per_page": per_page,
+                "search_text": search_text
             },
         }).then((response) => {
             if (response.data.code === 0) {
                 let newData = [];
 
                 for (let i = 0; i < response.data.list.length; i++) {
-                    var content = response.data.list[i]['fields']['content'];
-                    if (content.length > 150) content = content.substring(0, 150) + '...';
+                    let content = response.data.list[i]['fields']['content'];
+                    let title = addHighlight(response.data.list[i]['fields']['title'], search_text);
+                    if (condition === 'search') {
+                        let index = content.indexOf(search_text);
+                        if (index === -1 && content.length > wordCount) {
+                            content = content.substring(0, wordCount) + '...';
+                        } else {
+                            let tempContent = content.substring(index - wordCount / 2, index + wordCount - wordCount / 2);
+                            let newContent = [];
+                            if (index - wordCount / 2 > 0) newContent.push('...');
+                            newContent.push(addHighlight(tempContent, search_text));
+                            if (index + wordCount - wordCount / 2 < content.length) newContent.push('...');
+                            content = newContent;
+                        }
+                    } else if (content.length > wordCount) {
+                        content = content.substring(0, wordCount) + '...';
+                    }
                     newData.push(
                         <div style={{ paddingTop: '50px' }}>
                             <div className='card'>
@@ -76,7 +109,7 @@ const Article = () => {
                                     <Meta
                                         title={
                                             <a onClick={() => { }} target="_blank">
-                                                <h2></h2><h2>{response.data.list[i]['fields']['title']}</h2>
+                                                <h2></h2><h2>{title}</h2>
                                             </a>
                                         }
                                         description={
@@ -100,7 +133,7 @@ const Article = () => {
     }
 
     const init = () => {
-        getArticles(location.state.condition, location.state.page_number, location.state.tag_id, location.state.per_page);
+        getArticles(location.state.condition, location.state.page_number, location.state.tag_id, location.state.per_page, location.state.search_text);
     }
 
 
@@ -126,13 +159,28 @@ const Article = () => {
     const onSearch = () => {
         let value = searchValueRef.current.input.value;
         if (value === undefined || value.length === 0) return;
-        alert(value)
+        location.state.condition = 'search';
+        location.state.search_text = value;
+        setCurrentPageNumber(1);
+        getArticles('search', 1, -1, currentPageSize, value);
+        scrollToTop();
+    }
+
+    //滑到顶部
+    const scrollToTop = () => {
+        const top = document.documentElement.scrollTop || document.body.scrollTop;
+        if (top > 0) {
+            window.requestAnimationFrame(scrollToTop);
+            window.scrollTo(0, top - top / 8);//控制滑动速度
+        }
     }
 
     const changePageNumber = (pageNumber, pageSize) => {
         setCurrentPageNumber(pageNumber);
+        setCurrentPageSize(pageSize);
         setPerPage(pageSize);
-        getArticles(location.state.condition, pageNumber, location.state.tag_id, pageSize);
+        getArticles(location.state.condition, pageNumber, location.state.tag_id, pageSize, location.state.search_text);
+        scrollToTop();
     };
 
 
@@ -173,12 +221,14 @@ const Article = () => {
             <div className='pagination'>
                 <Pagination
                     showQuickJumper
-                    defaultCurrent={currentPageNumber}
+                    current={currentPageNumber}
+                    defaultCurrent={1}
                     total={totalPageNumber}
                     onChange={changePageNumber}
                     showSizeChanger={true}
                     pageSize={perPage}
                     showTotal={(total) => `共${total}条`}
+                    showTitle={false}
                 />
             </div>
             <Tooltip title="回到顶部" placement='left' mouseEnterDelay={0.5}>
