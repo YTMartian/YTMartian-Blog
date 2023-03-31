@@ -1,4 +1,4 @@
-.body {
+/* .body {
     background-image: url('../imgs/background.jpg');
     background-attachment: fixed;
     background-size: cover;
@@ -7,7 +7,7 @@
     -o-background-size: cover;
     -moz-background-size: cover;
     min-height: 100vh;
-}
+} */
 
 .thumb_up_navigation {
     float: right;

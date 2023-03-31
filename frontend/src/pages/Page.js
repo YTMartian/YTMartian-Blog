@@ -7,10 +7,22 @@ import { Helmet } from 'react-helmet';
 import request from '../request'
 import '../static/css/Page.css'
 import '../static/css/button.css'
-import { LikeFilled, HeartTwoTone } from '@ant-design/icons'
+import ReactMarkdown from 'react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import {
     message,
+    Tooltip,
+    FloatButton,
+    Modal,
 } from 'antd';
+import {
+    LikeFilled,
+    HeartTwoTone,
+    SettingFilled,
+    CodeOutlined
+} from '@ant-design/icons'
+
 
 message.config({
     top: 0
@@ -22,6 +34,8 @@ const Page = () => {
     const [initialization, setInitialization] = useState(true);
     const location = useLocation();//获取前一页面history传递的参数
     const queryParams = new URLSearchParams(location.search);
+    const [articleContent, setArticleContent] = useState(undefined);
+    const [isCodeSettingsModalOpen, setIsCodeSettingsModalOpen] = useState(false);
 
 
     //初始化
@@ -50,6 +64,7 @@ const Page = () => {
                 }
 
                 console.log(this_article);
+                setArticleContent(this_article.content);
 
             } else {
                 //404
@@ -76,6 +91,16 @@ const Page = () => {
         message.success(['点赞成功! ', <HeartTwoTone twoToneColor="#eb2f96" />])
     }
 
+    const showCodeSettingsModal = () => {
+        setIsCodeSettingsModalOpen(true);
+    };
+    const handleCodeSettingsOk = () => {
+        setIsCodeSettingsModalOpen(false);
+    };
+    const handleCodeSettingsCancel = () => {
+        setIsCodeSettingsModalOpen(false);
+    };
+
     return (
         <div className='body'>
             <Helmet>
@@ -83,13 +108,61 @@ const Page = () => {
                 <title>YTMartian | 董家佚💕丁梦洁</title>
                 <link rel="icon" href="../static/imgs/label.ico" type="image/x-icon"></link>
             </Helmet>
-            {queryParams.get('article_id')}
+
+            <ReactMarkdown
+                children={articleContent}
+                components={{
+                    code({ node, inline, className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || '')
+                        return !inline && match ? (
+                            <SyntaxHighlighter
+                                children={String(children).replace(/\n$/, '')}
+                                style={dracula}
+                                language={match[1]}
+                                PreTag="div"
+                                {...props}
+                            />
+                        ) : (
+                            <code className={className} {...props}>
+                                {children}
+                            </code>
+                        )
+                    }
+                }}
+            />
 
             <nav className="thumb_up_navigation">
                 <button style={{ position: 'fixed', top: '6%', right: '8%' }} className="button button-glow button-circle button-caution button-jumbo" onClick={thumbsUp}>
                     <LikeFilled />
                 </button>
             </nav>
+
+            <FloatButton.Group
+                trigger="hover"
+                type="primary"
+                style={{
+                    bottom: 100,
+                }}
+                icon={<SettingFilled />}
+            >
+                <FloatButton icon={
+                    <Tooltip title="代码高亮" placement='left' mouseEnterDelay={0.2}>
+                        <CodeOutlined onClick={showCodeSettingsModal} />
+                    </Tooltip>
+                } />
+            </FloatButton.Group>
+
+            <Tooltip title="回到顶部" placement='left' mouseEnterDelay={0.5}>
+                <FloatButton.BackTop duration={800} type='default' style={{ bottom: 50, }} />
+            </Tooltip>
+
+            <Modal
+                title="代码高亮设置"
+                open={isCodeSettingsModalOpen}
+                onOk={handleCodeSettingsOk}
+                onCancel={handleCodeSettingsCancel}>
+                <p>示例</p>
+            </Modal>
         </div>
     );
 }
