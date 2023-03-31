@@ -17,7 +17,7 @@
 }
 
 /* ------------------------------------------------------------------------------
-	Header
+	Header(START)
 -------------------------------------------------------------------------------*/
 #header {
     position: fixed;
@@ -36,7 +36,7 @@
     transition: padding 0.3s;
 }
 
-#header .logo {
+#header .header-content a {
     float: left;
     font-size: 24px;
     font-weight: 700;
@@ -47,7 +47,7 @@
 }
 
 
-#header.fixed {
+#header .fixed {
     background-color: #fff;
     box-shadow: 0px 10px 19px 8px rgba(0, 0, 0, 0.2), 0px 3px 20px 8px rgba(0, 0, 0, 0.19);
 }
@@ -61,12 +61,14 @@
     padding: 50px 0;
 }
 
-#header.fixed .nav-toggle {
-    top: 18px;
-    color: #000;
-}
 
+/* ------------------------------------------------------------------------------
+	Header(END)
+-------------------------------------------------------------------------------*/
 
+/* ------------------------------------------------------------------------------
+	banner(START)
+-------------------------------------------------------------------------------*/
 
 .search {
     padding: 1px 0;
@@ -105,6 +107,10 @@
     transform: translate(-50%, -50%);
 }
 
+.carousel-item-text a {
+    text-decoration: none;
+}
+
 h7 {
     font-family: Monoton, KaiTi;
     font-weight: 500;
@@ -112,6 +118,13 @@ h7 {
     color: #c0ad91;
 }
 
+/* ------------------------------------------------------------------------------
+	banner(end)
+-------------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------------------
+	subtitle(START)
+-------------------------------------------------------------------------------*/
 
 #gtco-products {
     padding: 7em 0;
@@ -210,4 +223,255 @@ h7 {
 .fadeInUp {
     -webkit-animation-name: fadeInUp;
     animation-name: fadeInUp;
+}
+
+/* ------------------------------------------------------------------------------
+	subtitle(START)
+-------------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------------------
+	wallpaper(START)
+-------------------------------------------------------------------------------*/
+
+.no-padding {
+    padding: 0;
+    display: block;
+    box-sizing: border-box;
+}
+
+.container-fluid {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.container-fluid::before {
+    display: table;
+    content: " ";
+}
+
+.row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.row:before {
+    display: table;
+    content: " ";
+}
+
+.row:after {
+    clear: both;
+}
+
+.no-gutter [class*=col-] {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+
+.work {
+    -moz-box-shadow: 0 0 0 1px #fff;
+    -webkit-box-shadow: 0 0 0 1px #fff;
+    box-shadow: 0 0 0 1px #fff;
+    overflow: hidden;
+    position: relative;
+}
+
+.work img {
+    width: 100%;
+    height: 100%;
+}
+
+.work .overlay {
+    background: rgba(218, 101, 55, 0.8);
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    -moz-transition: opacity, 0.3s;
+    -o-transition: opacity, 0.3s;
+    -webkit-transition: opacity, 0.3s;
+    transition: opacity, 0.3s;
+}
+
+.work .overlay-caption {
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 100%;
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.work h5,
+.work p,
+.work img {
+    -moz-transition: all, 0.5s;
+    -o-transition: all, 0.5s;
+    -webkit-transition: all, 0.5s;
+    transition: all, 0.5s;
+}
+
+.work h5,
+.work p {
+    color: #fff;
+    margin: 0;
+    opacity: 0;
+}
+
+.work span {
+    font-size: 45px;
+}
+
+.work h5 {
+    margin-bottom: 5px;
+    -moz-transform: translate3d(0, -200%, 0);
+    -ms-transform: translate3d(0, -200%, 0);
+    -webkit-transform: translate3d(0, -200%, 0);
+    transform: translate3d(0, -200%, 0);
+}
+
+.work p {
+    -moz-transform: translate3d(0, 200%, 0);
+    -ms-transform: translate3d(0, 200%, 0);
+    -webkit-transform: translate3d(0, 200%, 0);
+    transform: translate3d(0, 200%, 0);
+}
+
+.work-box:hover img {
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    transform: scale(1.2);
+}
+
+.work-box:hover .overlay {
+    opacity: 1;
+}
+
+.work-box:hover .overlay h5,
+.work-box:hover .overlay p {
+    opacity: 1;
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+}
+
+.col-lg-3 {
+    margin-top: 10px;
+}
+
+/* ------------------------------------------------------------------------------
+    	wallpaper(END)
+-------------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------------------
+    	footer(START)
+-------------------------------------------------------------------------------*/
+
+.gtco-footer {
+    padding: 7em 0;
+    clear: both;
+    position: relative;
+    display: block;
+}
+
+.gtco-widget {
+    margin-bottom: 30px;
+}
+
+.gtco-widget h3 {
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.gtco-widget p {
+    font-size: 13px;
+    line-height: 22.4px;
+    color: #6c7279;
+    margin: 0 0 10px;
+}
+
+.gtco-widget a {
+    color: #e84545;
+    text-decoration: none;
+    background-color: transparent;
+    transition: 0.5s;
+}
+
+.gtco-footer-links {
+    padding: 0;
+    margin: 0 0 20px 0;
+    float: left;
+    width: 100%;
+}
+
+.gtco-footer-links li {
+    padding: 0;
+    margin: 0 0 15px 0;
+    list-style: none;
+    line-height: 1;
+}
+
+.copyright p {
+    font-size: 13px;
+    line-height: 22.4px;
+    color: #6c7279;
+}
+
+.copyright .block {
+    display: block;
+}
+
+.copyright a {
+    color: #e84545;
+    text-decoration: none;
+    background-color: transparent;
+    transition: 0.5s;
+}
+
+.gtco-widget .gtco-quick-contact {
+    padding: 0;
+    margin: 0;
+}
+
+.gtco-widget .gtco-quick-contact li {
+    padding: 0;
+    margin: 0 0 10px 0;
+    list-style: none;
+}
+
+.gtco-widget .gtco-quick-contact li i {
+    width: 30px;
+    font-size: 18px;
+    position: relative;
+    margin-top: 4px;
+    display: -moz-inline-stack;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+}
+
+/* ------------------------------------------------------------------------------
+    	footer(END)
+-------------------------------------------------------------------------------*/
+
+.gtco-portfolio {
+    padding: 7em 0;
+    background: #303841;
+    min-height: 500px;
+    background-image: url('../imgs/stockBackground.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }

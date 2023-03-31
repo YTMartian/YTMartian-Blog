@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home'
 import Article from './pages/Article'
+import Wallpaper from './pages/Wallpaper'
+import Page from './pages/Page'
 import { Spin } from 'antd';
 
 const loading = (
@@ -18,6 +20,8 @@ class App extends Component {
                     <Routes>
                         <Route path="/" name="Home" element={<Home />} />
                         <Route path="/Article" name="Article" element={<Article />} />
+                        <Route path="/Wallpaper" name="Wallpaper" element={<Wallpaper />} />
+                        <Route path="/Page" name="Page" element={<Page />} />
                     </Routes>
                 </React.Suspense>
             </HashRouter>

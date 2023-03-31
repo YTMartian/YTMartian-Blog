@@ -15,8 +15,6 @@ install requirements
 pip install -r requirements.txt
 ```
 
-The django-haystack compatibility problem with the newest django 3.0.5, so when run this project you need to change some files appears in the log infomation.
-
 should change
 
 ```

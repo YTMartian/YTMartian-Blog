@@ -1,0 +1,28 @@
+.wallpaper-body {
+    text-align: center;
+    background: url("../imgs/background.svg");
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    -moz-background-size: cover;
+    overflow: hidden;
+    margin: auto;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+.herocontent {
+    padding-top: 100px;
+    width: 100%;
+    max-width: 900px;
+}
+
+.heroshot {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 1200px;
+
+}

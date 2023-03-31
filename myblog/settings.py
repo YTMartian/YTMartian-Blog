@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'haystack',
     'blog',
     'mptt',
     'comments',
@@ -131,17 +130,18 @@ DATE_FORMAT = 'Y-m-d'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'blog.whoosh_cn_backend.WhooshEngine',
-        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
-    },
-}
+# HAYSTACK_CONNECTIONS = {
+#     'default': {
+#         'ENGINE': 'blog.whoosh_cn_backend.WhooshEngine',
+#         'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+#     },
+# }
 # 添加文章时自动生成索引
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+# HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 # 设置每页文章数
-HAYSTACK_SEARCH_RESULTS_PER_PAGE = 7
-ARTICLE_PER_PAGE = 7
+# HAYSTACK_SEARCH_RESULTS_PER_PAGE = 7
+
+DEFAULT_PER_PAGE = 7
 
 GRAPPELLI_ADMIN_TITLE = '董家佚 | YTMartian'
 
@@ -159,14 +159,14 @@ MATHJAX_CONFIG_DATA = {
 }
 
 # 设置缓存
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#         'LOCATION': '127.0.0.1:11211',
+#     }
+# }
 # 设置缓存过期时间
-CACHE_MIDDLEWARE_SECONDS=86400
+# CACHE_MIDDLEWARE_SECONDS=86400
 
 #将允许将cookie包含在跨站点HTTP请求中
 CORS_ALLOW_CREDENTIALS = True

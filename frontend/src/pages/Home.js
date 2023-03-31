@@ -2,12 +2,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useRef, useState } from 'react';
-import { useNavigate } from "react-router-dom"
 import '../static/css/Home.css'
 import '../static/css/style.css'
 import '../static/css/TagCloud.css'
+import '../static/css/bootstrap.min.css'
+import '../static/css/button.css'
 import { Helmet } from 'react-helmet';
-import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons'
+import { LeftOutlined, RightOutlined, SearchOutlined, MailFilled } from '@ant-design/icons'
 import request from '../request'
 import {
     Carousel,
@@ -32,9 +33,9 @@ const distanceToBottom = (dom) => {
 
 const Home = () => {
 
-    const navigate = useNavigate();
     const searchValueRef = useRef('');
     const [slides, setSlides] = useState(undefined);
+    const [wallpapers, setWallpapers] = useState(undefined);
     const [tags, setTags] = useState(undefined);
     const [initialization, setInitialization] = useState(true);
     const [headerScrollClass, setHeaderScrollClass] = useState('');
@@ -71,7 +72,7 @@ const Home = () => {
                                 <div className='carousel-item'>
                                     <img src={slidePicAddresses[i]} style={{ margin: 'auto' }} />
                                     <span className='carousel-item-text'>
-                                        <a href={"article/0/" + response.data.list[i]['pk']}><h7>{response.data.list[i]['fields']['title']}</h7></a>
+                                        <a href={`/#/Page?article_id=${response.data.list[i]['pk']}`} target="_blank"><h7>{response.data.list[i]['fields']['title']}</h7></a>
                                     </span>
                                 </div>
                             );
@@ -128,11 +129,7 @@ const Home = () => {
                     <li>
                         <a
                             target="_blank"
-                            onClick={() => {
-                                navigate(
-                                    '/Article', { state: { condition: 'all', page_number: 1, per_page: 10 } }
-                                )
-                            }}
+                            href={`/#/Article?condition=all&page_number=1&per_page=10`}
                             style={{ background: color }}
                         >
                             {'全部'}
@@ -145,11 +142,7 @@ const Home = () => {
                         <li>
                             <a
                                 target="_blank"
-                                onClick={() => {
-                                    navigate(
-                                        '/Article', { state: { condition: 'tag', page_number: 1, tag_id: response.data.list[i]['pk'], per_page: 10 } }
-                                    )
-                                }}
+                                href={`/#/Article?condition=tag&page_number=1&per_page=10&tag_id=${response.data.list[i]['pk']}`}
                                 style={{ background: color }}
                             >
                                 {response.data.list[i]['fields']['name']}
@@ -165,6 +158,39 @@ const Home = () => {
             message.error('获取tags失败(2):' + error, 3);
             console.log('获取tags失败(2):', error);
         });
+
+        //获取wallpapers
+        request({
+            method: 'post',
+            url: 'get_wallpaper/',
+            data: {
+                'condition': 'index'
+            },
+        }).then((response) => {
+            if (response.data.code === 0) {
+                let newData = [];
+                for (let i = 0; i < response.data.list.length; i++) {
+                    newData.push(
+                        <div className="col-lg-3 col-md-6 col-sm-6 work">
+                            <a href={`/#/Wallpaper?wallpaper_id=${response.data.list[i]['pk']}`} target='_blank' className="work-box">
+                                <img src={response.data.list[i]['fields']['preview_address']} />
+                                <div className="overlay">
+                                    <div className="overlay-caption">
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    );
+                }
+                setWallpapers(newData);
+            } else {
+                message.error('获取wallpapers失败(1):' + response.data.msg, 3);
+            }
+        }).catch((error) => {
+            message.error('获取wallpapers失败(2):' + error, 3);
+            console.log('获取wallpapers失败(2):', error);
+        });
+
     }
 
     //监听滚动事件
@@ -181,7 +207,7 @@ const Home = () => {
         for (let i = 0; i < len; i++) {
             let name = 'subtitle' + i;
             let currentElement = document.getElementById(name);
-            if (distanceToBottom(currentElement) >= 100) {
+            if (currentElement !== null && currentElement !== undefined && distanceToBottom(currentElement) >= 100) {
                 currentElement.className = 'text-center gtco-heading animate-fast fadeInUp';
             }
         }
@@ -201,9 +227,10 @@ const Home = () => {
     const onSearch = () => {
         let value = searchValueRef.current.input.value;
         if (value === undefined || value.length === 0) return;
-        navigate(
-            '/Article', { state: { condition: 'search', page_number: 1, per_page: 10, search_text: value } }
-        )
+        // navigate(
+        //     '/Article', { state: { condition: 'search', page_number: 1, per_page: 10, search_text: value } }
+        // )
+        window.open(`/#/Article?condition=search&page_number=1&per_page=10&search_text=${value}`, '_blank')
     }
 
     return (
@@ -274,6 +301,68 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+
+            <div>
+                <div className="container-fluid">
+                    <div className="row no-gutter">
+                        {wallpapers}
+                    </div>
+                </div>
+            </div>
+
+            <div id="gtco-products"></div>
+            <div className="gtco-portfolio">
+                <div className="gtco-container">
+                    <div className="text-center gtco-heading animate-box" style={{ paddingTop: '10%' }} id='subtitle2'>
+                        <a href="" target="_blank" className="button button-primary button-giant">Nothing...</a>
+                    </div>
+                </div>
+            </div>
+
+            <footer className="gtco-footer">
+                <div className="gtco-container">
+                    <div className="row">
+                        <div className="col-md-4">
+                            <div className="gtco-widget">
+                                <h3>关于本站</h3>
+                                <p>这是使用Django、React开发，Nginx部署的个人小网站.</p>
+                            </div>
+                        </div>
+
+                        <div className="col-md-4 col-md-push-1">
+                            <div className="gtco-widget">
+                                <h3>一些网站</h3>
+                                <ul className="gtco-footer-links">
+                                    <li><a target="_blank" href="https://www.reddit.com/">Reddit</a></li>
+                                    <li><a target="_blank" href="https://github.com/">GitHub</a></li>
+                                    <li><a target="_blank" href="https://www.v2ex.com/">V2EX</a></li>
+                                    <li><a target="_blank" href="https://xueqiu.com/">XueQiu</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="col-md-4">
+                            <div className="gtco-widget">
+                                <h3>联系我</h3>
+                                <ul className="gtco-quick-contact">
+                                    <li><MailFilled style={{ color: '#666666' }} /> 1773741250@qq.com</li>
+                                    <li><MailFilled style={{ color: '#666666' }} /> dongtim@outlook.com</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row copyright">
+                        <div class="col-md-12">
+                            <p class="pull-left">
+                                <small class="block">&copy;<a href="https://beian.miit.gov.cn/" target="_blank">蜀ICP备17014384号-2</a></small>
+                                <small class="block">&copy; 2017年9月</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </>
     );
 }

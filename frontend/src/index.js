@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import APP from './APP';
-import reportWebVitals from './reportWebVitals';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { ConfigProvider } from 'antd';//全局中文
 import { Provider } from 'react-redux'
 import store from './store'

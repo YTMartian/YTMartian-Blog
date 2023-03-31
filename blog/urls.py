@@ -20,6 +20,7 @@ urlpatterns = [
     path('get_comment/', views.get_comment),
     path('submit_like/', views.submit_like),
     path('submit_comment/', views.submit_comment),
+    path('get_article_by_id/', views.get_article_by_id),
 ]
 
 handler404 = views.page_not_found

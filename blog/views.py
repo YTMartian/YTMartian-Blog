@@ -10,6 +10,7 @@ from . import models
 import urllib.request
 import urllib.parse
 # 引入settings.py
+import inspect
 import random
 import math
 import json
@@ -18,6 +19,7 @@ import sys
 
 sys.path.append("..")
 import comments.models
+
 
 @never_cache
 def index(request):
@@ -75,7 +77,7 @@ def article(request, classification, tags, now_page):
                 if tags == j.name or tags == 'all':
                     articles.append(i)
                     break
-    per_page = settings.ARTICLE_PER_PAGE
+    per_page = settings.DEFAULT_PER_PAGE
     total_page = len(articles) // per_page  # 每页展示7篇,total_page为总页数
     if len(articles) % per_page != 0:
         total_page += 1
@@ -198,14 +200,18 @@ def page_error(request):
     return render(request, '500.html')
 
 
-def judge_ip(request):
+def judge_ip(request, return_ip=False):
     ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", None))
     ips = models.LimitIp.objects.all()
     t = []
     for i in ips:
         t.append(i.ip_address)
     if str(ip) in t:
+        if return_ip:
+            return True, ip
         return True
+    if return_ip:
+        return False, ip
     return False
 
 
@@ -259,7 +265,33 @@ def get_tags(request):
     return JsonResponse(res)
 
 
-DEFAULT_PER_PAGE = 10
+@csrf_exempt
+@require_http_methods(['POST'])
+def get_article_by_id(request):
+    if judge_ip(request):
+        return JsonResponse({'DJY': '😁该IP限制访问😁'})
+    res = {}
+    article_id = -1
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        if 'article_id' not in data.keys():
+            raise Exception(f'article_id not in parameters (Line: {inspect.currentframe().f_lineno})')
+        article_id = data['article_id']
+        res_data = models.Article.objects.filter(pk=data['article_id'])
+        if len(res_data) == 0:
+            raise Exception('404')
+        if "article_%s_has_read" % article_id not in request.COOKIES:
+            res_data[0].increase_readings()
+        res['list'] = json.loads(serializers.serialize('json', res_data))
+        res['msg'] = 'success'
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    response = JsonResponse(res)
+    # 设置临时cookie，表示打开阅读过了,该cookie有效期直到浏览器关闭
+    response.set_cookie("article_%s_has_read" % article_id, "True")
+    return response
 
 
 @csrf_exempt
@@ -270,8 +302,8 @@ def get_article(request):
         data = json.loads(request.body.decode('utf-8'))
         res_data = {}
         if data['condition'] == 'all':  # 所有文章
-            per_page = data['per_page'] if 'per_page' in data.keys() else DEFAULT_PER_PAGE
-            page_number = data['page_number']
+            per_page = data['per_page'] if 'per_page' in data.keys() else settings.DEFAULT_PER_PAGE
+            page_number = data['page_number'] if 'page_number' in data.keys() else 1
             res_data = models.Article.objects.all()
             res['total_count'] = len(res_data)
             if 0 < page_number <= math.ceil(len(res_data) / per_page):
@@ -286,7 +318,7 @@ def get_article(request):
             res_data = models.Article.objects.filter(classification__id=8)  # index_show
         elif data['condition'] == 'tag':  # 该标签下的文章
             try:
-                per_page = data['per_page'] if 'per_page' in data.keys() else DEFAULT_PER_PAGE
+                per_page = data['per_page'] if 'per_page' in data.keys() else settings.DEFAULT_PER_PAGE
                 page_number = data['page_number']
                 res_data = models.Article.objects.filter(tags__id=data['tag_id'])  # 判断是否在ManyToManyField里面
                 res['total_count'] = len(res_data)
@@ -300,15 +332,15 @@ def get_article(request):
                     res_data = {}
             except:
                 pass
-        elif data['condition'] == 'one_article':  # 单独一篇文章
+        elif data['condition'] == 'one_article':  # 单独一篇文章（微信小程序的逻辑）
             res_data = models.Article.objects.filter(pk=data['article_id'])
-            if not data['is_reading']:
+            if 'is_reading' in data.keys() and not data['is_reading']:
                 article_ = models.Article.objects.get(pk=data['article_id'])
                 article_.readings = article_.readings + 1
                 article_.save()
         elif data['condition'] == 'page':
             try:
-                per_page = data['per_page'] if 'per_page' in data.keys() else DEFAULT_PER_PAGE
+                per_page = data['per_page'] if 'per_page' in data.keys() else settings.DEFAULT_PER_PAGE
                 page_number = data['page_number']
                 res_data = models.Article.objects.all()
                 res['total_count'] = len(res_data)
@@ -324,7 +356,7 @@ def get_article(request):
                 pass
         elif data['condition'] == 'history' or data['condition'] == 'search':
             try:
-                per_page = data['per_page'] if 'per_page' in data.keys() else DEFAULT_PER_PAGE
+                per_page = data['per_page'] if 'per_page' in data.keys() else settings.DEFAULT_PER_PAGE
                 page_number = data['page_number']
                 # 或查询
                 res_data = models.Article.objects.filter(content__contains=data['search_text']) \
@@ -359,7 +391,6 @@ def get_wallpaper(request):
         if data['condition'] == 'index':
             wallpapers = models.Wallpaper.objects.all()
             res_data = random.sample(list(wallpapers), 8)
-            print(res_data)
         elif data['condition'] == 'one':
             res_data = models.Wallpaper.objects.filter(id=data['id'])  # index_show
         res['list'] = json.loads(serializers.serialize('json', res_data))

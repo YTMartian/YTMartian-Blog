@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import '../static/css/Article.css'
 import '../static/css/style.css'
 import '../static/css/TagCloud.css'
@@ -17,6 +17,7 @@ import {
     Card,
     FloatButton,
     Tooltip,
+    Empty,
 } from 'antd';
 import {
     SearchOutlined,
@@ -33,7 +34,6 @@ message.config({
 
 const Article = () => {
 
-    const navigate = useNavigate();
     const [headerScrollClass, setHeaderScrollClass] = useState('');
     const [initialization, setInitialization] = useState(true);
     const [articles, setArticles] = useState(undefined);
@@ -42,8 +42,9 @@ const Article = () => {
     const [totalPageNumber, setTotalPageNumber] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const searchValueRef = useRef('');
-    const location = useLocation();//获取前一页面history传递的参数
     const wordCount = 200;//每条显示字数
+    const location = useLocation();//获取前一页面history传递的参数
+    const queryParams = new URLSearchParams(location.search);
 
     //将s1中出现的s2高亮显示
     const addHighlight = (s1, s2) => {
@@ -67,9 +68,9 @@ const Article = () => {
             url: 'get_article/',
             data: {
                 "condition": condition,
-                "page_number": page_number,
-                "tag_id": tag_id,
-                "per_page": per_page,
+                "page_number": parseInt(page_number),
+                "tag_id": parseInt(tag_id),
+                "per_page": parseInt(per_page),
                 "search_text": search_text
             },
         }).then((response) => {
@@ -108,7 +109,7 @@ const Article = () => {
                                 >
                                     <Meta
                                         title={
-                                            <a onClick={() => { }} target="_blank">
+                                            <a href={`/#/Page?article_id=${response.data.list[i]['pk']}`} target="_blank">
                                                 <h2></h2><h2>{title}</h2>
                                             </a>
                                         }
@@ -120,6 +121,9 @@ const Article = () => {
                             </div>
                         </div>
                     );
+                }
+                if (newData.length === 0) {
+                    newData.push(<Empty />)
                 }
                 setArticles(newData);
                 setTotalPageNumber(response.data.total_count);
@@ -133,7 +137,7 @@ const Article = () => {
     }
 
     const init = () => {
-        getArticles(location.state.condition, location.state.page_number, location.state.tag_id, location.state.per_page, location.state.search_text);
+        getArticles(queryParams.get('condition'), queryParams.get('page_number'), queryParams.get('tag_id'), queryParams.get('per_page'), queryParams.get('search_text'));
     }
 
 
@@ -149,7 +153,7 @@ const Article = () => {
     }
 
     if (initialization) {
-        setCurrentPageNumber(location.state.page_number);
+        setCurrentPageNumber(queryParams.get('page_number'));
         setInitialization(false);
         init();
         window.addEventListener('scroll', handleScroll, true);
@@ -159,8 +163,8 @@ const Article = () => {
     const onSearch = () => {
         let value = searchValueRef.current.input.value;
         if (value === undefined || value.length === 0) return;
-        location.state.condition = 'search';
-        location.state.search_text = value;
+        queryParams.set('condition', 'search');
+        queryParams.set('search_text', value);
         setCurrentPageNumber(1);
         getArticles('search', 1, -1, currentPageSize, value);
         scrollToTop();
@@ -179,7 +183,7 @@ const Article = () => {
         setCurrentPageNumber(pageNumber);
         setCurrentPageSize(pageSize);
         setPerPage(pageSize);
-        getArticles(location.state.condition, pageNumber, location.state.tag_id, pageSize, location.state.search_text);
+        getArticles(queryParams.get('condition'), pageNumber, queryParams.get('tag_id'), pageSize, queryParams.get('search_text'));
         scrollToTop();
     };
 
@@ -193,7 +197,7 @@ const Article = () => {
             </Helmet>
             <div>
                 <header id='header' className={headerScrollClass}>
-                    <div className='header-content'>
+                    <div className='header-content-article'>
                         <a className='logo' href="">YTMartian</a>
                         <div className='dd' style={{ float: 'left', paddingLeft: '50px' }}>
                             <Form
@@ -225,10 +229,11 @@ const Article = () => {
                     defaultCurrent={1}
                     total={totalPageNumber}
                     onChange={changePageNumber}
-                    showSizeChanger={true}
+                    showSizeChanger={false}
                     pageSize={perPage}
                     showTotal={(total) => `共${total}条`}
                     showTitle={false}
+
                 />
             </div>
             <Tooltip title="回到顶部" placement='left' mouseEnterDelay={0.5}>
