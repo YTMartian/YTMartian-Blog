@@ -189,7 +189,7 @@ const Article = () => {
 
 
     return (
-        <div className='body'>
+        <div className='article_body'>
             <Helmet>
                 <meta charSet="utf-8" />
                 <title>YTMartian | 董家佚💕丁梦洁</title>

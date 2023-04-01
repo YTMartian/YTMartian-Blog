@@ -9,7 +9,10 @@ import '../static/css/Page.css'
 import '../static/css/button.css'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { materialOceanic } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import remarkMath from 'remark-math'
+import rehypeMathjax from 'rehype-mathjax'
+import remarkGfm from 'remark-gfm'
 import {
     message,
     Tooltip,
@@ -102,14 +105,14 @@ const Page = () => {
     };
 
     return (
-        <div className='body'>
+        <div className='page_body'>
             <Helmet>
                 <meta charSet="utf-8" />
                 <title>YTMartian | 董家佚💕丁梦洁</title>
                 <link rel="icon" href="../static/imgs/label.ico" type="image/x-icon"></link>
             </Helmet>
 
-            <ReactMarkdown
+            <ReactMarkdown className='table_hljs'
                 children={articleContent}
                 components={{
                     code({ node, inline, className, children, ...props }) {
@@ -117,9 +120,10 @@ const Page = () => {
                         return !inline && match ? (
                             <SyntaxHighlighter
                                 children={String(children).replace(/\n$/, '')}
-                                style={dracula}
+                                style={materialOceanic}
                                 language={match[1]}
                                 PreTag="div"
+                                showLineNumbers={true}
                                 {...props}
                             />
                         ) : (
@@ -129,6 +133,8 @@ const Page = () => {
                         )
                     }
                 }}
+                remarkPlugins={[remarkMath, remarkGfm]}
+                rehypePlugins={[rehypeMathjax]}
             />
 
             <nav className="thumb_up_navigation">
@@ -146,7 +152,7 @@ const Page = () => {
                 icon={<SettingFilled />}
             >
                 <FloatButton icon={
-                    <Tooltip title="代码高亮" placement='left' mouseEnterDelay={0.2}>
+                    <Tooltip title="代码区域设置" placement='left' mouseEnterDelay={0.2}>
                         <CodeOutlined onClick={showCodeSettingsModal} />
                     </Tooltip>
                 } />
@@ -157,7 +163,7 @@ const Page = () => {
             </Tooltip>
 
             <Modal
-                title="代码高亮设置"
+                title="代码区域设置"
                 open={isCodeSettingsModalOpen}
                 onOk={handleCodeSettingsOk}
                 onCancel={handleCodeSettingsCancel}>
