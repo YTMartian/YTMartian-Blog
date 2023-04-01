@@ -23,7 +23,11 @@ import {
     LikeFilled,
     HeartTwoTone,
     SettingFilled,
-    CodeOutlined
+    CodeOutlined,
+    CalendarOutlined,
+    CommentOutlined,
+    LikeOutlined,
+    EyeOutlined
 } from '@ant-design/icons'
 
 
@@ -37,7 +41,7 @@ const Page = () => {
     const [initialization, setInitialization] = useState(true);
     const location = useLocation();//获取前一页面history传递的参数
     const queryParams = new URLSearchParams(location.search);
-    const [articleContent, setArticleContent] = useState(undefined);
+    const [thisArticle, setThisArticle] = useState({});
     const [isCodeSettingsModalOpen, setIsCodeSettingsModalOpen] = useState(false);
 
 
@@ -67,7 +71,7 @@ const Page = () => {
                 }
 
                 console.log(this_article);
-                setArticleContent(this_article.content);
+                setThisArticle(this_article);
 
             } else {
                 //404
@@ -112,30 +116,52 @@ const Page = () => {
                 <link rel="icon" href="../static/imgs/label.ico" type="image/x-icon"></link>
             </Helmet>
 
-            <ReactMarkdown className='table_hljs'
-                children={articleContent}
-                components={{
-                    code({ node, inline, className, children, ...props }) {
-                        const match = /language-(\w+)/.exec(className || '')
-                        return !inline && match ? (
-                            <SyntaxHighlighter
-                                children={String(children).replace(/\n$/, '')}
-                                style={materialOceanic}
-                                language={match[1]}
-                                PreTag="div"
-                                showLineNumbers={true}
-                                {...props}
-                            />
-                        ) : (
-                            <code className={className} {...props}>
-                                {children}
-                            </code>
-                        )
-                    }
-                }}
-                remarkPlugins={[remarkMath, remarkGfm]}
-                rehypePlugins={[rehypeMathjax]}
-            />
+            <div style={{ margin: 'auto' }}>
+                <div className="col-md-8 col-md-offset-2 text-center" style={{ marginTop: '10px', marginBottom: '5em' }}>
+                    <div className="page_large_header" style={{ height: '720px' }}>
+                        <h1 className="page_main_title" style={{ fontWeight: 'bold' }}>{thisArticle.title}</h1>
+                        <div className="page_artitle_info">
+                            <span>{[<CalendarOutlined />, thisArticle.publish_time]} </span>
+                            <span>{[<EyeOutlined />, thisArticle.readings]} </span>
+                            <span>{[<LikeOutlined />, thisArticle.thumbs_up]} </span>
+                            <span>{[<CommentOutlined />, thisArticle.comments]} </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 col-md-offset-2 gtco-tabs page_card">
+                <br />
+                <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI' }}>
+                    <ReactMarkdown className='table_hljs'
+                        children={thisArticle.content}
+                        components={{
+                            code({ node, inline, className, children, ...props }) {
+                                const match = /language-(\w+)/.exec(className || '')
+                                return !inline && match ? (
+                                    <SyntaxHighlighter
+                                        children={String(children).replace(/\n$/, '')}
+                                        style={materialOceanic}
+                                        language={match[1]}
+                                        PreTag="div"
+                                        showLineNumbers={true}
+                                        {...props}
+                                    />
+                                ) : (
+                                    <code className={className} {...props}>
+                                        {children}
+                                    </code>
+                                )
+                            }
+                        }}
+                        remarkPlugins={[remarkMath, remarkGfm]}
+                        rehypePlugins={[rehypeMathjax]}
+                    />
+                </div>
+                <br />
+            </div>
+
+
 
             <nav className="thumb_up_navigation">
                 <button style={{ position: 'fixed', top: '6%', right: '8%' }} className="button button-glow button-circle button-caution button-jumbo" onClick={thumbsUp}>
@@ -147,7 +173,7 @@ const Page = () => {
                 trigger="hover"
                 type="primary"
                 style={{
-                    bottom: 100,
+                    bottom: 60,
                 }}
                 icon={<SettingFilled />}
             >
@@ -159,7 +185,7 @@ const Page = () => {
             </FloatButton.Group>
 
             <Tooltip title="回到顶部" placement='left' mouseEnterDelay={0.5}>
-                <FloatButton.BackTop duration={800} type='default' style={{ bottom: 50, }} />
+                <FloatButton.BackTop duration={800} type='default' style={{ bottom: 10, }} />
             </Tooltip>
 
             <Modal
