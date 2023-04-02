@@ -32,6 +32,16 @@ message.config({
     top: 150
 });
 
+//获取元素到浏览器底部距离
+const distanceToBottom = (dom) => {
+    const height = window.innerHeight  //可视区窗口高度
+    const curDomHeight = dom.offsetHeight
+    // const curDomHeight = dom.getBoundingClientRect().height
+    const curDomY = dom.getBoundingClientRect().y
+    const curDomBottom = height - curDomHeight - curDomY
+    return curDomBottom
+}
+
 const Article = () => {
 
     const [headerScrollClass, setHeaderScrollClass] = useState('');
@@ -97,7 +107,7 @@ const Article = () => {
                     }
                     newData.push(
                         <div style={{ paddingTop: '50px' }}>
-                            <div className='card'>
+                            <div className='article_card animate-box' >
                                 <Card
                                     className='card_header'
                                     actions={[
@@ -150,6 +160,18 @@ const Article = () => {
         } else {
             setHeaderScrollClass('');
         }
+        handleCardAnimate();
+    }
+
+    //设置card动画
+    const handleCardAnimate = () => {
+        let articleCards = document.getElementsByClassName('article_card');
+        for (let i = 0; i < articleCards.length; i++) {
+            let currentElement = articleCards[i];
+            if (currentElement !== null && currentElement !== undefined && distanceToBottom(currentElement) >= -100) {
+                currentElement.className = 'card article_card animate-fast fadeInUp';
+            }
+        }
     }
 
     if (initialization) {
@@ -157,6 +179,8 @@ const Article = () => {
         setInitialization(false);
         init();
         window.addEventListener('scroll', handleScroll, true);
+        window.addEventListener('load', handleCardAnimate, true);//加载时先执行一遍，否则需要scroll才能显示头几个card
+        window.addEventListener('onbeforeunload', handleCardAnimate, true);
     }
 
     //点击搜索
