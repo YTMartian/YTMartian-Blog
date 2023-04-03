@@ -105,9 +105,14 @@ const Article = () => {
                     } else if (content.length > wordCount) {
                         content = content.substring(0, wordCount) + '...';
                     }
+
+                    let class_ = 'article_card animate-box';
+                    if (i <= 1) {//默认先出现头两个文章
+                        class_ = 'card article_card animate-fast fadeInUp';
+                    }
                     newData.push(
                         <div style={{ paddingTop: '50px' }}>
-                            <div className='article_card animate-box' >
+                            <div className={class_} >
                                 <Card
                                     className='card_header'
                                     actions={[
@@ -119,7 +124,7 @@ const Article = () => {
                                 >
                                     <Meta
                                         title={
-                                            <a href={`/#/Page?article_id=${response.data.list[i]['pk']}`} target="_blank">
+                                            <a href={`${window.location.origin}${window.location.pathname}#/Page?article_id=${response.data.list[i]['pk']}`} target="_blank">
                                                 <h2></h2><h2>{title}</h2>
                                             </a>
                                         }

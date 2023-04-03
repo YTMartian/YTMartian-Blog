@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useRef, useState, useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom'
 import '../static/css/Home.css'
 import '../static/css/style.css'
 import '../static/css/TagCloud.css'
@@ -33,6 +34,7 @@ const distanceToBottom = (dom) => {
 
 const Home = () => {
 
+    // const navigate = useNavigate();
     const searchValueRef = useRef('');
     const [slides, setSlides] = useState(undefined);
     const [wallpapers, setWallpapers] = useState(undefined);
@@ -71,7 +73,7 @@ const Home = () => {
                                 <div className='carousel-item'>
                                     <img src={slidePicAddresses[i]} style={{ margin: 'auto' }} />
                                     <span className='carousel-item-text'>
-                                        <a href={`/#/Page?article_id=${response.data.list[i]['pk']}`} target="_blank"><h7>{response.data.list[i]['fields']['title']}</h7></a>
+                                        <a href={`${window.location.origin}${window.location.pathname}#/Page?article_id=${response.data.list[i]['pk']}`} target="_blank"><h7>{response.data.list[i]['fields']['title']}</h7></a>
                                     </span>
                                 </div>
                             );
@@ -128,7 +130,7 @@ const Home = () => {
                     <li>
                         <a
                             target="_blank"
-                            href={`/#/Article?condition=all&page_number=1&per_page=10`}
+                            href={`${window.location.origin}${window.location.pathname}#/Article?condition=all&page_number=1&per_page=10`}
                             style={{ background: color }}
                         >
                             {'全部'}
@@ -141,7 +143,7 @@ const Home = () => {
                         <li>
                             <a
                                 target="_blank"
-                                href={`/#/Article?condition=tag&page_number=1&per_page=10&tag_id=${response.data.list[i]['pk']}`}
+                                href={`${window.location.origin}${window.location.pathname}#/Article?condition=tag&page_number=1&per_page=10&tag_id=${response.data.list[i]['pk']}`}
                                 style={{ background: color }}
                             >
                                 {response.data.list[i]['fields']['name']}
@@ -171,7 +173,7 @@ const Home = () => {
                 for (let i = 0; i < response.data.list.length; i++) {
                     newData.push(
                         <div className="col-lg-3 col-md-6 col-sm-6 work">
-                            <a href={`/#/Wallpaper?wallpaper_id=${response.data.list[i]['pk']}`} target='_blank' className="work-box">
+                            <a href={`${window.location.origin}${window.location.pathname}#/Wallpaper?wallpaper_id=${response.data.list[i]['pk']}`} target='_blank' className="work-box">
                                 <img src={response.data.list[i]['fields']['preview_address']} />
                                 <div className="overlay">
                                     <div className="overlay-caption">
@@ -229,9 +231,12 @@ const Home = () => {
         let value = searchValueRef.current.input.value;
         if (value === undefined || value.length === 0) return;
         // navigate(
-        //     '/Article', { state: { condition: 'search', page_number: 1, per_page: 10, search_text: value } }
+        //     `/Article?condition=search&page_number=1&per_page=10&search_text=${value}`
         // )
-        window.open(`/#/Article?condition=search&page_number=1&per_page=10&search_text=${value}`, '_blank')
+        //打包后window.open需要正确打开的地址应该是：
+        //file:///C:/Users/YTMartian/Desktop/myblog-rebuild/frontend/build/index.html#/Article?condition=search&page_number=1&per_page=10&search_text=cv
+        // console.log(window.location)
+        window.open(`${window.location.origin}${window.location.pathname}#/Article?condition=search&page_number=1&per_page=10&search_text=${value}`, '_blank')
     }
 
     return (

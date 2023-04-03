@@ -214,7 +214,7 @@ const Page = () => {
             } else {
                 //404
                 if (response.data.msg === '404') {
-                    window.open('/#/404', '_self')
+                    window.open(`${window.location.origin}${window.location.pathname}#/404`, '_self')
                 } else {
                     message.error('获取article失败(1):' + response.data.msg, 3);
                 }
