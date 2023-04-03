@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import '../static/css/Home.css'
 import '../static/css/style.css'
 import '../static/css/TagCloud.css'
@@ -37,7 +37,6 @@ const Home = () => {
     const [slides, setSlides] = useState(undefined);
     const [wallpapers, setWallpapers] = useState(undefined);
     const [tags, setTags] = useState(undefined);
-    const [initialization, setInitialization] = useState(true);
     const [headerScrollClass, setHeaderScrollClass] = useState('');
 
 
@@ -190,7 +189,6 @@ const Home = () => {
             message.error('获取wallpapers失败(2):' + error, 3);
             console.log('获取wallpapers失败(2):', error);
         });
-
     }
 
     //监听滚动事件
@@ -214,14 +212,17 @@ const Home = () => {
 
     }
 
-    if (initialization) {
-        setInitialization(false);
+    //相当于componentDidMount，componentDidUpdate 和 componentWillUnmount
+    useEffect(() => {
+        // create
         init();
         window.addEventListener('scroll', handleScroll, true);
+        return () => {
+            // destroy
 
-    }
-
-
+        }
+        // deps
+    }, []);
 
     //点击搜索
     const onSearch = () => {

@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from "react-router-dom"
 import { Helmet } from 'react-helmet';
 import request from '../request'
@@ -62,6 +63,11 @@ import {
     Spin,
     Select,
     Image,
+    Space,
+    Button,
+    Input,
+    Popover,
+    Form,
 } from 'antd';
 import {
     LikeFilled,
@@ -71,9 +77,17 @@ import {
     CalendarOutlined,
     CommentOutlined,
     LikeOutlined,
-    EyeOutlined
+    EyeOutlined,
+    QuestionCircleOutlined,
+    SmileTwoTone,
 } from '@ant-design/icons'
+import ReactCanvasNest from 'react-canvas-nest'
+import EmojiMartData from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
+import ReactPlayer from 'react-player'
 
+
+const { TextArea } = Input;
 
 message.config({
     top: 0
@@ -82,7 +96,6 @@ message.config({
 
 const Page = () => {
 
-    const [initialization, setInitialization] = useState(true);
     const location = useLocation();//获取前一页面history传递的参数
     const queryParams = new URLSearchParams(location.search);
     const [thisArticle, setThisArticle] = useState({});
@@ -91,6 +104,7 @@ const Page = () => {
     const [isCodeSettingsModalOpen, setIsCodeSettingsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [currentCodeTheme, setCurrentCodeTheme] = useState('materialOceanic')
+    const [form1] = Form.useForm();//对表单数据域进行交互
 
     const codeThemes = {
         'a11yDark': a11yDark,
@@ -133,11 +147,8 @@ const Page = () => {
         'xonokai': xonokai,
     }
 
-
-    //初始化
-    const init = () => {
-
-        //获取article
+    //获取article
+    const getArticles = () => {
         request({
             method: 'post',
             url: 'get_article_by_id/',
@@ -166,7 +177,7 @@ const Page = () => {
             } else {
                 //404
                 if (response.data.msg === '404') {
-                    console.log(404)
+                    window.open('/#/404', '_self')
                 } else {
                     message.error('获取article失败(1):' + response.data.msg, 3);
                 }
@@ -178,15 +189,44 @@ const Page = () => {
         });
     }
 
-    if (initialization) {
-        setInitialization(false);
-        init();
+    //获取comments
+    const getComments = () => {
+        request({
+            method: 'post',
+            url: 'get_comment/',
+            data: {
+                'condition': 'article',
+                'article_id': queryParams.get('article_id'),
+            },
+        }).then((response) => {
+            if (response.data.code === 0) {
+                console.log(response.data);
+            } else {
+                message.error('获取comment失败(1):' + response.data.msg, 3);
+
+            }
+        }).catch((error) => {
+            message.error('获取comment失败(2):' + error, 3);
+            console.log('获取comment失败(2):', error);
+        });
+    }
+
+    //相当于componentDidMount，componentDidUpdate 和 componentWillUnmount
+    useEffect(() => {
+        // create
+        getArticles();
+        getComments();
         document.body.classList.add(styles.page_body);
         let theme = Cookies.get('currentCodeTheme');
         if (theme !== undefined && codeThemes[theme] !== undefined) {
             setCurrentCodeTheme(theme);
         }
-    }
+        return () => {
+            // destroy
+
+        }
+        // deps
+    }, []);
 
     const thumbsUp = () => {
         request({
@@ -227,6 +267,33 @@ const Page = () => {
         }
     };
 
+    const selectEmoji = (value) => {
+        let curText = form1.getFieldValue('comment');
+        if (!curText) {
+            curText = '';
+        }
+        let element = document.getElementById('commentTextArea1');
+        let start = element.selectionStart;
+        let end = element.selectionEnd;
+        form1.setFieldsValue({
+            comment: curText.slice(0, start) + value.native + curText.slice(end)
+        });
+        //如果插入之后立即设置光标位置，就会失败，因为这时还未渲染完成
+        setTimeout(() => {
+            element.focus();
+            element.selectionStart = start + value.native.length;
+            element.selectionEnd = start + value.native.length;
+        }, 1);
+    }
+
+    const onCommentArticle = () => {
+        let value = form1.getFieldValue('comment');
+        console.log(value);
+        if (!value || value.length === 0) {
+            message.info('评论为空！')
+        }
+    }
+
     return (
         <div className={styles.page_body}>
             <Helmet>
@@ -235,11 +302,24 @@ const Page = () => {
                 <link rel="icon" href="../static/imgs/label.ico" type="image/x-icon"></link>
             </Helmet>
 
+            <ReactCanvasNest
+                className='canvasNest'
+                config={{
+                    pointColor: ' 255, 255, 255 ',
+                    lineColor: '255,255,255',
+                    pointOpacity: 0.5,
+                    pointR: 2,
+                    count: 100,
+                    follow: false
+                }}
+                style={{ zIndex: 1, position: 'fixed', top: 0, left: 0 }}
+            />
+
             <div style={{ margin: 'auto' }}>
                 <div className="col-md-8 col-md-offset-2 text-center" style={{ marginTop: '10px', marginBottom: '5em' }}>
                     <div className={styles.page_large_header} style={{ height: '720px' }}>
-                        <h1 className={styles.page_main_title} style={{ fontWeight: 'bold' }}>{thisArticle.title}</h1>
-                        <div className={styles.page_artitle_info}>
+                        <h1 className={styles.page_main_title} style={{ fontWeight: 'bold', zIndex: 3 }}>{thisArticle.title}</h1>
+                        <div className={styles.page_artitle_info} style={{ zIndex: 2 }}>
                             <span>{[<CalendarOutlined />, thisArticle.publish_time]} </span>
                             <span>{[<EyeOutlined />, thisArticle.readings]} </span>
                             <span>{[<LikeOutlined />, thisArticleThumbsUp]} </span>
@@ -248,7 +328,7 @@ const Page = () => {
                     </div>
                 </div>
             </div>
-            <div className={styles.page_card}>
+            <div className={styles.page_card} style={{ zIndex: 2 }}>
                 <br />
                 <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI' }}>
                     <Spin spinning={isLoading} size={'large'} tip={'加载中...'} style={{ marginLeft: '50%' }}></Spin>
@@ -291,11 +371,68 @@ const Page = () => {
                 <br />
             </div>
 
+            <div className={styles.page_card} style={{ zIndex: 2 }}>
+                <br />
+                <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI' }}>
+                    <Form
+                        form={form1}
+                        scrollToFirstError
+                        size='default'
+                    >
+                        <Form.Item name="comment">
+                            <TextArea
+                                showCount
+                                allowClear
+                                size='large'
+                                placeholder="说出你大胆的想法..."
+                                maxLength={256}
+                                autoSize={{ minRows: 1 }}
+                                id='commentTextArea1'
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <Popover
+                                content={
+                                    <Picker
+                                        data={EmojiMartData}
+                                        onEmojiSelect={selectEmoji}
+                                        theme={'light'}
+                                        locale={'zh'}
+                                        style={{ paddingTop: '100px' }}
+                                    />
+                                }
+                                trigger="click"
+                                placement="bottom"
+                            >
+                                <Button
+                                    shape='circle'
+                                    ghost={true}
+                                    size='large'
+                                    icon={<SmileTwoTone twoToneColor="#52c41a" />}
+                                    onClick={() => {
+                                        document.getElementById('commentTextArea1').focus();//防止textarea失焦
+                                    }}
+                                />
+                            </Popover>
 
+                            <Space style={{ float: 'right' }}>
+                                <Button type="primary" onClick={onCommentArticle}>
+                                    评论
+                                </Button>
+                                <Tooltip title="匿名评论|Markdown格式">
+                                    <Button type="link" shape='circle' icon={<QuestionCircleOutlined />} />
+                                </Tooltip>
+                            </Space>
+                        </Form.Item>
+                    </Form>
+                    <br />
+                </div>
+                <br />
+            </div>
 
 
             <nav className={styles.thumb_up_navigation}>
-                <button style={{ position: 'fixed', top: '6%', right: '8%' }} className="button button-glow button-circle button-caution button-jumbo" onClick={thumbsUp}>
+                <button style={{ position: 'fixed', top: '6%', right: '8%', zIndex: 2 }} className="button button-glow button-circle button-caution button-jumbo" onClick={thumbsUp}>
                     <LikeFilled />
                 </button>
             </nav>
@@ -326,6 +463,9 @@ const Page = () => {
                 onCancel={handleCodeSettingsCancel}
                 footer={null}
                 centered={true}
+                style={{
+                    top: -100,
+                }}
             >
                 <span>主题: </span>
                 <Select
@@ -344,7 +484,7 @@ const Page = () => {
                     })()}
                 />
             </Modal>
-        </div>
+        </div >
     );
 }
 

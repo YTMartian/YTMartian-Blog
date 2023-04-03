@@ -1,0 +1,10 @@
+.four_zero_four_body {
+    background-image: url('../imgs/404_page.png');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    -moz-background-size: cover;
+    min-height: 100vh;
+}

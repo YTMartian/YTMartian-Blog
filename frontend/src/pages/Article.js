@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/heading-has-content */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useLocation } from "react-router-dom"
 import '../static/css/Article.css'
 import '../static/css/style.css'
@@ -45,7 +46,6 @@ const distanceToBottom = (dom) => {
 const Article = () => {
 
     const [headerScrollClass, setHeaderScrollClass] = useState('');
-    const [initialization, setInitialization] = useState(true);
     const [articles, setArticles] = useState(undefined);
     const [currentPageNumber, setCurrentPageNumber] = useState(1);
     const [currentPageSize, setCurrentPageSize] = useState(10);
@@ -146,10 +146,6 @@ const Article = () => {
         });
     }
 
-    const init = () => {
-        getArticles(queryParams.get('condition'), queryParams.get('page_number'), queryParams.get('tag_id'), queryParams.get('per_page'), queryParams.get('search_text'));
-    }
-
 
     //监听滚动事件
     const handleScroll = () => {
@@ -174,14 +170,21 @@ const Article = () => {
         }
     }
 
-    if (initialization) {
+    //相当于componentDidMount，componentDidUpdate 和 componentWillUnmount
+    useEffect(() => {
+        // create
         setCurrentPageNumber(queryParams.get('page_number'));
-        setInitialization(false);
-        init();
+        getArticles(queryParams.get('condition'), queryParams.get('page_number'), queryParams.get('tag_id'), queryParams.get('per_page'), queryParams.get('search_text'));
         window.addEventListener('scroll', handleScroll, true);
         window.addEventListener('load', handleCardAnimate, true);//加载时先执行一遍，否则需要scroll才能显示头几个card
         window.addEventListener('onbeforeunload', handleCardAnimate, true);
-    }
+        window.addEventListener('scroll', handleScroll, true);
+        return () => {
+            // destroy
+
+        }
+        // deps
+    }, []);
 
     //点击搜索
     const onSearch = () => {
