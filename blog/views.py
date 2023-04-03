@@ -465,28 +465,33 @@ def submit_comment(request):
         res_data = {}
         if data['condition'] == 'article':  # 回复文章
             if data['state'] == 'add':  # 添加评论
+                if len(data['content']) > settings.COMMENT_MAX_LENGTH:
+                    return JsonResponse({'msg': f'comment length exceeds {settings.COMMENT_MAX_LENGTH}', 'code': 1})
                 content_code = check_content(data['content'])
                 if content_code == 1:
                     return JsonResponse({'msg': 'invalid', 'code': 1})
                 elif content_code == 2:
                     return JsonResponse({'msg': 'error', 'code': 1})
                 article_ = models.Article.objects.get(id=data['article_id'])
-                article_.comments = article_.comments + 1
+                article_.increase_comments()
                 article_.save()
                 comment = comments.models.Comment(content=data['content'], post=article_)
-                comment.user_name = data['user_name']
+                if 'user_name' in data.keys():
+                    comment.user_name = data['user_name']
                 comment.save()
                 msg = 'success'
                 res_data = comments.models.Comment.objects.filter(id=comment.id)
-            elif data['state'] == 'delete':  # 删除评论
-                comment = comments.models.Comment.objects.get(id=data['comment_id'])
-                article_ = models.Article.objects.get(id=comment.post_id)
-                article_.comments = article_.comments - 1
-                article_.save()
-                comments.models.Comment.objects.filter(id=data['comment_id']).delete()
-                msg = 'success'
+            # elif data['state'] == 'delete':  # 删除评论
+            #     comment = comments.models.Comment.objects.get(id=data['comment_id'])
+            #     article_ = models.Article.objects.get(id=comment.post_id)
+            #     article_.comments = article_.comments - 1
+            #     article_.save()
+            #     comments.models.Comment.objects.filter(id=data['comment_id']).delete()
+            #     msg = 'success'
         elif data['condition'] == 'comment':  # 回复评论
             if data['state'] == 'add':  # 添加评论
+                if len(data['content']) > settings.COMMENT_MAX_LENGTH:
+                    return JsonResponse({'msg': f'comment length exceeds {settings.COMMENT_MAX_LENGTH}', 'code': 1})
                 content_code = check_content(data['content'])
                 if content_code == 1:
                     return JsonResponse({'msg': 'invalid', 'code': 1})
@@ -494,11 +499,13 @@ def submit_comment(request):
                     return JsonResponse({'msg': 'error', 'code': 1})
                 parent = comments.models.Comment.objects.get(id=data['comment_id'])
                 comment = comments.models.Comment(content=data['content'], parent=parent)
+                if 'user_name' in data.keys():
+                    comment.user_name = data['user_name']
                 comment.save()
                 msg = 'success'
-            elif data['state'] == 'delete':  # 删除评论
-                comments.models.Comment.objects.get(id=data['comment_id']).delete()
-                msg = 'success'
+            # elif data['state'] == 'delete':  # 删除评论
+            #     comments.models.Comment.objects.get(id=data['comment_id']).delete()
+            #     msg = 'success'
         res['list'] = json.loads(serializers.serialize('json', res_data))
         res['msg'] = msg
         res['code'] = 0

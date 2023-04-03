@@ -277,11 +277,13 @@ ol {
     display: inline-block;
     color: #1b1b1b;
 }
-
+*/
 .page_card blockquote {
     opacity: .9;
     font-style: italic;
-} */
+    background-color: #eeeeee;
+    font-family: 楷体, cursive;
+}
 
 /* .page_card img {
     border: 1px solid #ddd;

@@ -85,6 +85,7 @@ import ReactCanvasNest from 'react-canvas-nest'
 import EmojiMartData from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import ReactPlayer from 'react-player'
+import Draggable from 'react-draggable'
 
 
 const { TextArea } = Input;
@@ -105,6 +106,42 @@ const Page = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [currentCodeTheme, setCurrentCodeTheme] = useState('materialOceanic')
     const [form1] = Form.useForm();//对表单数据域进行交互
+
+    //----------------------------拖动Emoji组件(START)-------------------------------------//
+    const [openEmojiModal, setOpenEmojiModal] = useState(false);
+    const [disabledEmojiModalDrag, setDisabledEmojiModalDrag] = useState(false);
+    const [bounds, setBounds] = useState({
+        left: 0,
+        top: 0,
+        bottom: 0,
+        right: 0,
+    });
+    const draggleRef = useRef(null);
+    const showEmojiModal = () => {
+        setOpenEmojiModal(true);
+    };
+    const handleEmojiModalOk = (e) => {
+        console.log(e);
+        setOpenEmojiModal(false);
+    };
+    const handleEmojiModalCancel = (e) => {
+        console.log(e);
+        setOpenEmojiModal(false);
+    };
+    const onEmojiModalStart = (_event, uiData) => {
+        const { clientWidth, clientHeight } = window.document.documentElement;
+        const targetRect = draggleRef.current?.getBoundingClientRect();
+        if (!targetRect) {
+            return;
+        }
+        setBounds({
+            left: -targetRect.left + uiData.x,
+            right: clientWidth - (targetRect.right - uiData.x),
+            top: -targetRect.top + uiData.y,
+            bottom: clientHeight - (targetRect.bottom - uiData.y),
+        });
+    };
+    //----------------------------拖动Emoji组件(END)-------------------------------------//
 
     const codeThemes = {
         'a11yDark': a11yDark,
@@ -240,7 +277,7 @@ const Page = () => {
         }).then((response) => {
             if (response.data.code === 0 && response.data.msg === 'success') {
                 setThisArticleThumbsUp(thisArticleThumbsUp + 1);
-                message.success(['点赞成功! ', <HeartTwoTone twoToneColor="#eb2f96" />])
+                message.success(['点赞成功! ', <HeartTwoTone twoToneColor="#eb2f96" />], 3)
             } else {
                 message.error('点赞失败(1):' + response.data.msg, 3);
             }
@@ -288,10 +325,37 @@ const Page = () => {
 
     const onCommentArticle = () => {
         let value = form1.getFieldValue('comment');
-        console.log(value);
         if (!value || value.length === 0) {
             message.info('评论为空！')
         }
+        request({
+            method: 'post',
+            url: 'submit_comment/',
+            data: {
+                'condition': 'article',
+                'article_id': queryParams.get('article_id'),
+                'state': 'add',
+                'content': value,
+            },
+        }).then((response) => {
+            if (response.data.code === 0 && response.data.msg === 'success') {
+                message.success('评论成功! ', 3);
+                setThisArticleCommentsCount(thisArticleCommentsCount + 1);
+                form1.setFieldsValue({
+                    comment: ''
+                });
+            } else if (response.data.code === 1 && response.data.msg === 'invalid') {
+                message.error('评论失败(1):疑似含有违禁词', 3);
+            } else if (response.data.code === 1 && response.data.msg === 'error') {
+                message.error('评论失败(2):errcode!=0', 3);
+            } else {
+                message.error('评论失败(3)', 3);
+                console.log('评论失败(3):', response.data);
+            }
+        }).catch((error) => {
+            message.error('评论失败(4):' + error, 3);
+            console.log('评论失败(4):', error);
+        });
     }
 
     return (
@@ -361,6 +425,32 @@ const Page = () => {
                                         fallback={'https://www.dongjiayi.com/static/files/image_fallback.png'}
                                     />
                                 )
+                            },
+                            blockquote: ({ node, ...props }) => {
+                                //原来的渲染有点问题，不能识别换行
+                                let data = [];
+                                console.log(node.children)
+                                for (let child in node.children) {
+                                    let type = node.children[child].type;
+                                    if (type === 'text') {
+                                        data.push(node.children[child].value);
+                                    } else if (type === 'element') {
+                                        for (let i in node.children[child].children) {
+                                            let s1 = node.children[child].children[i].value;
+                                            let s2 = '\n';
+                                            let index = s1.indexOf(s2);
+                                            let start = 0;
+                                            while (index !== -1) {
+                                                data.push(s1.substring(start, index));
+                                                data.push(<br />)
+                                                start = index + s2.length;
+                                                index = s1.indexOf(s2, start);
+                                            }
+                                            data.push(s1.substring(start, s1.length));
+                                        }
+                                    }
+                                }
+                                return <blockquote>{data}</blockquote>
                             }
                         }}
                         remarkPlugins={[remarkMath, remarkGfm]}
@@ -391,30 +481,16 @@ const Page = () => {
                             />
                         </Form.Item>
                         <Form.Item>
-                            <Popover
-                                content={
-                                    <Picker
-                                        data={EmojiMartData}
-                                        onEmojiSelect={selectEmoji}
-                                        theme={'light'}
-                                        locale={'zh'}
-                                        style={{ paddingTop: '100px' }}
-                                    />
-                                }
-                                trigger="click"
-                                placement="bottom"
-                            >
-                                <Button
-                                    shape='circle'
-                                    ghost={true}
-                                    size='large'
-                                    icon={<SmileTwoTone twoToneColor="#52c41a" />}
-                                    onClick={() => {
-                                        document.getElementById('commentTextArea1').focus();//防止textarea失焦
-                                    }}
-                                />
-                            </Popover>
-
+                            <Button
+                                shape='circle'
+                                ghost={true}
+                                size='large'
+                                icon={<SmileTwoTone twoToneColor="#52c41a" />}
+                                onClick={() => {
+                                    document.getElementById('commentTextArea1').focus();//防止textarea失焦
+                                    showEmojiModal();
+                                }}
+                            />
                             <Space style={{ float: 'right' }}>
                                 <Button type="primary" onClick={onCommentArticle}>
                                     评论
@@ -425,10 +501,57 @@ const Page = () => {
                             </Space>
                         </Form.Item>
                     </Form>
-                    <br />
                 </div>
-                <br />
+                <hr />
+                <h2>{thisArticleCommentsCount}条评论</h2>
+
             </div>
+
+            <Modal
+                title={
+                    <div
+                        style={{
+                            cursor: 'move',
+                        }}
+                        onMouseOver={() => {
+                            if (disabledEmojiModalDrag) {
+                                setDisabledEmojiModalDrag(false);
+                            }
+                        }}
+                        onMouseOut={() => {
+                            setDisabledEmojiModalDrag(true);
+                        }}
+                        onFocus={() => { }}
+                        onBlur={() => { }}
+                    >
+                        Emoji
+                    </div>
+                }
+                footer={null}
+                open={openEmojiModal}
+                onOk={handleEmojiModalOk}
+                onCancel={handleEmojiModalCancel}
+                maskClosable={true}
+                mask={true}
+                width={400}
+                keyboard={true}
+                modalRender={(modal) => (
+                    <Draggable
+                        disabled={disabledEmojiModalDrag}
+                        bounds={bounds}
+                        onStart={(event, uiData) => onEmojiModalStart(event, uiData)}
+                    >
+                        <div ref={draggleRef}>{modal}</div>
+                    </Draggable>
+                )}
+            >
+                <Picker
+                    data={EmojiMartData}
+                    onEmojiSelect={selectEmoji}
+                    theme={'light'}
+                    locale={'zh'}
+                />
+            </Modal>
 
 
             <nav className={styles.thumb_up_navigation}>
