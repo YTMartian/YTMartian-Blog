@@ -232,6 +232,68 @@ const Page = () => {
         });
     }
 
+    const getMarkdown = (content) => {
+        return <ReactMarkdown className={styles.table_hljs}
+            children={content}
+            components={{
+                code({ node, inline, className, children, ...props }) {
+                    const match = /language-(\w+)/.exec(className || '')
+                    return !inline && match ? (
+                        <SyntaxHighlighter
+                            children={String(children).replace(/\n$/, '')}
+                            style={codeThemes[currentCodeTheme]}
+                            language={match[1]}
+                            PreTag="div"
+                            showLineNumbers={true}
+                            {...props}
+                        />
+                    ) : (
+                        <code className={className} {...props}>
+                            {children}
+                        </code>
+                    )
+                },
+                img: ({ node, ...props }) => {
+                    return (
+                        <Image
+                            src={node.properties.src}
+                            width={768}
+                            alt={node.properties.alt}
+                            fallback={'https://www.dongjiayi.com/static/files/image_fallback.png'}
+                        />
+                    )
+                },
+                blockquote: ({ node, ...props }) => {
+                    //原来的渲染有点问题，不能识别换行
+                    let data = [];
+                    for (let child in node.children) {
+                        let type = node.children[child].type;
+                        if (type === 'text') {
+                            data.push(node.children[child].value);
+                        } else if (type === 'element') {
+                            for (let i in node.children[child].children) {
+                                let s1 = node.children[child].children[i].value;
+                                let s2 = '\n';
+                                let index = s1.indexOf(s2);
+                                let start = 0;
+                                while (index !== -1) {
+                                    data.push(s1.substring(start, index));
+                                    data.push(<br />)
+                                    start = index + s2.length;
+                                    index = s1.indexOf(s2, start);
+                                }
+                                data.push(s1.substring(start, s1.length));
+                            }
+                        }
+                    }
+                    return <blockquote>{data}</blockquote>
+                }
+            }}
+            remarkPlugins={[remarkMath, remarkGfm]}
+            rehypePlugins={[rehypeMathjax]}
+        />
+    }
+
     //获取comments
     const getComments = () => {
 
@@ -245,14 +307,12 @@ const Page = () => {
                 }
             }
             return <Card
-                style={{
-                    width: '100%',
-                }}
+                className={styles.comment_card}
                 extra={
                     <div className={styles.comment_operator}>
                         <a onClick={() => commentComment(list[index]['pk'])}>{[<MessageOutlined />, '回复']}</a>
-                        <a onClick={() => commentThumbsUp(list[index]['pk'])}>{[<LikeOutlined />, thisArticleThumbsUp]}</a>
-                        <a onClick={() => commentThumbsDown(list[index]['pk'])}>{[<DislikeOutlined />, thisArticleThumbsUp]}</a>
+                        <a onClick={() => commentThumbsUp(list[index]['pk'])}>{[<LikeOutlined />, list[index]['fields']['thumbs_up']]}</a>
+                        <a onClick={() => commentThumbsDown(list[index]['pk'])}>{[<DislikeOutlined />, list[index]['fields']['thumbs_down']]}</a>
                     </div>
                 }
                 title={
@@ -265,7 +325,7 @@ const Page = () => {
                 }
                 type={type}
             >
-                <p className={styles.comment_content}>{list[index]['fields']['content']}</p>
+                <p className={styles.comment_content}>{getMarkdown(list[index]['fields']['content'])}</p>
                 {innerCard}
             </Card>;
         }
@@ -344,7 +404,7 @@ const Page = () => {
         }).then((response) => {
             if (response.data.code === 0 && response.data.msg === 'success') {
                 setThisArticleThumbsUp(thisArticleThumbsUp + 1);
-                message.success(['点赞成功! ', <HeartTwoTone twoToneColor="#eb2f96" />], 3)
+                message.success(['点赞成功! ', <HeartTwoTone twoToneColor="#eb2f96" />], 3);
             } else {
                 message.error('点赞失败(1):' + response.data.msg, 3);
             }
@@ -427,11 +487,47 @@ const Page = () => {
     }
 
     const commentThumbsUp = (commentId) => {
-        message.success('点赞成功！' + commentId)
+        request({
+            method: 'post',
+            url: 'submit_like/',
+            data: {
+                'condition': 'comment',
+                'comment_id': commentId,
+                'state': 'add'
+            },
+        }).then((response) => {
+            if (response.data.code === 0 && response.data.msg === 'success') {
+                getComments();
+                message.success(['点赞成功! ', <HeartTwoTone twoToneColor="#eb2f96" />], 3);
+            } else {
+                message.error('点赞失败(1):' + response.data.msg, 3);
+            }
+        }).catch((error) => {
+            message.error('点赞失败(2):' + error, 3);
+            console.log('点赞失败(2):', error);
+        });
     }
 
     const commentThumbsDown = (commentId) => {
-        message.success('点踩成功！' + commentId)
+        request({
+            method: 'post',
+            url: 'submit_like/',
+            data: {
+                'condition': 'comment',
+                'comment_id': commentId,
+                'state': 'minus'
+            },
+        }).then((response) => {
+            if (response.data.code === 0 && response.data.msg === 'success') {
+                getComments();
+                message.success('点踩成功! ', 3);
+            } else {
+                message.error('点踩失败(1):' + response.data.msg, 3);
+            }
+        }).catch((error) => {
+            message.error('点踩失败(2):' + error, 3);
+            console.log('点踩失败(2):', error);
+        });
     }
 
     const commentComment = (commentId) => {
@@ -477,65 +573,7 @@ const Page = () => {
                 <br />
                 <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI' }}>
                     <Spin spinning={isLoading} size={'large'} tip={'加载中...'} style={{ marginLeft: '50%' }}></Spin>
-                    <ReactMarkdown className={styles.table_hljs}
-                        children={thisArticle.content}
-                        components={{
-                            code({ node, inline, className, children, ...props }) {
-                                const match = /language-(\w+)/.exec(className || '')
-                                return !inline && match ? (
-                                    <SyntaxHighlighter
-                                        children={String(children).replace(/\n$/, '')}
-                                        style={codeThemes[currentCodeTheme]}
-                                        language={match[1]}
-                                        PreTag="div"
-                                        showLineNumbers={true}
-                                        {...props}
-                                    />
-                                ) : (
-                                    <code className={className} {...props}>
-                                        {children}
-                                    </code>
-                                )
-                            },
-                            img: ({ node, ...props }) => {
-                                return (
-                                    <Image
-                                        src={node.properties.src}
-                                        width={768}
-                                        alt={node.properties.alt}
-                                        fallback={'https://www.dongjiayi.com/static/files/image_fallback.png'}
-                                    />
-                                )
-                            },
-                            blockquote: ({ node, ...props }) => {
-                                //原来的渲染有点问题，不能识别换行
-                                let data = [];
-                                for (let child in node.children) {
-                                    let type = node.children[child].type;
-                                    if (type === 'text') {
-                                        data.push(node.children[child].value);
-                                    } else if (type === 'element') {
-                                        for (let i in node.children[child].children) {
-                                            let s1 = node.children[child].children[i].value;
-                                            let s2 = '\n';
-                                            let index = s1.indexOf(s2);
-                                            let start = 0;
-                                            while (index !== -1) {
-                                                data.push(s1.substring(start, index));
-                                                data.push(<br />)
-                                                start = index + s2.length;
-                                                index = s1.indexOf(s2, start);
-                                            }
-                                            data.push(s1.substring(start, s1.length));
-                                        }
-                                    }
-                                }
-                                return <blockquote>{data}</blockquote>
-                            }
-                        }}
-                        remarkPlugins={[remarkMath, remarkGfm]}
-                        rehypePlugins={[rehypeMathjax]}
-                    />
+                    {getMarkdown(thisArticle.content)}
 
                 </div>
                 <br />

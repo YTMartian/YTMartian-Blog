@@ -444,7 +444,7 @@ def submit_like(request):
                 comment.thumbs_up = comment.thumbs_up + 1
                 msg = 'success'
             elif data['state'] == 'minus':
-                comment.thumbs_up = comment.thumbs_up - 1
+                comment.thumbs_down = comment.thumbs_down + 1
                 msg = 'success'
             comment.save()
         res['msg'] = msg
