@@ -66,8 +66,9 @@ import {
     Space,
     Button,
     Input,
-    Popover,
     Form,
+    Card,
+    Avatar
 } from 'antd';
 import {
     LikeFilled,
@@ -77,9 +78,12 @@ import {
     CalendarOutlined,
     CommentOutlined,
     LikeOutlined,
+    DislikeOutlined,
     EyeOutlined,
     QuestionCircleOutlined,
     SmileTwoTone,
+    UserOutlined,
+    MessageOutlined,
 } from '@ant-design/icons'
 import ReactCanvasNest from 'react-canvas-nest'
 import EmojiMartData from '@emoji-mart/data'
@@ -89,6 +93,7 @@ import Draggable from 'react-draggable'
 
 
 const { TextArea } = Input;
+const { Meta } = Card;
 
 message.config({
     top: 0
@@ -102,6 +107,7 @@ const Page = () => {
     const [thisArticle, setThisArticle] = useState({});
     const [thisArticleThumbsUp, setThisArticleThumbsUp] = useState(0);
     const [thisArticleCommentsCount, setThisArticleCommentsCount] = useState(0);
+    const [thisArticleComments, setThisArticleComments] = useState(undefined);
     const [isCodeSettingsModalOpen, setIsCodeSettingsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [currentCodeTheme, setCurrentCodeTheme] = useState('materialOceanic')
@@ -228,6 +234,66 @@ const Page = () => {
 
     //获取comments
     const getComments = () => {
+
+        const dfs = (G, list, vis, index, depth) => {
+            vis[index] = true;
+            let innerCard = [];//当前评论card的子评论card
+            let type = depth <= 1 ? '' : 'inner';
+            for (let i = 0; i < G[index].length; i++) {
+                if (!vis[G[index][i]]) {
+                    innerCard.push(dfs(G, list, vis, G[index][i], depth + 1));
+                }
+            }
+            return <Card
+                style={{
+                    width: '100%',
+                }}
+                extra={
+                    <div className={styles.comment_operator}>
+                        <a onClick={() => commentComment(list[index]['pk'])}>{[<MessageOutlined />, '回复']}</a>
+                        <a onClick={() => commentThumbsUp(list[index]['pk'])}>{[<LikeOutlined />, thisArticleThumbsUp]}</a>
+                        <a onClick={() => commentThumbsDown(list[index]['pk'])}>{[<DislikeOutlined />, thisArticleThumbsUp]}</a>
+                    </div>
+                }
+                title={
+                    <Meta
+                        avatar={<Avatar icon={<UserOutlined />} />}
+                        title="匿名"
+                        description={list[index]['fields']['submit_date'].substring(0, 19).replace('T', ' ')}
+                        style={{ paddingTop: '10px', paddingBottom: '2px', fontSize: '0.8em', background: '#ffffff' }}
+                    />
+                }
+                type={type}
+            >
+                <p className={styles.comment_content}>{list[index]['fields']['content']}</p>
+                {innerCard}
+            </Card>;
+        }
+
+        //将评论转换为层级关系
+        const convertCommentsToLevel = (list) => {
+            let len = list.length;
+            let G = [];//邻接表
+            let idToIndex = {};//按顺序映射评论id
+            for (let i = 0; i < len; i++) {
+                G.push([]);
+                idToIndex[list[i]['pk']] = i;
+            }
+            for (let i = 0; i < len; i++) {
+                if (list[i]['fields']['parent']) {
+                    G[idToIndex[list[i]['fields']['parent']]].push(i);
+                }
+            }
+            const vis = new Array(len).fill(false);
+            let res = [];
+            for (let i = 0; i < len; i++) {
+                if (!vis[i]) {
+                    res.push(dfs(G, list, vis, i, 1));
+                }
+            }
+            return res;
+        }
+
         request({
             method: 'post',
             url: 'get_comment/',
@@ -238,6 +304,7 @@ const Page = () => {
         }).then((response) => {
             if (response.data.code === 0) {
                 console.log(response.data);
+                setThisArticleComments(convertCommentsToLevel(response.data.list));
             } else {
                 message.error('获取comment失败(1):' + response.data.msg, 3);
 
@@ -344,6 +411,7 @@ const Page = () => {
                 form1.setFieldsValue({
                     comment: ''
                 });
+                getComments();
             } else if (response.data.code === 1 && response.data.msg === 'invalid') {
                 message.error('评论失败(1):疑似含有违禁词', 3);
             } else if (response.data.code === 1 && response.data.msg === 'error') {
@@ -357,6 +425,19 @@ const Page = () => {
             console.log('评论失败(4):', error);
         });
     }
+
+    const commentThumbsUp = (commentId) => {
+        message.success('点赞成功！' + commentId)
+    }
+
+    const commentThumbsDown = (commentId) => {
+        message.success('点踩成功！' + commentId)
+    }
+
+    const commentComment = (commentId) => {
+        message.success('评论成功！' + commentId)
+    }
+
 
     return (
         <div className={styles.page_body}>
@@ -429,7 +510,6 @@ const Page = () => {
                             blockquote: ({ node, ...props }) => {
                                 //原来的渲染有点问题，不能识别换行
                                 let data = [];
-                                console.log(node.children)
                                 for (let child in node.children) {
                                     let type = node.children[child].type;
                                     if (type === 'text') {
@@ -504,7 +584,9 @@ const Page = () => {
                 </div>
                 <hr />
                 <h2>{thisArticleCommentsCount}条评论</h2>
-
+                <div>
+                    {thisArticleComments}
+                </div>
             </div>
 
             <Modal

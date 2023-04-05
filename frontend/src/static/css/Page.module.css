@@ -301,3 +301,25 @@ ol {
     transform: translateY(-1px);
     box-shadow: 0 0 20px 4px rgba(0, 0, 0, 0.2);
 } */
+
+.comment_content {
+    padding-left: 10px;
+    border-left: 8px solid #2b2b2b;
+    background: #eee;
+    margin-top: 20px;
+    margin-left: 30px;
+    font-family: Source-CodePro, KaiTi;
+    font-size: 1.3em;
+    word-wrap: break-word;
+}
+
+.comment_operator a {
+    display: inline-block;
+    color: #7f7f7f;
+    padding-left: 7px;
+}
+
+.comment_operator a:hover {
+    color: #17B794;
+    cursor: pointer;
+}
