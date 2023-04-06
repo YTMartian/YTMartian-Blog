@@ -498,7 +498,10 @@ def submit_comment(request):
                 elif content_code == 2:
                     return JsonResponse({'msg': 'error', 'code': 1})
                 parent = comments.models.Comment.objects.get(id=data['comment_id'])
-                comment = comments.models.Comment(content=data['content'], parent=parent)
+                article_ = models.Article.objects.get(id=parent.post.id)
+                article_.increase_comments()
+                article_.save()
+                comment = comments.models.Comment(content=data['content'], parent=parent, post=article_)
                 if 'user_name' in data.keys():
                     comment.user_name = data['user_name']
                 comment.save()

@@ -60,7 +60,6 @@ import {
     Tooltip,
     FloatButton,
     Modal,
-    Spin,
     Select,
     Image,
     Space,
@@ -106,12 +105,15 @@ const Page = () => {
     const queryParams = new URLSearchParams(location.search);
     const [thisArticle, setThisArticle] = useState({});
     const [thisArticleThumbsUp, setThisArticleThumbsUp] = useState(0);
-    const [thisArticleCommentsCount, setThisArticleCommentsCount] = useState(0);
+    const thisArticleCommentsCount = useRef(0);
     const [thisArticleComments, setThisArticleComments] = useState(undefined);
     const [isCodeSettingsModalOpen, setIsCodeSettingsModalOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isContentLoading, setIsContentLoading] = useState('');
+    const [isCommentLoading, setIsCommentLoading] = useState('');
     const [currentCodeTheme, setCurrentCodeTheme] = useState('materialOceanic')
     const [form1] = Form.useForm();//对表单数据域进行交互
+    const [form2] = Form.useForm();//用于回复评论
+    const currentReplyCommentId = useRef(undefined);//记录当前回复的评论id,如果不使用hook，则无法传入selectEmoji，并且useState不是同步更新的
 
     //----------------------------拖动Emoji组件(START)-------------------------------------//
     const [openEmojiModal, setOpenEmojiModal] = useState(false);
@@ -127,11 +129,9 @@ const Page = () => {
         setOpenEmojiModal(true);
     };
     const handleEmojiModalOk = (e) => {
-        console.log(e);
         setOpenEmojiModal(false);
     };
     const handleEmojiModalCancel = (e) => {
-        console.log(e);
         setOpenEmojiModal(false);
     };
     const onEmojiModalStart = (_event, uiData) => {
@@ -213,10 +213,10 @@ const Page = () => {
                     comments: response.data.list[0]['fields']['comments'],
                 }
 
-                setIsLoading(false);
+                setIsContentLoading('none');
                 setThisArticle(this_article);
                 setThisArticleThumbsUp(this_article.thumbs_up);
-                setThisArticleCommentsCount(this_article.comments);
+                thisArticleCommentsCount.current = this_article.comments;
             } else {
                 //404
                 if (response.data.msg === '404') {
@@ -318,7 +318,7 @@ const Page = () => {
                 title={
                     <Meta
                         avatar={<Avatar icon={<UserOutlined />} />}
-                        title="匿名"
+                        title={`匿名(id:${list[index]['pk']})`}
                         description={list[index]['fields']['submit_date'].substring(0, 19).replace('T', ' ')}
                         style={{ paddingTop: '10px', paddingBottom: '2px', fontSize: '0.8em', background: '#ffffff' }}
                     />
@@ -326,6 +326,48 @@ const Page = () => {
                 type={type}
             >
                 <p className={styles.comment_content}>{getMarkdown(list[index]['fields']['content'])}</p>
+                <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI', display: 'none' }} id={`replyArea${list[index]['pk']}`}>
+                    <Form
+                        form={form2}
+                        scrollToFirstError
+                        size='default'
+                    >
+                        <Form.Item name="comment">
+                            <TextArea
+                                showCount
+                                allowClear
+                                size='large'
+                                placeholder="说出你大胆的想法..."
+                                maxLength={256}
+                                autoSize={{ minRows: 1 }}
+                                id={`replyTextArea${list[index]['pk']}`}
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button
+                                shape='circle'
+                                ghost={true}
+                                size='large'
+                                icon={<SmileTwoTone twoToneColor="#52c41a" />}
+                                onClick={() => {
+                                    document.getElementById(`replyTextArea${list[index]['pk']}`).focus();//防止textarea失焦
+                                    showEmojiModal();
+                                }}
+                            />
+                            <Space style={{ float: 'right' }}>
+                                <Button type="primary" onClick={() => onCommentComment(list[index]['pk'])}>
+                                    评论
+                                </Button>
+                                <Button type="primary" onClick={() => onCancelCommentComment(list[index]['pk'])} danger>
+                                    取消
+                                </Button>
+                                <Tooltip title="匿名评论|Markdown格式">
+                                    <Button type="link" shape='circle' icon={<QuestionCircleOutlined />} />
+                                </Tooltip>
+                            </Space>
+                        </Form.Item>
+                    </Form>
+                </div>
                 {innerCard}
             </Card>;
         }
@@ -363,8 +405,8 @@ const Page = () => {
             },
         }).then((response) => {
             if (response.data.code === 0) {
-                console.log(response.data);
                 setThisArticleComments(convertCommentsToLevel(response.data.list));
+                setIsCommentLoading('none');
             } else {
                 message.error('获取comment失败(1):' + response.data.msg, 3);
 
@@ -433,15 +475,26 @@ const Page = () => {
 
     const selectEmoji = (value) => {
         let curText = form1.getFieldValue('comment');
+        let element = document.getElementById('commentTextArea1');
+        if (currentReplyCommentId.current) {//此时是回复的评论而不是文章
+            curText = form2.getFieldValue('comment');
+            element = document.getElementById(`replyTextArea${currentReplyCommentId.current}`);
+        }
         if (!curText) {
             curText = '';
         }
-        let element = document.getElementById('commentTextArea1');
         let start = element.selectionStart;
         let end = element.selectionEnd;
-        form1.setFieldsValue({
-            comment: curText.slice(0, start) + value.native + curText.slice(end)
-        });
+        if (currentReplyCommentId.current) {//此时是回复的评论而不是文章
+            form2.setFieldsValue({
+                comment: curText.slice(0, start) + value.native + curText.slice(end)
+            });
+        } else {
+            form1.setFieldsValue({
+                comment: curText.slice(0, start) + value.native + curText.slice(end)
+            });
+        }
+
         //如果插入之后立即设置光标位置，就会失败，因为这时还未渲染完成
         setTimeout(() => {
             element.focus();
@@ -450,6 +503,7 @@ const Page = () => {
         }, 1);
     }
 
+    //评论文章
     const onCommentArticle = () => {
         let value = form1.getFieldValue('comment');
         if (!value || value.length === 0) {
@@ -467,7 +521,7 @@ const Page = () => {
         }).then((response) => {
             if (response.data.code === 0 && response.data.msg === 'success') {
                 message.success('评论成功! ', 3);
-                setThisArticleCommentsCount(thisArticleCommentsCount + 1);
+                thisArticleCommentsCount.current = thisArticleCommentsCount.current + 1;
                 form1.setFieldsValue({
                     comment: ''
                 });
@@ -483,6 +537,54 @@ const Page = () => {
         }).catch((error) => {
             message.error('评论失败(4):' + error, 3);
             console.log('评论失败(4):', error);
+        });
+    }
+
+    //评论评论
+    const onCommentComment = (commentId) => {
+        let value = form2.getFieldValue('comment');
+        if (!value || value.length === 0) {
+            message.info('评论为空！')
+        }
+        request({
+            method: 'post',
+            url: 'submit_comment/',
+            data: {
+                'condition': 'comment',
+                'comment_id': commentId,
+                'state': 'add',
+                'content': value,
+            },
+        }).then((response) => {
+            if (response.data.code === 0 && response.data.msg === 'success') {
+                message.success('评论成功! ', 3);
+                thisArticleCommentsCount.current = thisArticleCommentsCount.current + 1;
+                form2.setFieldsValue({
+                    comment: ''
+                });
+                getComments();
+                document.getElementById(`replyArea${currentReplyCommentId.current}`).style.display = 'none';
+                currentReplyCommentId.current = undefined;
+            } else if (response.data.code === 1 && response.data.msg === 'invalid') {
+                message.error('评论失败(1):疑似含有违禁词', 3);
+            } else if (response.data.code === 1 && response.data.msg === 'error') {
+                message.error('评论失败(2):errcode!=0', 3);
+            } else {
+                message.error('评论失败(3)', 3);
+                console.log('评论失败(3):', response.data);
+            }
+        }).catch((error) => {
+            message.error('评论失败(4):' + error, 3);
+            console.log('评论失败(4):', error);
+        });
+    }
+
+    //取消评论评论
+    const onCancelCommentComment = (commentId) => {
+        document.getElementById(`replyArea${commentId}`).style.display = 'none';
+        currentReplyCommentId.current = undefined;
+        form2.setFieldsValue({
+            comment: ''
         });
     }
 
@@ -530,8 +632,19 @@ const Page = () => {
         });
     }
 
+
     const commentComment = (commentId) => {
-        message.success('评论成功！' + commentId)
+        if (currentReplyCommentId.current) {
+            document.getElementById(`replyArea${currentReplyCommentId.current}`).style.display = 'none';
+            if (currentReplyCommentId.current !== commentId) {//已在回复一条评论时，又点击了回复另一条评论
+                form2.setFieldsValue({
+                    comment: ''
+                });
+            }
+        }
+        document.getElementById(`replyArea${commentId}`).style.display = '';
+        currentReplyCommentId.current = commentId;
+        document.getElementById(`replyTextArea${commentId}`).focus();
     }
 
 
@@ -564,7 +677,7 @@ const Page = () => {
                             <span>{[<CalendarOutlined />, thisArticle.publish_time]} </span>
                             <span>{[<EyeOutlined />, thisArticle.readings]} </span>
                             <span>{[<LikeOutlined />, thisArticleThumbsUp]} </span>
-                            <span>{[<CommentOutlined />, thisArticleCommentsCount]} </span>
+                            <span>{[<CommentOutlined />, thisArticleCommentsCount.current]} </span>
                         </div>
                     </div>
                 </div>
@@ -572,7 +685,9 @@ const Page = () => {
             <div className={styles.page_card} style={{ zIndex: 2 }}>
                 <br />
                 <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI' }}>
-                    <Spin spinning={isLoading} size={'large'} tip={'加载中...'} style={{ marginLeft: '50%' }}></Spin>
+                    <div className={styles.loading} style={{ display: isContentLoading }}>
+                        <span /><span /><span /><span /><span />
+                    </div>
                     {getMarkdown(thisArticle.content)}
 
                 </div>
@@ -621,8 +736,13 @@ const Page = () => {
                     </Form>
                 </div>
                 <hr />
-                <h2>{thisArticleCommentsCount}条评论</h2>
+                <h2>{thisArticleCommentsCount.current}条评论</h2>
                 <div>
+                    <div className={styles.loading2} style={{ display: isCommentLoading }}>
+                        <div className={styles.loading2_dot1}></div>
+                        <div className={styles.loading2_dot2}></div>
+                        <div className={styles.loading2_dot3}></div>
+                    </div>
                     {thisArticleComments}
                 </div>
             </div>
