@@ -282,6 +282,9 @@ def get_article_by_id(request):
             raise Exception('404')
         if "article_%s_has_read" % article_id not in request.COOKIES:
             res_data[0].increase_readings()
+        # 校准评论数
+        res_data[0].comments = len(comments.models.Comment.objects.filter(post__id=article_id));
+        res_data[0].save()
         res['list'] = json.loads(serializers.serialize('json', res_data))
         res['msg'] = 'success'
         res['code'] = 0
