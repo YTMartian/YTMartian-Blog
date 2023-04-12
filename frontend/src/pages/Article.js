@@ -54,7 +54,7 @@ const Article = () => {
     const searchValueRef = useRef('');
     const wordCount = 200;//每条显示字数
     const location = useLocation();//获取前一页面history传递的参数
-    const queryParams = new URLSearchParams(location.search);
+    const queryParams = useRef(new URLSearchParams(location.search));
 
     //将s1中出现的s2高亮显示
     const addHighlight = (s1, s2) => {
@@ -178,8 +178,8 @@ const Article = () => {
     //相当于componentDidMount，componentDidUpdate 和 componentWillUnmount
     useEffect(() => {
         // create
-        setCurrentPageNumber(queryParams.get('page_number'));
-        getArticles(queryParams.get('condition'), queryParams.get('page_number'), queryParams.get('tag_id'), queryParams.get('per_page'), queryParams.get('search_text'));
+        setCurrentPageNumber(queryParams.current.get('page_number'));
+        getArticles(queryParams.current.get('condition'), queryParams.current.get('page_number'), queryParams.current.get('tag_id'), queryParams.current.get('per_page'), queryParams.current.get('search_text'));
         window.addEventListener('scroll', handleScroll, true);
         window.addEventListener('load', handleCardAnimate, true);//加载时先执行一遍，否则需要scroll才能显示头几个card
         window.addEventListener('onbeforeunload', handleCardAnimate, true);
@@ -195,8 +195,9 @@ const Article = () => {
     const onSearch = () => {
         let value = searchValueRef.current.input.value;
         if (value === undefined || value.length === 0) return;
-        queryParams.set('condition', 'search');
-        queryParams.set('search_text', value);
+        queryParams.current.set('condition', 'search');
+        queryParams.current.set('search_text', value);
+        console.log(queryParams.current.get('search_text'),value)
         setCurrentPageNumber(1);
         getArticles('search', 1, -1, currentPageSize, value);
         scrollToTop();
@@ -215,7 +216,8 @@ const Article = () => {
         setCurrentPageNumber(pageNumber);
         setCurrentPageSize(pageSize);
         setPerPage(pageSize);
-        getArticles(queryParams.get('condition'), pageNumber, queryParams.get('tag_id'), pageSize, queryParams.get('search_text'));
+        console.log(queryParams.current.get('search_text'))
+        getArticles(queryParams.current.get('condition'), pageNumber, queryParams.current.get('tag_id'), pageSize, queryParams.current.get('search_text'));
         scrollToTop();
     };
 

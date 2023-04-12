@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 's5(mk(i+-2x#+18wu8^$n7(j2r2zcyt#)&(hxzt+(a*xu+yznf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*'] if DEBUG else ['www.dongjiayi.com', 'dongjiayi.com', '59.110.154.234']
+ALLOWED_HOSTS = ['*'] # if DEBUG else ['www.dongjiayi.com', 'dongjiayi.com', '59.110.154.234']
 
 # Application definition
 
@@ -55,9 +55,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 缓存全站
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'myblog.urls'
@@ -88,8 +88,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'django_db',
         'HOST': '',
-        'USER': 'django',
-        'PASSWORD': '***',
+        'USER': 'root',
+        'PASSWORD': 'root',
         'PORT': '',
         'OPTIONS': {'charset': 'utf8mb4'},
     }
@@ -141,22 +141,22 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 # 设置每页文章数
 # HAYSTACK_SEARCH_RESULTS_PER_PAGE = 7
 
-DEFAULT_PER_PAGE = 7
+DEFAULT_PER_PAGE = 10
 
-GRAPPELLI_ADMIN_TITLE = '董家佚 | YTMartian'
+# GRAPPELLI_ADMIN_TITLE = '董家佚 | YTMartian'
 
-MATHJAX_ENABLED = True
+# MATHJAX_ENABLED = True
 
-MATHJAX_CONFIG_DATA = {
-    "tex2jax": {
-        "inlineMath":
-            [
-                ['$', '$'],
-                ['\\(', '\\)']
-            ]
-    },
-    "CommonHTML": {"linebreaks": {"automatic": "true"}, "scale": 90}
-}
+# MATHJAX_CONFIG_DATA = {
+#     "tex2jax": {
+#         "inlineMath":
+#             [
+#                 ['$', '$'],
+#                 ['\\(', '\\)']
+#             ]
+#     },
+#     "CommonHTML": {"linebreaks": {"automatic": "true"}, "scale": 90}
+# }
 
 # 设置缓存
 # CACHES = {
