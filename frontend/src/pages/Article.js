@@ -56,16 +56,23 @@ const Article = () => {
     const location = useLocation();//获取前一页面history传递的参数
     const queryParams = useRef(new URLSearchParams(location.search));
 
-    //将s1中出现的s2高亮显示
+    //将s1中出现的s2高亮显示，不区分大小写
     const addHighlight = (s1, s2) => {
+        let s1_lower = String(s1).slice().toLowerCase(); // deep copy
+        let s2_lower = String(s2).slice().toLowerCase();
+        let s2_out = '';
         let out = [];
-        let index = s1.indexOf(s2);
+        let index = s1_lower.indexOf(s2_lower);
         let start = 0;
         while (index !== -1) {
+            if (s2_out.length === 0) {
+                s2_out = s1.substring(index, index + s2.length);
+                console.log(s2, s2_lower, s2_out);
+            }
             out.push(s1.substring(start, index));
-            out.push(<span className='highlighted'>{s2}</span>)
+            out.push(<span className='highlighted'>{s2_out}</span>)
             start = index + s2.length;
-            index = s1.indexOf(s2, start);
+            index = s1_lower.indexOf(s2_lower, start);
         }
         out.push(s1.substring(start, s1.length));
         return out;
@@ -91,7 +98,9 @@ const Article = () => {
                     let content = response.data.list[i]['fields']['content'];
                     let title = addHighlight(response.data.list[i]['fields']['title'], search_text);
                     if (condition === 'search') {
-                        let index = content.indexOf(search_text);
+                        let content_lower = String(content).slice().toLowerCase(); // deep copy
+                        let search_text_lower = String(search_text).slice().toLowerCase();
+                        let index = content_lower.indexOf(search_text_lower);
                         if (index === -1 && content.length > wordCount) {
                             content = content.substring(0, wordCount) + '...';
                         } else {
@@ -197,7 +206,7 @@ const Article = () => {
         if (value === undefined || value.length === 0) return;
         queryParams.current.set('condition', 'search');
         queryParams.current.set('search_text', value);
-        console.log(queryParams.current.get('search_text'),value)
+        console.log(queryParams.current.get('search_text'), value)
         setCurrentPageNumber(1);
         getArticles('search', 1, -1, currentPageSize, value);
         scrollToTop();

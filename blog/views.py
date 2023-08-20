@@ -361,9 +361,9 @@ def get_article(request):
             try:
                 per_page = data['per_page'] if 'per_page' in data.keys() else settings.DEFAULT_PER_PAGE
                 page_number = data['page_number']
-                # 或查询
-                res_data = models.Article.objects.filter(content__contains=data['search_text']) \
-                           | models.Article.objects.filter(title__contains=data['search_text'])
+                # 或查询, __icontains忽略大小写
+                res_data = models.Article.objects.filter(content__icontains=data['search_text']) \
+                           | models.Article.objects.filter(title__icontains=data['search_text'])
                 res['total_count'] = len(res_data)
                 if 0 < page_number <= math.ceil(len(res_data) / per_page):
                     start = per_page * (page_number - 1)
