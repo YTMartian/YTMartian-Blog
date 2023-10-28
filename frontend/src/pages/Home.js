@@ -320,7 +320,9 @@ const Home = () => {
             <div className="gtco-portfolio">
                 <div className="gtco-container">
                     <div className="text-center gtco-heading animate-box" style={{ paddingTop: '10%' }} id='subtitle2'>
-                        <a href="" target="_blank" className="button button-primary button-giant">Nothing...</a>
+                        <a href={`${window.location.origin}${window.location.pathname}#/Stock`} className="button button-primary button-giant" target="_blank">
+                            Nothing...
+                        </a>
                     </div>
                 </div>
             </div>

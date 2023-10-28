@@ -558,3 +558,17 @@ def check_content(content: str) -> int:
     if secure_check_return['errcode'] != 0:
         return 2
     return 0
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_stocks(request):
+    res = {}
+    try:
+        data = models.StockRecorder.objects.all()
+        res['list'] = json.loads(serializers.serialize('json', data))
+        res['msg'] = 'success'
+        res['code'] = 0
+    except Exception as e:
+        res['msg'] = str(e)
+        res['code'] = 1
+    return JsonResponse(res)

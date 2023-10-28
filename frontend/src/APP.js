@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Article from './pages/Article'
 import Wallpaper from './pages/Wallpaper'
 import Page from './pages/Page'
+import Stock from './pages/Stock'
 import FourZeroFour from './pages/404'
 import { Spin } from 'antd';
 
@@ -24,6 +25,7 @@ class App extends Component {
                         <Route path="/Wallpaper" name="Wallpaper" element={<Wallpaper />} />
                         <Route path="/Page" name="Page" element={<Page />} />
                         <Route path="/404" name="404" element={<FourZeroFour />} />
+                        <Route path="/Stock" name="Stock" element={<Stock />} />
                     </Routes>
                 </React.Suspense>
             </HashRouter>
