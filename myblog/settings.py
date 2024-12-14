@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 's5(mk(i+-2x#+18wu8^$n7(j2r2zcyt#)&(hxzt+(a*xu+yznf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*'] # if DEBUG else ['www.dongjiayi.com', 'dongjiayi.com', '59.110.154.234']
 
