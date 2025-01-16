@@ -83,12 +83,14 @@ import {
     SmileTwoTone,
     UserOutlined,
     MessageOutlined,
+    EyeInvisibleOutlined,
 } from '@ant-design/icons'
 import ReactCanvasNest from 'react-canvas-nest'
 import EmojiMartData from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import ReactPlayer from 'react-player'
 import Draggable from 'react-draggable'
+import mermaid from 'mermaid';
 
 
 const { TextArea } = Input;
@@ -96,6 +98,13 @@ const { Meta } = Card;
 
 message.config({
     top: 0
+});
+
+// Initialize mermaid
+mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    securityLevel: 'loose',
 });
 
 
@@ -114,6 +123,7 @@ const Page = () => {
     const [form1] = Form.useForm();//对表单数据域进行交互
     const [form2] = Form.useForm();//用于回复评论
     const currentReplyCommentId = useRef(undefined);//记录当前回复的评论id,如果不使用hook，则无法传入selectEmoji，并且useState不是同步更新的
+    const [showMermaidCode, setShowMermaidCode] = useState(false);
 
     //----------------------------拖动Emoji组件(START)-------------------------------------//
     const [openEmojiModal, setOpenEmojiModal] = useState(false);
@@ -232,12 +242,72 @@ const Page = () => {
         });
     }
 
+    // 添加处理显示/隐藏源码的函数
+    const handleMermaidCodeToggle = () => {
+        setShowMermaidCode(!showMermaidCode);
+        // 给 DOM 一点时间更新，然后重新渲染 mermaid
+        setTimeout(() => {
+            mermaid.contentLoaded();
+        }, 200);
+    };
+
     const getMarkdown = (content) => {
         return <ReactMarkdown className={styles.table_hljs}
             children={content}
             components={{
                 code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || '')
+                    
+                    // Handle mermaid syntax
+                    if (match && match[1] === 'mermaid') {
+                        return (
+                            <div>
+                                <div style={{ marginBottom: '10px' }}>
+                                    <Button 
+                                        type="link" 
+                                        onClick={handleMermaidCodeToggle}
+                                        icon={showMermaidCode ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                                    >
+                                        {showMermaidCode ? '隐藏源码' : '显示源码'}
+                                    </Button>
+                                </div>
+                                <div style={{ 
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: '20px',
+                                    alignItems: 'flex-start'
+                                }}>
+                                    {/* Source code */}
+                                    {showMermaidCode && (
+                                        <div style={{ flex: 1 }}>
+                                            <SyntaxHighlighter
+                                                children={String(children).replace(/\n$/, '')}
+                                                style={codeThemes[currentCodeTheme]}
+                                                language="mermaid"
+                                                PreTag="div"
+                                                showLineNumbers={true}
+                                                {...props}
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Render mermaid diagram */}
+                                    <div style={{ 
+                                        flex: showMermaidCode ? 1 : 'auto',
+                                        border: '1px solid #eee',
+                                        padding: '20px',
+                                        borderRadius: '4px',
+                                        backgroundColor: '#fff'
+                                    }}>
+                                        <div className="mermaid">
+                                            {String(children).replace(/\n$/, '')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    }
+                    
+                    // Handle other code blocks
                     return !inline && match ? (
                         <SyntaxHighlighter
                             children={String(children).replace(/\n$/, '')}
@@ -259,7 +329,7 @@ const Page = () => {
                             src={node.properties.src}
                             width={768}
                             alt={node.properties.alt}
-                            fallback={'https://www.dongjiayi.com/static/files/image_fallback.png'}
+                            fallback={'http://45.141.139.185//static/files/image_fallback.png'}
                         />
                     )
                 },
@@ -433,6 +503,14 @@ const Page = () => {
         }
         // deps
     }, []);
+
+    // Add useEffect to initialize mermaid after content renders
+    useEffect(() => {
+        // Initialize mermaid diagrams
+        setTimeout(() => {
+            mermaid.contentLoaded();
+        }, 200);
+    }, [thisArticle]); // Add thisArticle as dependency
 
     const thumbsUp = () => {
         request({

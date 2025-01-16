@@ -65,7 +65,13 @@ from django.utils.encoding import python_2_unicode_compatible
 
 * [ ] Rebuild frontend with react.
 
-* [ ] Deploy in docker.
+* [x] Deploy in docker.
+
+* [x] support mermaid
+
+* [ ] 标签不要重复创建
+
+* [ ] recoder不再记录访问ip问题修复
 
 <img src="mini program.jpg" width="30%" height="30%">
 
