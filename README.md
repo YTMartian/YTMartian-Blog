@@ -77,3 +77,6 @@ from django.utils.encoding import python_2_unicode_compatible
 
 <img src="mini program.jpg" width="30%" height="30%">
 
+### CHANGELOG
+
+- 2025-01-18 增加文章目录功能

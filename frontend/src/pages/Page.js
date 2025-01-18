@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from "react-router-dom"
 import { Helmet } from 'react-helmet';
 import request from '../request'
@@ -87,6 +87,8 @@ import {
     CopyOutlined,
     ColumnWidthOutlined,
     ColumnHeightOutlined,
+    LeftOutlined,
+    RightOutlined,
 } from '@ant-design/icons'
 import ReactCanvasNest from 'react-canvas-nest'
 import EmojiMartData from '@emoji-mart/data'
@@ -94,6 +96,7 @@ import Picker from '@emoji-mart/react'
 // import ReactPlayer from 'react-player'
 import Draggable from 'react-draggable'
 import mermaid from 'mermaid';
+import { throttle } from 'lodash';
 
 
 const { TextArea } = Input;
@@ -243,6 +246,16 @@ const Page = () => {
     const [form2] = Form.useForm();//用于回复评论
     const currentReplyCommentId = useRef(undefined);//记录当前回复的评论id,如果不使用hook，则无法传入selectEmoji，并且useState不是同步更新的
     const [showMermaidCode, setShowMermaidCode] = useState(false);
+    const [tableOfContents, setTableOfContents] = useState([]);
+    const [tocCollapsed, setTocCollapsed] = useState(false);
+    const [tocPosition, setTocPosition] = useState({ x: 20, y: 240 }); // 修改这里的值来调整初始位置
+    const [dockSide, setDockSide] = useState('left'); // 新增：记录停靠边
+    const tocDraggleRef = useRef(null);
+    const [activeId, setActiveId] = useState('');
+    const headingObservers = useRef(new Map());
+    const [isDragging, setIsDragging] = useState(false);
+    const [articleBounds, setArticleBounds] = useState({ left: 0, right: 0 });
+    const articleRef = useRef(null);
 
     //----------------------------拖动Emoji组件(START)-------------------------------------//
     const [openEmojiModal, setOpenEmojiModal] = useState(false);
@@ -346,6 +359,9 @@ const Page = () => {
                 setThisArticle(this_article);
                 setThisArticleThumbsUp(this_article.thumbs_up);
                 thisArticleCommentsCount.current = this_article.comments;
+                
+                // 从内容生成目录
+                generateTOC(this_article.content);
             } else {
                 //404
                 if (response.data.msg === '404') {
@@ -476,7 +492,13 @@ const Page = () => {
                         }
                     }
                     return <blockquote>{data}</blockquote>
-                }
+                },
+                h1: ({node, ...props}) => <h1 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h2: ({node, ...props}) => <h2 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h3: ({node, ...props}) => <h3 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h4: ({node, ...props}) => <h4 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h5: ({node, ...props}) => <h5 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h6: ({node, ...props}) => <h6 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
             }}
             remarkPlugins={[remarkMath, remarkGfm]}
             rehypePlugins={[rehypeMathjax]}
@@ -844,6 +866,123 @@ const Page = () => {
         document.getElementById(`replyTextArea${commentId}`).focus();
     }
 
+    // 添加从markdown内容生成目录的函数
+    const generateTOC = (content) => {
+        const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+        const toc = [];
+        let match;
+        
+        while ((match = headingRegex.exec(content)) !== null) {
+            const level = match[1].length; // 标题级别(1-6)
+            const text = match[2];         // 标题文本
+            const id = text.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-'); // 生成标题ID
+            
+            toc.push({
+                level,
+                text,
+                id
+            });
+        }
+        
+        setTableOfContents(toc);
+    };
+
+    // 添加滚动处理函数
+    const scrollToHeading = (id) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    // 使用 useCallback 优化观察者回调
+    const headingCallback = useCallback((entries) => {
+        const visibleHeadings = entries.filter(entry => entry.isIntersecting);
+        
+        if (visibleHeadings.length > 0) {
+            // 获取最靠近视口顶部的标题
+            const mostVisibleHeading = visibleHeadings.reduce((prev, curr) => {
+                const prevBound = prev.boundingClientRect;
+                const currBound = curr.boundingClientRect;
+                return Math.abs(prevBound.top) < Math.abs(currBound.top) ? prev : curr;
+            });
+            
+            setActiveId(mostVisibleHeading.target.id);
+        }
+    }, []);
+
+    // 设置标题观察者
+    useEffect(() => {
+        const observer = new IntersectionObserver(headingCallback, {
+            rootMargin: '-80px 0px -80% 0px'
+        });
+
+        // 清理旧的观察者
+        headingObservers.current.forEach(observer => observer.disconnect());
+        headingObservers.current.clear();
+
+        // 观察所有标题元素
+        document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+            observer.observe(heading);
+            headingObservers.current.set(heading, observer);
+        });
+
+        return () => {
+            headingObservers.current.forEach(observer => observer.disconnect());
+            headingObservers.current.clear();
+        };
+    }, [headingCallback, thisArticle]); // 当文章内容更新时重新设置观察者
+
+    // 修改 onTocStart 函数，移除边界限制
+    const onTocStart = useCallback((e, data) => {
+        setIsDragging(true);
+    }, []);
+
+    // 修改 onTocStop 函数，简化逻辑
+    const onTocStop = useCallback((e, data) => {
+        setIsDragging(false);
+        const { clientWidth } = window.document.documentElement;
+        const newDockSide = data.x < clientWidth / 2 ? 'left' : 'right';
+        setDockSide(newDockSide);
+        setTocPosition({ x: data.x, y: data.y });
+    }, []);
+
+    // 处理折叠/展开
+    const toggleCollapse = () => {
+        const { clientWidth } = window.document.documentElement;
+        setTocCollapsed(!tocCollapsed);
+        
+        if (!tocCollapsed) { // 要折叠
+            setTocPosition({ 
+                x: dockSide === 'left' ? 0 : clientWidth - 40,
+                y: tocPosition.y 
+            });
+        } else { // 要展开
+            setTocPosition({ 
+                x: dockSide === 'left' ? 20 : clientWidth - 270,
+                y: tocPosition.y 
+            });
+        }
+    };
+
+    // 添加一个函数来更新文章边界
+    const updateArticleBounds = useCallback(() => {
+        if (articleRef.current) {
+            const rect = articleRef.current.getBoundingClientRect();
+            setArticleBounds({
+                left: rect.left,
+                right: window.innerWidth - rect.right
+            });
+        }
+    }, []);
+
+    // 添加窗口大小变化监听
+    useEffect(() => {
+        updateArticleBounds();
+        const handleResize = throttle(updateArticleBounds, 100);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [updateArticleBounds]);
 
     return (
         <div className={styles.page_body}>
@@ -879,14 +1018,13 @@ const Page = () => {
                     </div>
                 </div>
             </div>
-            <div className={styles.page_card} style={{ zIndex: 2 }}>
+            <div className={styles.page_card} style={{ zIndex: 2 }} ref={articleRef}>
                 <br />
                 <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI' }}>
                     <div className={styles.loading} style={{ display: isContentLoading }}>
                         <span /><span /><span /><span /><span />
                     </div>
                     {getMarkdown(thisArticle.content)}
-
                 </div>
                 <br />
             </div>
@@ -992,8 +1130,24 @@ const Page = () => {
 
 
             <nav className={styles.thumb_up_navigation}>
-                <button style={{ position: 'fixed', top: '6%', right: '8%', zIndex: 2 }} className="button button-glow button-circle button-caution button-jumbo" onClick={thumbsUp}>
-                    <LikeFilled />
+                <button 
+                    style={{ 
+                        position: 'fixed', 
+                        top: '6%', 
+                        right: '8%', 
+                        zIndex: 2,
+                        borderRadius: '50%',  // 添加圆角
+                        width: '60px',        // 设置固定宽度
+                        height: '60px',       // 设置固定高度
+                        display: 'flex',      // 使用flex布局
+                        alignItems: 'center', // 垂直居中
+                        justifyContent: 'center', // 水平居中
+                        padding: 0            // 移除内边距
+                    }} 
+                    className="button button-glow button-caution button-jumbo" 
+                    onClick={thumbsUp}
+                >
+                    <LikeFilled style={{ fontSize: '24px' }} />
                 </button>
             </nav>
 
@@ -1044,6 +1198,58 @@ const Page = () => {
                     })()}
                 />
             </Modal>
+
+            <Draggable
+                handle=".toc-handle"
+                position={tocPosition}
+                onStart={onTocStart}
+                onStop={onTocStop}
+            >
+                <div 
+                    className={`${styles.toc_navigation} ${styles[dockSide]} ${tocCollapsed ? styles.collapsed : ''} ${isDragging ? styles.dragging : ''}`}
+                    ref={tocDraggleRef}
+                    style={{
+                        position: 'fixed',
+                        pointerEvents: 'auto',
+                        zIndex: 1000,
+                        width: tocCollapsed ? '40px' : '15vw',
+                        transition: 'width 0.3s ease',
+                        overflow: 'hidden'
+                    }}
+                >
+                    <div className={styles.toc_container}>
+                        <div className={`${styles.toc_header} toc-handle`}>
+                            <h3>目录</h3>
+                            <button
+                                className={styles.collapse_btn}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCollapse();
+                                }}
+                            >
+                                {dockSide === 'left' ? 
+                                    (tocCollapsed ? <RightOutlined /> : <LeftOutlined />) :
+                                    (tocCollapsed ? <LeftOutlined /> : <RightOutlined />)
+                                }
+                            </button>
+                        </div>
+                        <div className={styles.toc_content}>
+                            {tableOfContents.map((heading, index) => (
+                                <div
+                                    key={index}
+                                    className={`${styles.toc_item} ${heading.id === activeId ? styles.active : ''}`}
+                                    style={{ 
+                                        paddingLeft: `${(heading.level) * 5}px`
+                                    }}
+                                    onClick={() => scrollToHeading(heading.id)}
+                                >
+                                    {heading.text}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </Draggable>
         </div >
     );
 }

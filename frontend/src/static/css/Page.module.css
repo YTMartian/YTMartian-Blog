@@ -437,3 +437,252 @@ ol {
         transform: scale(2.0);
     }
 }
+
+.toc_navigation {
+    position: fixed;
+    z-index: 100;
+    will-change: transform;
+}
+
+.toc_container {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    min-width: 250px;
+    transition: all 0.3s ease;
+    transform: translate3d(0, 0, 0);
+}
+
+.toc_container h3 {
+    color: #333;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    font-weight: bold;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.toc_item {
+    padding: 8px 12px;
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    position: relative;
+    margin: 2px 0;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
+    cursor: pointer !important;
+    border-radius: 4px;
+}
+
+.toc_item:hover {
+    color: #1890ff;
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    padding-left: 10px;
+    font-weight: 600;
+}
+
+/* 添加活跃状态样式 */
+.toc_item.active {
+    background-color: rgba(24, 144, 255, 0.1);
+    color: #1890ff;
+    font-weight: 600;
+}
+
+.toc_item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 70%;
+    background-color: #1890ff;
+    border-radius: 0 2px 2px 0;
+}
+
+/* 添加滚动条样式 */
+.toc_navigation::-webkit-scrollbar {
+    width: 6px;
+}
+
+.toc_navigation::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.toc_navigation::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.toc_navigation::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* 保持响应式设计 */
+@media screen and (max-width: 768px) {
+    .toc_navigation {
+        display: none;
+    }
+    
+    .page_card {
+        margin-left: 0 !important;
+    }
+}
+
+/* 折叠状态样式 */
+.collapsed .toc_content {
+    max-height: 0;
+    overflow: hidden;
+}
+
+.collapsed .toc_container {
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 拖动时的样式 */
+.toc_navigation:active {
+    cursor: grabbing;
+}
+
+/* 确保内容区域不会被拖动 */
+.toc_item {
+    cursor: pointer !important;
+}
+
+/* 添加一些视觉提示 */
+.toc_header:hover {
+    opacity: 0.8;
+}
+
+.toc_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    cursor: move; /* 指示可拖动 */
+}
+
+.toc_content {
+    transition: all 0.3s ease;
+    max-height: 500px;
+    overflow: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.toc_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    user-select: none;
+}
+
+.collapse_btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.collapse_btn:hover {
+    color: #1890ff;
+    transform: scale(1.1);
+}
+
+/* 左侧停靠样式 */
+.left.collapsed .toc_container {
+    transform: translateX(-100%);
+    border-radius: 0 16px 16px 0;
+    padding: 10px;
+    min-width: auto;
+}
+
+.left.collapsed .toc_content {
+    display: none;
+}
+
+.left.collapsed .collapse_btn {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 右侧停靠样式 */
+.right.collapsed .toc_container {
+    transform: translateX(100%);
+    border-radius: 16px 0 0 16px;
+    padding: 10px;
+    min-width: auto;
+}
+
+.right.collapsed .toc_content {
+    display: none;
+}
+
+.right.collapsed .collapse_btn {
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    border-radius: 8px 0 0 8px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 拖动时移除过渡效果 */
+.dragging {
+    transition: none !important;
+}
+
+.dragging * {
+    transition: none !important;
+}
+
+/* 优化折叠动画 */
+.collapsed .toc_container {
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 优化滚动条 */
+.toc_content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.toc_content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.toc_content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.toc_content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+}
