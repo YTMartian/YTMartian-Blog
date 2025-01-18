@@ -58,6 +58,9 @@ const Article = () => {
 
     //将s1中出现的s2高亮显示，不区分大小写
     const addHighlight = (s1, s2) => {
+        if (s2 === undefined || s2 === null || s2 === '') {
+            return s1;
+        }
         let s1_lower = String(s1).slice().toLowerCase(); // deep copy
         let s2_lower = String(s2).slice().toLowerCase();
         let s2_out = '';
@@ -93,7 +96,6 @@ const Article = () => {
         }).then((response) => {
             if (response.data.code === 0) {
                 let newData = [];
-
                 for (let i = 0; i < response.data.list.length; i++) {
                     let content = response.data.list[i]['fields']['content'];
                     let title = addHighlight(response.data.list[i]['fields']['title'], search_text);

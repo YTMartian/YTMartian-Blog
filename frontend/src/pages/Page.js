@@ -84,11 +84,14 @@ import {
     UserOutlined,
     MessageOutlined,
     EyeInvisibleOutlined,
+    CopyOutlined,
+    ColumnWidthOutlined,
+    ColumnHeightOutlined,
 } from '@ant-design/icons'
 import ReactCanvasNest from 'react-canvas-nest'
 import EmojiMartData from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
-import ReactPlayer from 'react-player'
+// import ReactPlayer from 'react-player'
 import Draggable from 'react-draggable'
 import mermaid from 'mermaid';
 
@@ -107,6 +110,122 @@ mermaid.initialize({
     securityLevel: 'loose',
 });
 
+// 将 copyToClipboard 移到组件外部
+const copyToClipboard = (text) => {
+    // 首先尝试使用 navigator.clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(
+            () => message.success('复制成功'),
+            () => fallbackCopyToClipboard(text)
+        );
+    } else {
+        // 如果 navigator.clipboard 不可用，使用后备方案
+        fallbackCopyToClipboard(text);
+    }
+};
+
+// 后备复制方案
+const fallbackCopyToClipboard = (text) => {
+    try {
+        // 创建一个临时文本区域
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+
+        // 防止滚动到底部
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        // 执行复制命令
+        const successful = document.execCommand('copy');
+        textArea.remove();
+
+        if (successful) {
+            message.success('复制成功');
+        } else {
+            message.error('复制失败');
+        }
+    } catch (err) {
+        message.error('复制失败');
+        console.error('复制失败:', err);
+    }
+};
+
+// 创建独立的代码块组件
+const CodeBlock = ({ match, codeString, language, codeThemes, currentCodeTheme }) => {
+    const [localWrapLongLines, setLocalWrapLongLines] = useState(false);
+
+    const handleLocalWrapLongLinesToggle = () => {
+        setLocalWrapLongLines(!localWrapLongLines);
+        // 给 DOM 一点时间更新，然后重新渲染 mermaid
+        setTimeout(() => {
+            mermaid.contentLoaded();
+        }, 200);
+    };
+
+    return (
+        <div style={{ position: 'relative' }}>
+            <Space
+                style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '10px',
+                    zIndex: 1,
+                }}
+            >
+                <Tooltip title={localWrapLongLines ? "禁用自动换行" : "启用自动换行"}>
+                    <Button
+                        type="text"
+                        icon={localWrapLongLines ? <ColumnWidthOutlined /> : <ColumnHeightOutlined />}
+                        onClick={handleLocalWrapLongLinesToggle}
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            color: '#1890ff'
+                        }}
+                    />
+                </Tooltip>
+                <Tooltip title="复制代码">
+                    <Button
+                        type="text"
+                        icon={<CopyOutlined style={{ color: '#1890ff' }} />}
+                        onClick={() => copyToClipboard(codeString)}
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            color: '#1890ff'
+                        }}
+                    />
+                </Tooltip>
+            </Space>
+            <SyntaxHighlighter
+                children={codeString}
+                style={codeThemes[currentCodeTheme]}
+                language={language}
+                PreTag="div"
+                showLineNumbers={true}
+                wrapLines={true}
+                wrapLongLines={localWrapLongLines}
+                customStyle={{
+                    margin: 0,
+                    padding: '1em',
+                    paddingTop: '2em'
+                }}
+                lineNumberStyle={lineNumber => ({
+                    minWidth: '2.5em',
+                    paddingRight: '1em',
+                    textAlign: 'right',
+                    userSelect: 'none',
+                    borderRight: '1px solid rgba(128, 128, 128, 0.2)',
+                    marginRight: '1em'
+                })}
+            />
+        </div>
+    );
+};
 
 const Page = () => {
 
@@ -257,21 +376,22 @@ const Page = () => {
             components={{
                 code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || '')
-                    
+                    const codeString = String(children).replace(/\n$/, '');
+
                     // Handle mermaid syntax
                     if (match && match[1] === 'mermaid') {
                         return (
                             <div>
                                 <div style={{ marginBottom: '10px' }}>
-                                    <Button 
-                                        type="link" 
+                                    <Button
+                                        type="link"
                                         onClick={handleMermaidCodeToggle}
                                         icon={showMermaidCode ? <EyeOutlined /> : <EyeInvisibleOutlined />}
                                     >
                                         {showMermaidCode ? '隐藏源码' : '显示源码'}
                                     </Button>
                                 </div>
-                                <div style={{ 
+                                <div style={{
                                     display: 'flex',
                                     flexDirection: 'row',
                                     gap: '20px',
@@ -291,7 +411,7 @@ const Page = () => {
                                         </div>
                                     )}
                                     {/* Render mermaid diagram */}
-                                    <div style={{ 
+                                    <div style={{
                                         flex: showMermaidCode ? 1 : 'auto',
                                         border: '1px solid #eee',
                                         padding: '20px',
@@ -306,16 +426,15 @@ const Page = () => {
                             </div>
                         )
                     }
-                    
+
                     // Handle other code blocks
                     return !inline && match ? (
-                        <SyntaxHighlighter
-                            children={String(children).replace(/\n$/, '')}
-                            style={codeThemes[currentCodeTheme]}
+                        <CodeBlock
+                            match={match}
+                            codeString={codeString}
                             language={match[1]}
-                            PreTag="div"
-                            showLineNumbers={true}
-                            {...props}
+                            codeThemes={codeThemes}
+                            currentCodeTheme={currentCodeTheme}
                         />
                     ) : (
                         <code className={className} {...props}>

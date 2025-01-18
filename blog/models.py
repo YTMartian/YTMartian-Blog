@@ -38,7 +38,7 @@ class TagManager(models.Manager):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=20, blank=True, default='')
+    name = models.CharField(max_length=100, blank=True, default='', unique=True)
     creat_time = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()  # 默认的管理器
@@ -49,6 +49,14 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                name="tag_uniq",
+            )
+        ]
 
 
 class ClassManager(models.Manager):

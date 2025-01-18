@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import IntegrityError
+from django.contrib import messages
 from .models import Tag, Classification, Article, Wallpaper, Slide, Recorder, LimitIp, StockRecorder
 # from django import forms
 
@@ -37,7 +39,17 @@ class StockAdmin(admin.ModelAdmin):
     ordering = ('-time',)
 
 
-admin.site.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except IntegrityError:
+            messages.error(request, f'标签 "{obj.name}" 已存在，请使用其他名称。')
+            # 重新抛出异常，但这次会被 admin 优雅地处理
+            raise IntegrityError
+
+
+admin.site.register(Tag, TagAdmin)
 admin.site.register(Slide)
 admin.site.register(Recorder, RecorderAdmin)
 admin.site.register(Wallpaper)
