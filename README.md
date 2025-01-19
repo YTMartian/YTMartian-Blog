@@ -80,3 +80,7 @@ from django.utils.encoding import python_2_unicode_compatible
 ### CHANGELOG
 
 - 2025-01-18 增加文章目录功能
+
+### BUGS
+
+- 点赞后mermaid显示源码功能会被初始化

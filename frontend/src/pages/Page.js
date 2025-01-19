@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useLocation } from "react-router-dom"
 import { Helmet } from 'react-helmet';
 import request from '../request'
@@ -97,6 +97,8 @@ import Picker from '@emoji-mart/react'
 import Draggable from 'react-draggable'
 import mermaid from 'mermaid';
 import { throttle } from 'lodash';
+import CodeBlock from '../pages/CodeBlock';
+import TOC from '../pages/TOC';
 
 
 const { TextArea } = Input;
@@ -108,7 +110,7 @@ message.config({
 
 // Initialize mermaid
 mermaid.initialize({
-    startOnLoad: true,
+    startOnLoad: false,
     theme: 'default',
     securityLevel: 'loose',
 });
@@ -159,77 +161,6 @@ const fallbackCopyToClipboard = (text) => {
     }
 };
 
-// 创建独立的代码块组件
-const CodeBlock = ({ match, codeString, language, codeThemes, currentCodeTheme }) => {
-    const [localWrapLongLines, setLocalWrapLongLines] = useState(false);
-
-    const handleLocalWrapLongLinesToggle = () => {
-        setLocalWrapLongLines(!localWrapLongLines);
-        // 给 DOM 一点时间更新，然后重新渲染 mermaid
-        setTimeout(() => {
-            mermaid.contentLoaded();
-        }, 200);
-    };
-
-    return (
-        <div style={{ position: 'relative' }}>
-            <Space
-                style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '10px',
-                    zIndex: 1,
-                }}
-            >
-                <Tooltip title={localWrapLongLines ? "禁用自动换行" : "启用自动换行"}>
-                    <Button
-                        type="text"
-                        icon={localWrapLongLines ? <ColumnWidthOutlined /> : <ColumnHeightOutlined />}
-                        onClick={handleLocalWrapLongLinesToggle}
-                        style={{
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            color: '#1890ff'
-                        }}
-                    />
-                </Tooltip>
-                <Tooltip title="复制代码">
-                    <Button
-                        type="text"
-                        icon={<CopyOutlined style={{ color: '#1890ff' }} />}
-                        onClick={() => copyToClipboard(codeString)}
-                        style={{
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            color: '#1890ff'
-                        }}
-                    />
-                </Tooltip>
-            </Space>
-            <SyntaxHighlighter
-                children={codeString}
-                style={codeThemes[currentCodeTheme]}
-                language={language}
-                PreTag="div"
-                showLineNumbers={true}
-                wrapLines={true}
-                wrapLongLines={localWrapLongLines}
-                customStyle={{
-                    margin: 0,
-                    padding: '1em',
-                    paddingTop: '2em'
-                }}
-                lineNumberStyle={lineNumber => ({
-                    minWidth: '2.5em',
-                    paddingRight: '1em',
-                    textAlign: 'right',
-                    userSelect: 'none',
-                    borderRight: '1px solid rgba(128, 128, 128, 0.2)',
-                    marginRight: '1em'
-                })}
-            />
-        </div>
-    );
-};
-
 const Page = () => {
 
     const location = useLocation();//获取前一页面history传递的参数
@@ -245,7 +176,6 @@ const Page = () => {
     const [form1] = Form.useForm();//对表单数据域进行交互
     const [form2] = Form.useForm();//用于回复评论
     const currentReplyCommentId = useRef(undefined);//记录当前回复的评论id,如果不使用hook，则无法传入selectEmoji，并且useState不是同步更新的
-    const [showMermaidCode, setShowMermaidCode] = useState(false);
     const [tableOfContents, setTableOfContents] = useState([]);
     const [tocCollapsed, setTocCollapsed] = useState(false);
     const [tocPosition, setTocPosition] = useState({ x: 20, y: 240 }); // 修改这里的值来调整初始位置
@@ -375,103 +305,7 @@ const Page = () => {
         });
     }
 
-    // 添加处理显示/隐藏源码的函数
-    const handleMermaidCodeToggle = () => {
-        setShowMermaidCode(!showMermaidCode);
-        // 给 DOM 一点时间更新，然后重新渲染 mermaid
-        setTimeout(() => {
-            mermaid.contentLoaded();
-        }, 200);
-    };
-
-    // 修改 mermaid 初始化配置
-    useEffect(() => {
-        console.log('Initializing mermaid...'); // 调试日志
-        try {
-            mermaid.initialize({
-                startOnLoad: true,
-                theme: 'default',
-                securityLevel: 'loose',
-                logLevel: 'debug',
-                flowchart: {
-                    useMaxWidth: true,
-                    htmlLabels: true
-                }
-            });
-            console.log('Mermaid initialized successfully'); // 调试日志
-        } catch (error) {
-            console.error('Mermaid initialization error:', error);
-        }
-    }, []);
-
-    // 修改 MermaidDiagram 组件为更简单的实现
-    const MermaidDiagram = ({ content }) => {
-        const elementRef = useRef(null);
-
-        useEffect(() => {
-            console.log('MermaidDiagram useEffect triggered', { content }); // 调试日志
-
-            const renderDiagram = () => {
-                if (!elementRef.current) {
-                    console.log('No element ref found'); // 调试日志
-                    return;
-                }
-
-                console.log('Starting diagram render...'); // 调试日志
-
-                try {
-                    // 确保内容是干净的
-                    const cleanContent = content.trim();
-                    console.log('Clean content:', cleanContent); // 调试日志
-
-                    // 生成唯一ID
-                    const id = `mermaid-${Date.now()}`;
-                    elementRef.current.innerHTML = `<div class="mermaid" id="${id}">${cleanContent}</div>`;
-
-                    // 使用 nextTick 确保 DOM 已更新
-                    setTimeout(() => {
-                        console.log('Running mermaid parse...'); // 调试日志
-                        mermaid.run({
-                            nodes: [document.getElementById(id)],
-                        }).then(() => {
-                            console.log('Mermaid diagram rendered successfully'); // 调试日志
-                        }).catch(error => {
-                            console.error('Mermaid run error:', error);
-                            elementRef.current.innerHTML = `
-                                <div style="color: red; padding: 10px; border: 1px solid red;">
-                                    Failed to render diagram: ${error.message}
-                                </div>
-                            `;
-                        });
-                    }, 0);
-
-                } catch (error) {
-                    console.error('Mermaid rendering error:', error);
-                    elementRef.current.innerHTML = `
-                        <div style="color: red; padding: 10px; border: 1px solid red;">
-                            Failed to render diagram: ${error.message}
-                        </div>
-                    `;
-                }
-            };
-
-            renderDiagram();
-        }, [content]);
-
-        return (
-            <div
-                ref={elementRef}
-                style={{
-                    width: '100%',
-                    minHeight: '100px',
-                    padding: '10px',
-                    backgroundColor: '#fff'
-                }}
-            />
-        );
-    };
-
-    // 修改 getMarkdown 函数中的 mermaid 处理部分
+    // 修改 getMarkdown 函数中的 code 处理部分
     const getMarkdown = (content) => {
         return <ReactMarkdown className={styles.table_hljs}
             children={content}
@@ -480,58 +314,8 @@ const Page = () => {
                     const match = /language-(\w+)/.exec(className || '')
                     const codeString = String(children).replace(/\n$/, '');
 
-                    // Handle mermaid syntax
-                    if (match && match[1] === 'mermaid') {
-                        console.log('Rendering mermaid code block:', codeString); // 调试日志
-                        return (
-                            <div>
-                                <div style={{ marginBottom: '10px' }}>
-                                    <Button
-                                        type="link"
-                                        onClick={handleMermaidCodeToggle}
-                                        icon={showMermaidCode ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                                    >
-                                        {showMermaidCode ? '隐藏源码' : '显示源码'}
-                                    </Button>
-                                </div>
-                                <div style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: '20px',
-                                    alignItems: 'flex-start'
-                                }}>
-                                    {showMermaidCode && (
-                                        <div style={{ flex: 1 }}>
-                                            <SyntaxHighlighter
-                                                children={codeString}
-                                                style={codeThemes[currentCodeTheme]}
-                                                language="mermaid"
-                                                PreTag="div"
-                                                showLineNumbers={true}
-                                                {...props}
-                                            />
-                                        </div>
-                                    )}
-                                    <div style={{
-                                        flex: showMermaidCode ? 1 : 'auto',
-                                        border: '1px solid #eee',
-                                        padding: '20px',
-                                        borderRadius: '4px',
-                                        backgroundColor: '#fff',
-                                        width: '100%',
-                                        minHeight: '100px'
-                                    }}>
-                                        <MermaidDiagram content={codeString} />
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    }
-
-                    // Handle other code blocks
                     return !inline && match ? (
                         <CodeBlock
-                            match={match}
                             codeString={codeString}
                             language={match[1]}
                             codeThemes={codeThemes}
@@ -720,7 +504,12 @@ const Page = () => {
 
     //相当于componentDidMount，componentDidUpdate 和 componentWillUnmount
     useEffect(() => {
-        // create
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            securityLevel: 'loose',
+        });
+
         getArticles();
         getComments();
         document.body.classList.add(styles.page_body);
@@ -955,9 +744,9 @@ const Page = () => {
         let match;
 
         while ((match = headingRegex.exec(content)) !== null) {
-            const level = match[1].length; // 标题级别(1-6)
-            const text = match[2];         // 标题文本
-            const id = "h" + level + "-" + text; // 生成标题ID
+            const level = match[1].length;
+            const text = match[2];
+            const id = "h" + level + "-" + text.replace(/\s+/g, '-').toLowerCase(); // 更规范的 ID
 
             toc.push({
                 level,
@@ -973,7 +762,7 @@ const Page = () => {
     const scrollToHeading = (id) => {
         const element = document.getElementById(id);
         if (element) {
-            const offset = 100; // 可以根据需要调整这个值
+            const offset = 100;
             const elementPosition = element.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset - offset;
 
@@ -1250,64 +1039,18 @@ const Page = () => {
                 />
             </Modal>
 
-            <Draggable
-                handle=".toc-handle"
-                position={tocPosition}
-                onStart={onTocStart}
-                onStop={onTocStop}
-                scale={1}
-                bounds="parent"
-                defaultPosition={tocPosition}
-                defaultClassName={styles.smooth_drag}
-            >
-                <div
-                    className={`${styles.toc_navigation} ${styles[dockSide]} ${tocCollapsed ? styles.collapsed : ''} ${isDragging ? styles.dragging : ''}`}
-                    ref={tocDraggleRef}
-                    style={{
-                        position: 'fixed',
-                        pointerEvents: 'auto',
-                        zIndex: 1000,
-                        width: tocCollapsed ? '40px' : '15vw',
-                        transition: 'width 0.3s ease',
-                        overflow: 'hidden',
-                        willChange: 'transform',
-                        transform: 'translate3d(0,0,0)',
-                        backfaceVisibility: 'hidden',
-                    }}
-                >
-                    <div className={styles.toc_container}>
-                        <div className={`${styles.toc_header} toc-handle`}>
-                            <h3>目录</h3>
-                            <button
-                                className={styles.collapse_btn}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleCollapse();
-                                }}
-                            >
-                                {dockSide === 'left' ?
-                                    (tocCollapsed ? <RightOutlined /> : <LeftOutlined />) :
-                                    (tocCollapsed ? <LeftOutlined /> : <RightOutlined />)
-                                }
-                            </button>
-                        </div>
-                        <div className={styles.toc_content}>
-                            {tableOfContents.map((heading, index) => (
-                                <div
-                                    key={index}
-                                    className={styles.toc_item}
-                                    style={{
-                                        paddingLeft: `${(heading.level) * 5}px`
-                                    }}
-                                    onClick={() => scrollToHeading(heading.id)}
-                                >
-                                    {heading.text}
-                                </div>
-                            ))}
-                        </div>
+            <TOC tableOfContents={tableOfContents} scrollToHeading={scrollToHeading} />
+
+            {/* <div className={styles.page_card} style={{ zIndex: 2 }} ref={articleRef}>
+                <br />
+                <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI' }}>
+                    <div className={styles.loading} style={{ display: isContentLoading }}>
+                        <span /><span /><span /><span /><span />
                     </div>
+                    {getMarkdown(thisArticle.content)}
                 </div>
-            </Draggable>
+                <br />
+            </div> */}
         </div >
     );
 }
