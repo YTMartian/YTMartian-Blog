@@ -251,8 +251,6 @@ const Page = () => {
     const [tocPosition, setTocPosition] = useState({ x: 20, y: 240 }); // 修改这里的值来调整初始位置
     const [dockSide, setDockSide] = useState('left'); // 新增：记录停靠边
     const tocDraggleRef = useRef(null);
-    const [activeId, setActiveId] = useState('');
-    const headingObservers = useRef(new Map());
     const [isDragging, setIsDragging] = useState(false);
     const [articleBounds, setArticleBounds] = useState({ left: 0, right: 0 });
     const articleRef = useRef(null);
@@ -359,7 +357,7 @@ const Page = () => {
                 setThisArticle(this_article);
                 setThisArticleThumbsUp(this_article.thumbs_up);
                 thisArticleCommentsCount.current = this_article.comments;
-                
+
                 // 从内容生成目录
                 generateTOC(this_article.content);
             } else {
@@ -386,6 +384,94 @@ const Page = () => {
         }, 200);
     };
 
+    // 修改 mermaid 初始化配置
+    useEffect(() => {
+        console.log('Initializing mermaid...'); // 调试日志
+        try {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'default',
+                securityLevel: 'loose',
+                logLevel: 'debug',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+            console.log('Mermaid initialized successfully'); // 调试日志
+        } catch (error) {
+            console.error('Mermaid initialization error:', error);
+        }
+    }, []);
+
+    // 修改 MermaidDiagram 组件为更简单的实现
+    const MermaidDiagram = ({ content }) => {
+        const elementRef = useRef(null);
+
+        useEffect(() => {
+            console.log('MermaidDiagram useEffect triggered', { content }); // 调试日志
+
+            const renderDiagram = () => {
+                if (!elementRef.current) {
+                    console.log('No element ref found'); // 调试日志
+                    return;
+                }
+
+                console.log('Starting diagram render...'); // 调试日志
+
+                try {
+                    // 确保内容是干净的
+                    const cleanContent = content.trim();
+                    console.log('Clean content:', cleanContent); // 调试日志
+
+                    // 生成唯一ID
+                    const id = `mermaid-${Date.now()}`;
+                    elementRef.current.innerHTML = `<div class="mermaid" id="${id}">${cleanContent}</div>`;
+
+                    // 使用 nextTick 确保 DOM 已更新
+                    setTimeout(() => {
+                        console.log('Running mermaid parse...'); // 调试日志
+                        mermaid.run({
+                            nodes: [document.getElementById(id)],
+                        }).then(() => {
+                            console.log('Mermaid diagram rendered successfully'); // 调试日志
+                        }).catch(error => {
+                            console.error('Mermaid run error:', error);
+                            elementRef.current.innerHTML = `
+                                <div style="color: red; padding: 10px; border: 1px solid red;">
+                                    Failed to render diagram: ${error.message}
+                                </div>
+                            `;
+                        });
+                    }, 0);
+
+                } catch (error) {
+                    console.error('Mermaid rendering error:', error);
+                    elementRef.current.innerHTML = `
+                        <div style="color: red; padding: 10px; border: 1px solid red;">
+                            Failed to render diagram: ${error.message}
+                        </div>
+                    `;
+                }
+            };
+
+            renderDiagram();
+        }, [content]);
+
+        return (
+            <div
+                ref={elementRef}
+                style={{
+                    width: '100%',
+                    minHeight: '100px',
+                    padding: '10px',
+                    backgroundColor: '#fff'
+                }}
+            />
+        );
+    };
+
+    // 修改 getMarkdown 函数中的 mermaid 处理部分
     const getMarkdown = (content) => {
         return <ReactMarkdown className={styles.table_hljs}
             children={content}
@@ -396,6 +482,7 @@ const Page = () => {
 
                     // Handle mermaid syntax
                     if (match && match[1] === 'mermaid') {
+                        console.log('Rendering mermaid code block:', codeString); // 调试日志
                         return (
                             <div>
                                 <div style={{ marginBottom: '10px' }}>
@@ -413,11 +500,10 @@ const Page = () => {
                                     gap: '20px',
                                     alignItems: 'flex-start'
                                 }}>
-                                    {/* Source code */}
                                     {showMermaidCode && (
                                         <div style={{ flex: 1 }}>
                                             <SyntaxHighlighter
-                                                children={String(children).replace(/\n$/, '')}
+                                                children={codeString}
                                                 style={codeThemes[currentCodeTheme]}
                                                 language="mermaid"
                                                 PreTag="div"
@@ -426,17 +512,16 @@ const Page = () => {
                                             />
                                         </div>
                                     )}
-                                    {/* Render mermaid diagram */}
                                     <div style={{
                                         flex: showMermaidCode ? 1 : 'auto',
                                         border: '1px solid #eee',
                                         padding: '20px',
                                         borderRadius: '4px',
-                                        backgroundColor: '#fff'
+                                        backgroundColor: '#fff',
+                                        width: '100%',
+                                        minHeight: '100px'
                                     }}>
-                                        <div className="mermaid">
-                                            {String(children).replace(/\n$/, '')}
-                                        </div>
+                                        <MermaidDiagram content={codeString} />
                                     </div>
                                 </div>
                             </div>
@@ -462,7 +547,7 @@ const Page = () => {
                     return (
                         <Image
                             src={node.properties.src}
-                            width={768}
+                            style={{ maxWidth: '1000px', maxHeight: '1000px' }}
                             alt={node.properties.alt}
                             fallback={'http://45.141.139.185//static/files/image_fallback.png'}
                         />
@@ -493,16 +578,21 @@ const Page = () => {
                     }
                     return <blockquote>{data}</blockquote>
                 },
-                h1: ({node, ...props}) => <h1 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h2: ({node, ...props}) => <h2 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h3: ({node, ...props}) => <h3 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h4: ({node, ...props}) => <h4 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h5: ({node, ...props}) => <h5 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h6: ({node, ...props}) => <h6 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h1: ({ node, ...props }) => <h1 id={extractTitle(1, props)} {...props} />,
+                h2: ({ node, ...props }) => <h2 id={extractTitle(2, props)} {...props} />,
+                h3: ({ node, ...props }) => <h3 id={extractTitle(3, props)} {...props} />,
+                h4: ({ node, ...props }) => <h4 id={extractTitle(4, props)} {...props} />,
+                h5: ({ node, ...props }) => <h5 id={extractTitle(5, props)} {...props} />,
+                h6: ({ node, ...props }) => <h6 id={extractTitle(6, props)} {...props} />,
             }}
             remarkPlugins={[remarkMath, remarkGfm]}
             rehypePlugins={[rehypeMathjax]}
         />
+    }
+
+    const extractTitle = (level, props) => {
+        const title = props.children[0];
+        return 'h' + level + '-' + title;
     }
 
     //获取comments
@@ -644,14 +734,6 @@ const Page = () => {
         }
         // deps
     }, []);
-
-    // Add useEffect to initialize mermaid after content renders
-    useEffect(() => {
-        // Initialize mermaid diagrams
-        setTimeout(() => {
-            mermaid.contentLoaded();
-        }, 200);
-    }, [thisArticle]); // Add thisArticle as dependency
 
     const thumbsUp = () => {
         request({
@@ -871,67 +953,36 @@ const Page = () => {
         const headingRegex = /^(#{1,6})\s+(.+)$/gm;
         const toc = [];
         let match;
-        
+
         while ((match = headingRegex.exec(content)) !== null) {
             const level = match[1].length; // 标题级别(1-6)
             const text = match[2];         // 标题文本
-            const id = text.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-'); // 生成标题ID
-            
+            const id = "h" + level + "-" + text; // 生成标题ID
+
             toc.push({
                 level,
                 text,
                 id
             });
         }
-        
+
         setTableOfContents(toc);
     };
 
-    // 添加滚动处理函数
+    // 修改滚动处理函数
     const scrollToHeading = (id) => {
         const element = document.getElementById(id);
         if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+            const offset = 100; // 可以根据需要调整这个值
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
         }
     };
-
-    // 使用 useCallback 优化观察者回调
-    const headingCallback = useCallback((entries) => {
-        const visibleHeadings = entries.filter(entry => entry.isIntersecting);
-        
-        if (visibleHeadings.length > 0) {
-            // 获取最靠近视口顶部的标题
-            const mostVisibleHeading = visibleHeadings.reduce((prev, curr) => {
-                const prevBound = prev.boundingClientRect;
-                const currBound = curr.boundingClientRect;
-                return Math.abs(prevBound.top) < Math.abs(currBound.top) ? prev : curr;
-            });
-            
-            setActiveId(mostVisibleHeading.target.id);
-        }
-    }, []);
-
-    // 设置标题观察者
-    useEffect(() => {
-        const observer = new IntersectionObserver(headingCallback, {
-            rootMargin: '-80px 0px -80% 0px'
-        });
-
-        // 清理旧的观察者
-        headingObservers.current.forEach(observer => observer.disconnect());
-        headingObservers.current.clear();
-
-        // 观察所有标题元素
-        document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
-            observer.observe(heading);
-            headingObservers.current.set(heading, observer);
-        });
-
-        return () => {
-            headingObservers.current.forEach(observer => observer.disconnect());
-            headingObservers.current.clear();
-        };
-    }, [headingCallback, thisArticle]); // 当文章内容更新时重新设置观察者
 
     // 修改 onTocStart 函数，移除边界限制
     const onTocStart = useCallback((e, data) => {
@@ -951,16 +1002,16 @@ const Page = () => {
     const toggleCollapse = () => {
         const { clientWidth } = window.document.documentElement;
         setTocCollapsed(!tocCollapsed);
-        
+
         if (!tocCollapsed) { // 要折叠
-            setTocPosition({ 
+            setTocPosition({
                 x: dockSide === 'left' ? 0 : clientWidth - 40,
-                y: tocPosition.y 
+                y: tocPosition.y
             });
         } else { // 要展开
-            setTocPosition({ 
+            setTocPosition({
                 x: dockSide === 'left' ? 20 : clientWidth - 270,
-                y: tocPosition.y 
+                y: tocPosition.y
             });
         }
     };
@@ -1130,11 +1181,11 @@ const Page = () => {
 
 
             <nav className={styles.thumb_up_navigation}>
-                <button 
-                    style={{ 
-                        position: 'fixed', 
-                        top: '6%', 
-                        right: '8%', 
+                <button
+                    style={{
+                        position: 'fixed',
+                        top: '6%',
+                        right: '8%',
                         zIndex: 2,
                         borderRadius: '50%',  // 添加圆角
                         width: '60px',        // 设置固定宽度
@@ -1143,8 +1194,8 @@ const Page = () => {
                         alignItems: 'center', // 垂直居中
                         justifyContent: 'center', // 水平居中
                         padding: 0            // 移除内边距
-                    }} 
-                    className="button button-glow button-caution button-jumbo" 
+                    }}
+                    className="button button-glow button-caution button-jumbo"
                     onClick={thumbsUp}
                 >
                     <LikeFilled style={{ fontSize: '24px' }} />
@@ -1204,8 +1255,12 @@ const Page = () => {
                 position={tocPosition}
                 onStart={onTocStart}
                 onStop={onTocStop}
+                scale={1}
+                bounds="parent"
+                defaultPosition={tocPosition}
+                defaultClassName={styles.smooth_drag}
             >
-                <div 
+                <div
                     className={`${styles.toc_navigation} ${styles[dockSide]} ${tocCollapsed ? styles.collapsed : ''} ${isDragging ? styles.dragging : ''}`}
                     ref={tocDraggleRef}
                     style={{
@@ -1214,7 +1269,10 @@ const Page = () => {
                         zIndex: 1000,
                         width: tocCollapsed ? '40px' : '15vw',
                         transition: 'width 0.3s ease',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        willChange: 'transform',
+                        transform: 'translate3d(0,0,0)',
+                        backfaceVisibility: 'hidden',
                     }}
                 >
                     <div className={styles.toc_container}>
@@ -1227,7 +1285,7 @@ const Page = () => {
                                     toggleCollapse();
                                 }}
                             >
-                                {dockSide === 'left' ? 
+                                {dockSide === 'left' ?
                                     (tocCollapsed ? <RightOutlined /> : <LeftOutlined />) :
                                     (tocCollapsed ? <LeftOutlined /> : <RightOutlined />)
                                 }
@@ -1237,8 +1295,8 @@ const Page = () => {
                             {tableOfContents.map((heading, index) => (
                                 <div
                                     key={index}
-                                    className={`${styles.toc_item} ${heading.id === activeId ? styles.active : ''}`}
-                                    style={{ 
+                                    className={styles.toc_item}
+                                    style={{
                                         paddingLeft: `${(heading.level) * 5}px`
                                     }}
                                     onClick={() => scrollToHeading(heading.id)}

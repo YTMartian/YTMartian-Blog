@@ -458,7 +458,7 @@ ol {
 }
 
 .toc_container h3 {
-    color: #333;
+    color: #ffffff;
     font-size: 1.2em;
     margin-bottom: 15px;
     padding-bottom: 10px;
@@ -468,7 +468,7 @@ ol {
 }
 
 .toc_item {
-    padding: 8px 12px;
+    padding: 3px 12px;
     font-size: 14px;
     color: rgb(255, 255, 255);
     font-weight: 500;
@@ -481,8 +481,8 @@ ol {
 }
 
 .toc_item:hover {
-    color: #1890ff;
-    transform: translateX(5px);
+    /* color: #1890ff; */
+    /* transform: translateX(5px); */
     background: rgba(255, 255, 255, 0.5);
     border-radius: 4px;
     padding-left: 10px;
@@ -651,38 +651,4 @@ ol {
     padding: 10px;
     border-radius: 8px 0 0 8px;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-}
-
-/* 拖动时移除过渡效果 */
-.dragging {
-    transition: none !important;
-}
-
-.dragging * {
-    transition: none !important;
-}
-
-/* 优化折叠动画 */
-.collapsed .toc_container {
-    transform: translate3d(0, 0, 0);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 优化滚动条 */
-.toc_content {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
-
-.toc_content::-webkit-scrollbar {
-    width: 4px;
-}
-
-.toc_content::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.toc_content::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 2px;
 }
