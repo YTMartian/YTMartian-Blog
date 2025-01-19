@@ -84,3 +84,7 @@ from django.utils.encoding import python_2_unicode_compatible
 ### BUGS
 
 - 点赞后mermaid显示源码功能会被初始化
+
+- 目录解析问题，会把代码块里的# 开头的也解析为目录
+
+- 目录过多时显示不全，如文章c++实现设计模式

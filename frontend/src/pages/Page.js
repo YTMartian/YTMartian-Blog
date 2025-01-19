@@ -375,8 +375,8 @@ const Page = () => {
     }
 
     const extractTitle = (level, props) => {
-        const title = props.children[0];
-        return 'h' + level + '-' + title;
+        const title = props.children[0].replace(/\s+/g, '');
+        return "h" + level + "-" + title;
     }
 
     //获取comments
@@ -746,7 +746,7 @@ const Page = () => {
         while ((match = headingRegex.exec(content)) !== null) {
             const level = match[1].length;
             const text = match[2];
-            const id = "h" + level + "-" + text.replace(/\s+/g, '-').toLowerCase(); // 更规范的 ID
+            const id = "h" + level + "-" + text.replace(/\s+/g, ''); // 更规范的 ID
 
             toc.push({
                 level,
@@ -1040,17 +1040,6 @@ const Page = () => {
             </Modal>
 
             <TOC tableOfContents={tableOfContents} scrollToHeading={scrollToHeading} />
-
-            {/* <div className={styles.page_card} style={{ zIndex: 2 }} ref={articleRef}>
-                <br />
-                <div style={{ fontSize: '1.2em', fontFamily: 'Microsoft YaHei UI' }}>
-                    <div className={styles.loading} style={{ display: isContentLoading }}>
-                        <span /><span /><span /><span /><span />
-                    </div>
-                    {getMarkdown(thisArticle.content)}
-                </div>
-                <br />
-            </div> */}
         </div >
     );
 }
